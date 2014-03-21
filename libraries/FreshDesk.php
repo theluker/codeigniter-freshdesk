@@ -1,6 +1,9 @@
 <?php
 
-class FreshAPI
+/**
+ * FreshDesk API
+ */
+class FreshDeskAPI
 {
     protected function _request($url, $method = 'GET', $data = null)
     {
@@ -15,7 +18,7 @@ class FreshAPI
  *
  * @link http://freshdesk.com/api/forums/forum-category
  */
-class FreshForumCategory extends FreshAPI
+class FreshDeskForumCategory extends FreshDeskAPI
 {
     /**
      * Create a new Forum Category.
@@ -74,11 +77,14 @@ class FreshForumCategory extends FreshAPI
     }
 }
 
-class FreshForum extends FreshAPI
+/**
+ * FreshDesk Forum
+ */
+class FreshDeskForum extends FreshDeskAPI
 {
     public function __construct()
     {
-        $this->Category = new FreshForumCategory();
+        $this->Category = new FreshDeskForumCategory();
     }
 
     protected function 
@@ -89,7 +95,10 @@ class FreshForum extends FreshAPI
     protected function delete();
 }
 
-class FreshDesk extends FreshAPI
+/**
+ * FreshDesk Library
+ */
+class FreshDesk extends FreshDeskAPI
 {
 
     private $CI;
@@ -98,7 +107,7 @@ class FreshDesk extends FreshAPI
     public function __construct()
     {
         $this->CI =& get_instance();
-        $this->Forum = new FreshForum();
+        $this->Forum = new FreshDeskForum();
     }
 }
 
