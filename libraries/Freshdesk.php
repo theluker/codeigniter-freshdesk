@@ -339,4 +339,4 @@ class FreshDeskForumCategory extends FreshDeskAPI
     }
 }
 
-/* End of file FreshDesk.php */
+/* End of file Freshdesk.php */
