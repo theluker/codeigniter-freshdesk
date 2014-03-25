@@ -227,36 +227,44 @@ class FreshDeskForumCategory extends FreshDeskAPI
      *
      * Response:
      *     <?xml version="1.0" encoding="UTF-8"?>
-     *     <forums type="array">
-     *       <forum>
-     *         <description>General helpdesk announcements to the customers.</description>
-     *         <description-html>
-     *           <p>General helpdesk announcements to the customers.</p>
-     *         </description-html>
-     *         <forum-category-id type="integer">2</forum-category-id>
-     *         <forum-type type="integer">4</forum-type>
-     *         <id type="integer">5</id>
-     *         <name>Announcements</name>
-     *         <position type="integer">5</position>
-     *         <posts-count type="integer">0</posts-count>
-     *         <topics-count type="integer">0</topics-count>
-     *       </forum>
-     *       <forum>
-     *         <account-id type="integer">2</account-id>
-     *         <description>Customers can voice their ideas here.</description>
-     *         <description-html>
-     *           <p>Customers can voice their ideas here.</p>
-     *         </description-html>
-     *         <forum-category-id type="integer">2</forum-category-id>
-     *         <forum-type type="integer">2</forum-type>
-     *         <id type="integer">6</id>
-     *         <name>Feature Requests</name>
-     *         <position type="integer">6</position>
-     *         <posts-count type="integer">11</posts-count>
-     *         <topics-count type="integer">7</topics-count>
-     *       </forum>
-     *       ...
-     *     </forums>
+     *     <forum-category>
+     *       <created-at type="datetime">2012-12-05T16:04:12+05:30</created-at>
+     *       <description>New testing category</description>
+     *       <id type="integer">2</id>
+     *       <name>Test</name>
+     *       <position type="integer">2</position>
+     *       <updated-at type="datetime">2012-12-05T16:04:12+05:30</updated-at>
+     *       <forums type="array">
+     *         <forum>
+     *           <description>General helpdesk announcements to the customers.</description>
+     *           <description-html>
+     *             <p>General helpdesk announcements to the customers.</p>
+     *           </description-html>
+     *           <forum-category-id type="integer">2</forum-category-id>
+     *           <forum-type type="integer">4</forum-type>
+     *           <id type="integer">5</id>
+     *           <name>Announcements</name>
+     *           <position type="integer">5</position>
+     *           <posts-count type="integer">0</posts-count>
+     *           <topics-count type="integer">0</topics-count>
+     *         </forum>
+     *         <forum>
+     *           <account-id type="integer">2</account-id>
+     *           <description>Customers can voice their ideas here.</description>
+     *           <description-html>
+     *             <p>Customers can voice their ideas here.</p>
+     *           </description-html>
+     *           <forum-category-id type="integer">2</forum-category-id>
+     *           <forum-type type="integer">2</forum-type>
+     *           <id type="integer">6</id>
+     *           <name>Feature Requests</name>
+     *           <position type="integer">6</position>
+     *           <posts-count type="integer">11</posts-count>
+     *           <topics-count type="integer">7</topics-count>
+     *         </forum>
+     *         ...
+     *       </forums>
+     *     </forum-category>
      *
      * @link   http://freshdesk.com/api/forums/forum-category#viewing-forums-in-a-category
      * 
