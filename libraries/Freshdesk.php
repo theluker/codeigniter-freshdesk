@@ -52,51 +52,63 @@ class FreshDeskAPI
     /**
      * Perform an API request.
      * 
-     * @param  string $resource Freshdesk API resource
+     * @param  string $endpoint Freshdesk API endpoint
      * @param  string $method   HTTP request method
      * @param  array  $data     HTTP PUT/POST data
-     * @return mixed            JSON object or HTTP response code
+     * @return mixed            SimpleXML object or HTTP response code
      */
-    protected function _request($resource, $method = 'GET', $data = null)
+    protected function _request($endpoint, $method = 'GET', $data = null)
     {
-        $ch = curl_init ("{$this->base_url}/{$resource}");        
-        $headers = array('Content-Type: application/json');
+        $method = strtoupper($method);
+
+        $ch = curl_init ("{$this->base_url}/{$endpoint}");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_USERPWD, "{$this->api_key}:X");   
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+        curl_setopt($ch, CURLOPT_USERPWD, "{$this->api_key}:X");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
+        // Set request data if passed
         if ($data)
         {
-            $data = json_encode($data);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            $headers[] = 'Content-Length: ' . strlen($data);
+            $index = array_keys($data)[0];
+            $xml = new SimpleXMLElement("<{$index}/>");
+            array_walk_recursive(array_flip($data[$index]), array ($xml, 'addChild'));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $xml->asXML());
         }
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         
         $data = curl_exec($ch);
         $info = curl_getinfo($ch);
-        log_message('debug', var_dump($info, $data));
+        log_message('debug', var_dump($info, htmlspecialchars($data)));
+                
+        // CURL error handling
         if (curl_errno($ch) and $error = curl_error($ch)) 
         {
             log_message('error', var_dump($error));
             curl_close($ch);
             return FALSE;
         }
-        if (in_array($info['http_code'], array(404, 406)) and $error = $data) 
+        if (in_array($info['http_code'], array(404, 406, 302)) and $error = $data) 
         {
             log_message('error', var_dump($error));
             curl_close($ch);
             return FALSE;   
-        }        
+        }
         curl_close($ch);
 
-        // Return JSON object if data was returned
-        if ($data = json_decode($data))
+        // Load SimpleXML object if data was returned and properly parsed
+        if ($data = @simplexml_load_string($data))
         {
+            // Return FALSE if data contains an error response
+            if ($error = @$data->error)
+            {
+                log_message('error', var_dump($error));
+                return FALSE;
+            }
+
+            // Return data
             return $data;
         }
 
@@ -117,25 +129,25 @@ class FreshDeskForumCategory extends FreshDeskAPI
     /**
      * Create a new Forum Category.
      * 
-     * Request URL: domain_URL/categories.json
+     * Request URL: domain_URL/categories.xml
      * Request method: POST
      * 
      * Request:
-     *     array = (
-     *         'forum-category' => array(
-     *             'name'        => 'Test',                # required
-     *             'description' => 'New testing category' # optional
-     *         )
-     *     );
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-category>
+     *       <name>Test</name>                                 <!--- (Mandatory) -->
+     *       <description>New testing category</description>   <!--- (Optional) --->
+     *     </forum-category>
      * Response:
-     *     stdClass Object (
-     *         [created_at] => 2011-03-15T02:23:15-07:00
-     *         [description] => Welcome to the Freshdesk community forums
-     *         [id] => 2
-     *         [name] => Freshdesk Forums
-     *         [position] => 1
-     *         [updated_at] => 2011-03-21T02:42:58-07:00
-     *     );
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-category>
+     *       <created-at type="datetime">2012-12-05T16:04:12+05:30</created-at>
+     *       <description>New testing category</description>
+     *       <id type="integer">2</id>
+     *       <name>Test</name>
+     *       <position type="integer">2</position>
+     *       <updated-at type="datetime">2012-12-05T16:04:12+05:30</updated-at>
+     *     </forum-category>
      *
      * @link http://freshdesk.com/api/forums/forum-category#create-a-forum-category
      * 
@@ -147,38 +159,40 @@ class FreshDeskForumCategory extends FreshDeskAPI
     {
         // Build array of request data
         $data = array(
-            'name' => $name,
-            'description' => $description
+            'forum-category' => array(
+                'name' => $name,
+                'description' => $description
+            )
         );
 
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories.json", 'POST', $data))
+        if ( ! $response = $this->_request("categories.xml", 'POST', $data))
         {
             return FALSE;
         }
 
-        // Extract and return category data from its 'forum_category' container
-        return $response->forum_category;
+        // Return Forum Category object
+        return $response;
     }
 
     /**
      * View all Forum Categories.
      *
-     * Request URL: domain_URL/categories.json
+     * Request URL: domain_URL/categories.xml
      * Request method: GET
      *
      * Response:
-     *   Array (
-     *       [0] => stdClass Object (
-     *           [created_at] => 2011-03-15T02:23:15-07:00
-     *           [description] => Welcome to the Freshdesk community forums
-     *           [id] => 2
-     *           [name] => Freshdesk Forums
-     *           [position] => 1
-     *           [updated_at] => 2011-03-21T02:42:58-07:00
-     *       )
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-categories type="array">
+     *       <forum-category>
+     *         <created-at type="datetime">2011-03-15T02:23:15-07:00</created-at>
+     *         <description>Welcome to the Freshdesk community forums</description>
+     *         <id type="integer">2</id>
+     *         <name>Freshdesk Forums</name>
+     *         <updated-at type="datetime">2011-03-21T02:42:58-07:00</updated-at>
+     *       </forum-category>
      *       ...
-     *   );
+     *   </forum-categories>
      * 
      * @link   http://freshdesk.com/api/forums/forum-category#view-all-forum-categories
      * 
@@ -187,7 +201,7 @@ class FreshDeskForumCategory extends FreshDeskAPI
     public function get_all()
     {
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories.json"))
+        if ( ! $response = $this->_request("categories.xml"))
         {
             return FALSE;
         }
@@ -195,16 +209,10 @@ class FreshDeskForumCategory extends FreshDeskAPI
         // Default category array
         $categories = array();
 
-        // Return empty array if HTTP 200 received
-        if ($response == 200)
+        // Extract category data from its 'forum-category' container
+        foreach (@$response->{'forum-category'} as $category)
         {
-            return $categories;
-        }
-
-        // Extract category data from its 'forum_category' container
-        foreach ($response as $category)
-        {
-            $categories[] = $category->forum_category;
+            $categories[] = $category;
         }
 
         // Return restructured array of categories
@@ -214,33 +222,41 @@ class FreshDeskForumCategory extends FreshDeskAPI
     /**
      * View Forums in a Category.
      *
-     * Request URL: domain_URL/categories/[id].json
+     * Request URL: domain_URL/categories/[id].xml
      * Request method: GET
      *
      * Response:
-     *     stdClass Object (
-     *         [created_at] => 2011-03-15T02:23:15-07:00
-     *         [description] => Welcome to the Freshdesk community forums
-     *         [id] => 2
-     *         [name] => Freshdesk Forums
-     *         [position] => 1
-     *         [updated_at] => 2011-03-21T02:42:58-07:00
-     *         [forums] => Array (
-     *             [0] => stdClass Object (
-     *                 [description] => General helpdesk announcements to the customers.
-     *                 [description_html] => <p>General helpdesk announcements to the customers.</p>
-     *                 [forum_category_id] => 2
-     *                 [forum_type] => 4
-     *                 [forum_visibility] => 1
-     *                 [id] => 6
-     *                 [name] => Announcements
-     *                 [position] => 1
-     *                 [posts_count] => 0
-     *                 [topics_count] => 0
-     *             )
-     *             ...
-     *         )
-     *   );
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forums type="array">
+     *       <forum>
+     *         <description>General helpdesk announcements to the customers.</description>
+     *         <description-html>
+     *           <p>General helpdesk announcements to the customers.</p>
+     *         </description-html>
+     *         <forum-category-id type="integer">2</forum-category-id>
+     *         <forum-type type="integer">4</forum-type>
+     *         <id type="integer">5</id>
+     *         <name>Announcements</name>
+     *         <position type="integer">5</position>
+     *         <posts-count type="integer">0</posts-count>
+     *         <topics-count type="integer">0</topics-count>
+     *       </forum>
+     *       <forum>
+     *         <account-id type="integer">2</account-id>
+     *         <description>Customers can voice their ideas here.</description>
+     *         <description-html>
+     *           <p>Customers can voice their ideas here.</p>
+     *         </description-html>
+     *         <forum-category-id type="integer">2</forum-category-id>
+     *         <forum-type type="integer">2</forum-type>
+     *         <id type="integer">6</id>
+     *         <name>Feature Requests</name>
+     *         <position type="integer">6</position>
+     *         <posts-count type="integer">11</posts-count>
+     *         <topics-count type="integer">7</topics-count>
+     *       </forum>
+     *       ...
+     *     </forums>
      *
      * @link   http://freshdesk.com/api/forums/forum-category#viewing-forums-in-a-category
      * 
@@ -255,28 +271,27 @@ class FreshDeskForumCategory extends FreshDeskAPI
             return $this->get_all();
         }
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}.json"))
+        if ( ! $response = $this->_request("categories/{$category_id}.xml"))
         {
             return FALSE;
         }
 
-        // Extract and return category data from its 'forum_category' container
-        return $response->forum_category;
+        // Return Forum Category object
+        return $response;
     }
 
     /**
      * Updated an existing Forum Category.
      *
-     * Request URL: domain_URL/categories/[category_id].json
+     * Request URL: domain_URL/categories/[category_id].xml
      * Request method: PUT
      *
      * Request:
-     *     Array (
-     *         'forum-category' => Array (
-     *             'name'        => 'Test',                # optional
-     *             'description' => 'New testing category' # optional
-     *         )
-     *     );
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-category>
+     *       <name>Test</name>                                 <!--- (Mandatory) -->
+     *       <description>New testing category</description>   <!--- (Optional) --->
+     *     </forum-category>
      *  Response:
      *      HTTP Status: 200 OK
      *
@@ -291,36 +306,39 @@ class FreshDeskForumCategory extends FreshDeskAPI
     {
         // Build array of request data
         $data = array(
-            'name' => $name,
-            'description' => $description,
+            'forum-category' => array(
+                'name' => $name,
+                'description' => $description
+            )
         );
 
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}.json", 'PUT', $data))
+        if ( ! $response = $this->_request("categories/{$category_id}.xml", 'PUT', $data))
         {
             return FALSE;
         }
 
-        // Return HTTP 200 code
+        // Return HTTP response
         return $response;
     }
 
     /**
      * Delete an existing Forum Category.
      *
-     * Request URL: domain_URL/categories/[category_id].json
+     * Request URL: domain_URL/categories/[category_id].xml
      * Request method: DELETE
      *
      * Response:
-     *     stdClass Object (
-     *         [created_at] => 2011-03-15T02:23:15-07:00
-     *         [description] => Welcome to the Freshdesk community forums
-     *         [id] => 2
-     *         [name] => Freshdesk Forums
-     *         [position] => 1
-     *         [updated_at] => 2011-03-21T02:42:58-07:00
-     *     );
-     *         
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-category>
+     *       <created-at type="datetime">2012-12-05T16:04:12+05:30</created-at>
+     *       <description>New testing category</description>
+     *       <id type="integer">2</id>
+     *       <name>Test</name>
+     *       <position type="integer">2</position>
+     *       <updated-at type="datetime">2012-12-05T16:04:12+05:30</updated-at>
+     *     </forum-category>
+     *       
      * @link   http://freshdesk.com/api/forums/forum-category#delete-a-forum-category
      * 
      * @param  integer $category_id Forum Category ID
@@ -329,14 +347,15 @@ class FreshDeskForumCategory extends FreshDeskAPI
     public function delete($category_id)
     {
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}.json", 'DELETE'))
+        if ( ! $response = $this->_request("categories/{$category_id}.xml", 'DELETE'))
         {
             return FALSE;
         }
 
-        // Extract and return category data from its 'forum_category' container
-        return $response->forum_category;
+        // Return Forum Category object
+        return $response;
     }
 }
 
 /* End of file Freshdesk.php */
+/* Location: ./application/libraries/Freshdesk.php */
