@@ -126,7 +126,81 @@ class FreshdeskAPI
  */
 class FreshdeskUser extends FreshdeskAPI
 {
+    /**
+     * Create a new User.
+     * 
+     * Request URL: domain_URL/contacts.xml
+     * Request method: POST
+     * 
+     * Request:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <user>
+     *       <name>Your User</name>                  <!--(Mandatory)-->
+     *       <email>youruser@yourcompany.com</email> <!--(Mandatory)-->
+     *     </user>
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8" ?>
+     *     <user>
+     *       <active type="boolean">false</active>
+     *       <created-at type="datetime">2012-12-12T16:26:34+05:30</created-at>
+     *       <customer-id type="integer">2</customer-id>
+     *       <deleted type="boolean">false</deleted>
+     *       <email>test@abc.com</email>
+     *       <external-id nil="true" />
+     *       <fb-profile-id nil="true" />
+     *       <id type="integer">16</id>
+     *       <language>en</language>
+     *       <name>Test</name>
+     *       <time-zone>Chennai</time-zone>
+     *       <updated-at type="datetime">2013-01-09T17:16:03+05:30</updated-at>
+     *       <user-role type="integer">3</user-role>
+     *      </user>
+     *
+     * @link http://freshdesk.com/api/users#create-users
+     * 
+     * @param  string $name  User Name
+     * @param  string $email User Description
+     * @return object        User object
+     */
+    public function create($name, $email = '')
+    {
+        // Build array of request data
+        $data = array(
+            'user' => array(
+                'name' => $name,
+                'email' => $email
+            )
+        );
 
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts.xml", 'POST', $data))
+        {
+            return FALSE;
+        }
+
+        // Return User object
+        return $response;
+    }
+
+    public function get_all()
+    {
+
+    }
+
+    public function get()
+    {
+
+    }
+
+    public function update()
+    {
+
+    }
+
+    public function delete()
+    {
+
+    }
 }
 
 /**
