@@ -118,6 +118,18 @@ class FreshDeskAPI
 }
 
 /**
+ * Freshdesk User
+ *
+ * Create, View, Update, and Delete Users.
+ *
+ * @link http://freshdesk.com/api/users
+ */
+class FreshDeskUser extends FreshDeskAPI
+{
+    
+}
+
+/**
  * FreshDesk Forum Category
  *
  * Create, View, Update, and Delete Forum Categories.
