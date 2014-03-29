@@ -248,9 +248,50 @@ class FreshdeskUser extends FreshdeskAPI
         return $users;
     }
 
-    public function get()
+    /**
+     * View a User.
+     *
+     * Request URL: domain_URL/contacts/[id].xml
+     * Request method: GET
+     *
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8" ?>
+     *     <user>
+     *       <active type="boolean">false</active>
+     *       <created-at type="datetime">2012-12-12T16:26:34+05:30</created-at>
+     *       <customer-id type="integer">2</customer-id>
+     *       <deleted type="boolean">false</deleted>
+     *       <email>test@abc.com</email>
+     *       <external-id nil="true" />
+     *       <fb-profile-id nil="true" />
+     *       <id type="integer">16</id>
+     *       <language>en</language>
+     *       <name>Test</name>
+     *       <time-zone>Chennai</time-zone>
+     *       <updated-at type="datetime">2013-01-09T17:16:03+05:30</updated-at>
+     *       <user-role type="integer">3</user-role>
+     *     </user>
+     *
+     * @link   http://freshdesk.com/api/users#view-a-particular-user
+     * 
+     * @param  integer $user_id     User ID
+     * @return mixed                Array or single User Object
+     */
+    public function get($user_id = NULL)
     {
+        // Return all users if no Category ID was passed
+        if ( ! $user_id)
+        {
+            return $this->get_all();
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts/{$user_id}.xml"))
+        {
+            return FALSE;
+        }
 
+        // Return User object
+        return $response;
     }
 
     public function update()
@@ -416,7 +457,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * @link   http://freshdesk.com/api/forums/forum-category#viewing-forums-in-a-category
      * 
      * @param  integer $category_id Forum Category ID
-     * @return mixed                Array or singleton Forum Category Object
+     * @return mixed                Array or single Forum Category Object
      */
     public function get($category_id = NULL)
     {
