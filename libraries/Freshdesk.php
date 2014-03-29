@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
 /**
- * FreshDesk Library
+ * Freshdesk Library
  */
 class Freshdesk
 {
@@ -31,14 +31,14 @@ class Freshdesk
         }
 
         // Instantiate API accessors
-        $this->ForumCategory = new FreshDeskForumCategory($this->base_url, $this->api_key);
+        $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->api_key);
     }
 }
 
 /**
- * FreshDesk API
+ * Freshdesk API
  */
-class FreshDeskAPI
+class FreshdeskAPI
 {
     private $api_key;
     protected $base_url;    
@@ -124,19 +124,19 @@ class FreshDeskAPI
  *
  * @link http://freshdesk.com/api/users
  */
-class FreshDeskUser extends FreshDeskAPI
+class FreshdeskUser extends FreshdeskAPI
 {
-    
+
 }
 
 /**
- * FreshDesk Forum Category
+ * Freshdesk Forum Category
  *
  * Create, View, Update, and Delete Forum Categories.
  *
  * @link http://freshdesk.com/api/forums/forum-category
  */
-class FreshDeskForumCategory extends FreshDeskAPI
+class FreshdeskForumCategory extends FreshdeskAPI
 {
     /**
      * Create a new Forum Category.
