@@ -8,6 +8,8 @@ class Freshdesk
     private $CI;
 
     protected $api_key;
+    protected $username;
+    protected $password;
     protected $base_url;
 
     public $User;
@@ -22,18 +24,26 @@ class Freshdesk
         if ($config = $this->CI->config->load('freshdesk', TRUE, TRUE))
         {
             $this->api_key = $this->CI->config->item('api_key', 'freshdesk');
+            $this->username = $this->CI->config->item('username', 'freshdesk');
+            $this->password = $this->CI->config->item('password', 'freshdesk');
             $this->base_url = $this->CI->config->item('base_url', 'freshdesk');
         }
         // Attempt to load config values from params
-        if ($api_key = @$params['api_key'] and $base_url = @$params['base_url'])
+        $this->api_key = @$params['api_key'] ?: @$params['api-key'];
+        $this->username = @$params['username'];
+        $this->password = @$params['password'];
+        $this->base_url = @$params['base_url'] ?: @$params['base-url'];
+
+        // API Key takes precendence
+        if ($this->api_key)
         {
-            $this->api_key = $api_key;
-            $this->base_url = $base_url;
+            $this->username = $this->api_key;
+            $this->password = 'X';
         }
 
         // Instantiate API accessors
-        $this->User = new FreshdeskUser($this->base_url, $this->api_key);
-        $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->api_key);
+        $this->User = new FreshdeskUser($this->base_url, $this->username, $this->password);
+        $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
     }
 }
 
@@ -42,13 +52,15 @@ class Freshdesk
  */
 class FreshdeskAPI
 {
-    private $api_key;
+    private $username;
+    private $password;
     protected $base_url;    
 
-    public function __construct($base_url, $api_key)
+    public function __construct($base_url, $username, $password)
     {
-        $this->api_key  = $api_key;
         $this->base_url = $base_url;
+        $this->username  = $username;
+        $this->password  = $password;
     }
 
     /**
@@ -59,7 +71,7 @@ class FreshdeskAPI
      * @param  array  $data     HTTP PUT/POST data
      * @return mixed            SimpleXML object or HTTP response code
      */
-    protected function _request($endpoint, $method = 'GET', $data = null)
+    protected function _request($endpoint, $method = 'GET', $data = NULL)
     {
         $method = strtoupper($method);
 
@@ -69,7 +81,7 @@ class FreshdeskAPI
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_USERPWD, "{$this->api_key}:X");
+        curl_setopt($ch, CURLOPT_USERPWD, "{$this->username}:{$this->password}");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
         // Convert array of data to XML
@@ -406,7 +418,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * @param  integer $category_id Forum Category ID
      * @return mixed                Array or singleton Forum Category Object
      */
-    public function get($category_id = null)
+    public function get($category_id = NULL)
     {
         // Return all categories if no Category ID was passed
         if ( ! $category_id)
