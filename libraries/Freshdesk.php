@@ -223,14 +223,26 @@ class FreshdeskUser extends FreshdeskAPI
      *        ...
      *      </users>
      *
+     * Note:
+     *     By default only verified users will be returned.
+     *     To view unverified users, pass the 'state' parameter to the method.
+     *
      * @link   http://freshdesk.com/api/users#view-all-users
      *
+     * @param  string   User state
      * @return array    Array of User Objects
      */
-    public function get_all()
+    public function get_all($state = NULL)
     {
+        // Build request string
+        $request = "contacts.xml";
+        if ($state)
+        {
+            $request .= "?state={$state}";
+        }
+
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts.xml"))
+        if ( ! $response = $this->_request($request))
         {
             return FALSE;
         }
