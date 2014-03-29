@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * Freshdesk Library
@@ -54,7 +54,7 @@ class FreshdeskAPI
 {
     private $username;
     private $password;
-    protected $base_url;    
+    protected $base_url;
 
     public function __construct($base_url, $username, $password)
     {
@@ -65,7 +65,7 @@ class FreshdeskAPI
 
     /**
      * Perform an API request.
-     * 
+     *
      * @param  string $endpoint Freshdesk API endpoint
      * @param  string $method   HTTP request method
      * @param  array  $data     HTTP PUT/POST data
@@ -92,23 +92,23 @@ class FreshdeskAPI
             array_walk_recursive(array_flip($data[$index]), array ($xml, 'addChild'));
             curl_setopt($ch, CURLOPT_POSTFIELDS, $xml->asXML());
         }
-        
+
         $data = curl_exec($ch);
         $info = curl_getinfo($ch);
         log_message('debug', var_dump($info, htmlspecialchars($data)));
-                
+
         // CURL error handling
-        if (curl_errno($ch) and $error = curl_error($ch)) 
+        if (curl_errno($ch) and $error = curl_error($ch))
         {
             log_message('error', var_dump($error));
             curl_close($ch);
             return FALSE;
         }
-        if (in_array($info['http_code'], array(404, 406, 302)) and $error = $data) 
+        if (in_array($info['http_code'], array(404, 406, 302)) and $error = $data)
         {
             log_message('error', var_dump($error));
             curl_close($ch);
-            return FALSE;   
+            return FALSE;
         }
         curl_close($ch);
 
@@ -142,10 +142,10 @@ class FreshdeskUser extends FreshdeskAPI
 {
     /**
      * Create a new User.
-     * 
+     *
      * Request URL: domain_URL/contacts.xml
      * Request method: POST
-     * 
+     *
      * Request:
      *     <?xml version="1.0" encoding="UTF-8"?>
      *     <user>
@@ -171,7 +171,7 @@ class FreshdeskUser extends FreshdeskAPI
      *      </user>
      *
      * @link http://freshdesk.com/api/users#create-users
-     * 
+     *
      * @param  string $name  User Name
      * @param  string $email User Description
      * @return object        User object
@@ -222,9 +222,9 @@ class FreshdeskUser extends FreshdeskAPI
      *        </user>
      *        ...
      *      </users>
-     * 
+     *
      * @link   http://freshdesk.com/api/users#view-all-users
-     * 
+     *
      * @return array    Array of User Objects
      */
     public function get_all()
@@ -234,7 +234,7 @@ class FreshdeskUser extends FreshdeskAPI
         {
             return FALSE;
         }
-        
+
         // Default user array
         $users = array();
 
@@ -273,7 +273,7 @@ class FreshdeskUser extends FreshdeskAPI
      *     </user>
      *
      * @link   http://freshdesk.com/api/users#view-a-particular-user
-     * 
+     *
      * @param  integer $user_id     User ID
      * @return mixed                Array or single User Object
      */
@@ -310,7 +310,7 @@ class FreshdeskUser extends FreshdeskAPI
      *      HTTP Status: 200 OK
      *
      * @link   http://freshdesk.com/api/users#modify-user-details
-     * 
+     *
      * @param  string $name  User Name
      * @param  string $email User Description
      * @return object        User object
@@ -336,9 +336,30 @@ class FreshdeskUser extends FreshdeskAPI
         return $response;
     }
 
-    public function delete()
+    /**
+     * Delete an existing User.
+     *
+     * Request URL: domain_URL/contacts/[user_id].xml
+     * Request method: DELETE
+     *
+     *  Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/users#delete-a-user
+     *
+     * @param  integer $user_id User ID
+     * @return integer          HTTP response code
+     */
+    public function delete($user_id)
     {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts/{$user_id}.xml", 'DELETE'))
+        {
+            return FALSE;
+        }
 
+        // Return HTTP response
+        return $response;
     }
 }
 
@@ -353,10 +374,10 @@ class FreshdeskForumCategory extends FreshdeskAPI
 {
     /**
      * Create a new Forum Category.
-     * 
+     *
      * Request URL: domain_URL/categories.xml
      * Request method: POST
-     * 
+     *
      * Request:
      *     <?xml version="1.0" encoding="UTF-8"?>
      *     <forum-category>
@@ -375,7 +396,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *     </forum-category>
      *
      * @link http://freshdesk.com/api/forums/forum-category#create-a-forum-category
-     * 
+     *
      * @param  string $name        Forum Category Name
      * @param  string $description Forum Category Description
      * @return object              Forum Category object
@@ -418,9 +439,9 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *       </forum-category>
      *       ...
      *     </forum-categories>
-     * 
+     *
      * @link   http://freshdesk.com/api/forums/forum-category#view-all-forum-categories
-     * 
+     *
      * @return array    Array of Forum Category Objects
      */
     public function get_all()
@@ -430,7 +451,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
         {
             return FALSE;
         }
-        
+
         // Default category array
         $categories = array();
 
@@ -492,7 +513,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *     </forum-category>
      *
      * @link   http://freshdesk.com/api/forums/forum-category#viewing-forums-in-a-category
-     * 
+     *
      * @param  integer $category_id Forum Category ID
      * @return mixed                Array or single Forum Category Object
      */
@@ -529,11 +550,11 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *      HTTP Status: 200 OK
      *
      * @link   http://freshdesk.com/api/forums/forum-category#update-a-forum-category
-     * 
+     *
      * @param  integer $category_id Forum Category ID
      * @param  string  $name        Forum Category Name
      * @param  string  $description Forum Category Description
-     * @return integer              HTTP response code             
+     * @return integer              HTTP response code
      */
     public function update($category_id, $name = '', $description = '')
     {
@@ -571,9 +592,9 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *       <position type="integer">2</position>
      *       <updated-at type="datetime">2012-12-05T16:04:12+05:30</updated-at>
      *     </forum-category>
-     *       
+     *
      * @link   http://freshdesk.com/api/forums/forum-category#delete-a-forum-category
-     * 
+     *
      * @param  integer $category_id Forum Category ID
      * @return object               Forum Category object
      */
