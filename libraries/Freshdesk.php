@@ -70,7 +70,7 @@ class FreshDeskAPI
         curl_setopt($ch, CURLOPT_USERPWD, "{$this->api_key}:X");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
-        // Set request data if passed
+        // Convert array of data to XML
         if ($data)
         {
             $index = array_keys($data)[0];
@@ -192,7 +192,7 @@ class FreshDeskForumCategory extends FreshDeskAPI
      *         <updated-at type="datetime">2011-03-21T02:42:58-07:00</updated-at>
      *       </forum-category>
      *       ...
-     *   </forum-categories>
+     *     </forum-categories>
      * 
      * @link   http://freshdesk.com/api/forums/forum-category#view-all-forum-categories
      * 
