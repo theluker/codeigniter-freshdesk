@@ -15,6 +15,7 @@ class Freshdesk
     public $User;
     public $Agent;
     public $ForumCategory;
+    public $Forum;
 
     public function __construct($params = array())
     {
@@ -46,6 +47,7 @@ class Freshdesk
         $this->User = new FreshdeskUser($this->base_url, $this->username, $this->password);
         $this->Agent = new FreshdeskAgent($this->base_url, $this->username, $this->password);
         $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
+        $this->Forum = new FreshdeskForum($this->base_url, $this->username, $this->password);
     }
 }
 
@@ -86,13 +88,10 @@ class FreshdeskAPI
         curl_setopt($ch, CURLOPT_USERPWD, "{$this->username}:{$this->password}");
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
-        // Convert array of data to XML
+        // Set POST data if passed to method
         if ($data)
         {
-            $index = array_keys($data)[0];
-            $xml = new SimpleXMLElement("<{$index}/>");
-            array_walk_recursive(array_flip($data[$index]), array ($xml, 'addChild'));
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $xml->asXML());
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_toXML($data));
         }
 
         $data = curl_exec($ch);
@@ -130,6 +129,34 @@ class FreshdeskAPI
 
         // Return HTTP response code by default
         return $info['http_code'];
+    }
+
+    private function _toXML($data, $xml = null)
+    {
+        // Initialize XML if first run
+        if ( ! $xml)
+        {
+            $root = array_keys($data)[0];
+            $xml = new SimpleXMLElement("<{$root}/>");
+        }
+
+        // Iterate nodes
+        foreach ($data as $key => $value)
+        {
+            // Recurse if value is array
+            if (is_array($value))
+            {
+                $node = $xml->addChild($key);
+                $this->_toXML($value, $node);
+            }
+            else
+            {
+                $node = $xml->addChild($key, $value);
+            }
+        }
+
+        // Return XML
+        return $xml->asXML();
     }
 }
 
@@ -234,7 +261,7 @@ class FreshdeskUser extends FreshdeskAPI
      * @param  string   User state
      * @return array    Array of User Objects
      */
-    public function get_all($state = NULL)
+    public function getAll($state = NULL)
     {
         // Build request string
         $request = "contacts.xml";
@@ -296,7 +323,7 @@ class FreshdeskUser extends FreshdeskAPI
         // Return all users if no Category ID was passed
         if ( ! $user_id)
         {
-            return $this->get_all();
+            return $this->getAll();
         }
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("contacts/{$user_id}.xml"))
@@ -387,7 +414,7 @@ class FreshdeskAgent extends FreshdeskAPI
         // Return all agents if no Agent ID was passed
         if ( ! $agent_id)
         {
-            return $this->get_all();
+            return $this->getAll();
         }
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("agents/{$agent_id}.xml"))
@@ -399,7 +426,7 @@ class FreshdeskAgent extends FreshdeskAPI
         return $response;
     }
 
-    public function get_all()
+    public function getAll()
     {
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("agents.xml"))
@@ -502,7 +529,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *
      * @return array    Array of Forum Category Objects
      */
-    public function get_all()
+    public function getAll()
     {
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("categories.xml"))
@@ -580,7 +607,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
         // Return all categories if no Category ID was passed
         if ( ! $category_id)
         {
-            return $this->get_all();
+            return $this->getAll();
         }
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("categories/{$category_id}.xml"))
@@ -665,6 +692,93 @@ class FreshdeskForumCategory extends FreshdeskAPI
         }
 
         // Return Forum Category object
+        return $response;
+    }
+}
+
+/**
+ * Freshdesk Forum
+ *
+ * Create, View, Update, and Delete Forums.
+ *
+ * @link http://freshdesk.com/api/forums/forum
+ */
+class FreshdeskForum extends FreshdeskAPI
+{
+    # TODO: More meaningful key names once types are determined
+    public static $TYPE = array(
+        'TYPE_1' => 1,
+        'TYPE_2' => 2
+    );
+    # TODO: More meaningful key names once visibility is determined
+    public static $VISIBILITY = array(
+        'VIS_1' => 1
+    );
+
+    /**
+     * Create a new Forum.
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums.xml
+     * Request method: POST
+     *
+     * Request:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum>
+     *       <name>Announcement</name>                   <!--Mandatory-->
+     *       <forum-visibility>1</forum-visibility>      <!--Mandatory-->
+     *       <forum-type>2</forum-type>                  <!--Mandatory-->
+     *       <description>Testing for API</description>  <!--Optional-->
+     *     </forum>
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum>
+     *       <description>Testing for API</description>
+     *       <description-html><p>Testing for <span class="caps">API</span></p>
+     *       </description-html>
+     *       <forum-category-id type="integer">3</forum-category-id>
+     *       <forum-type type="integer">2</forum-type>
+     *       <forum-visibility type="integer">1</forum-visibility>
+     *       <id type="integer">5</id>
+     *       <name>Announcement</name>
+     *       <position type="integer">1</position>
+     *       <posts-count type="integer">0</posts-count>
+     *       <topics-count type="integer">0</topics-count>
+     *     </forum>
+     *
+     * @link http://freshdesk.com/api/forums/forum#create-a-forum
+     *
+     * @todo   Determine avilable type/visibility options.
+     * @todo   Determine commonly default type/visibility option.
+     *
+     * @param  string $name        Forum Name
+     * @param  string $type        Forum Type
+     * @param  string $visibility  Forum Visibility
+     * @param  string $description Forum Description
+     * @return object              Forum object
+     */
+    public function create($category_id, $name, $type, $visibility, $description = '')
+    {
+        // Determine type and visibility
+        $type = is_string($type) ? @$this->TYPE[$type] : $type;
+        $visibility = is_string($visibility) ? @$this->VISIBILITY[$visibility] : $visibility;
+
+        // Build array of request data
+        $data = array(
+            'forum' => array(
+                'name' => $name,
+                'forum-type' => $type,
+                'forum-visibility' => $visibility,
+                'description' => $description
+            )
+        );
+
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums.xml", 'POST', $data))
+        {
+            return FALSE;
+        }
+
+        // Return Forum object
         return $response;
     }
 }
