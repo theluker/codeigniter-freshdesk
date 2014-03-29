@@ -10,7 +10,8 @@ class Freshdesk
     protected $api_key;
     protected $base_url;
 
-    public $Category;
+    public $User;
+    public $ForumCategory;
 
     public function __construct($params = array())
     {
@@ -31,6 +32,7 @@ class Freshdesk
         }
 
         // Instantiate API accessors
+        $this->User = new FreshdeskUser($this->base_url, $this->api_key);
         $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->api_key);
     }
 }
@@ -182,9 +184,56 @@ class FreshdeskUser extends FreshdeskAPI
         return $response;
     }
 
+    /**
+     * View all Users.
+     *
+     * Request URL: domain_URL/contacts.xml
+     * Request method: GET
+     *
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <users type="array">
+     *       <user>
+     *         <active type="boolean">false</active>
+     *         <created-at type="datetime">2012-12-12T16:26:34+05:30</created-at>
+     *         <customer-id type="integer">2</customer-id>
+     *         <deleted type="boolean">false</deleted>
+     *         <email>test@abc.com</email>
+     *         <external-id nil="true" />
+     *         <fb-profile-id nil="true" />
+     *         <id type="integer">16</id>
+     *         <language>en</language>
+     *         <name>Test</name>
+     *         <time-zone>Chennai</time-zone>
+     *         <updated-at type="datetime">2013-01-09T17:16:03+05:30</updated-at>
+     *         <user-role type="integer">3</user-role>
+     *        </user>
+     *        ...
+     *      </users>
+     * 
+     * @link   http://freshdesk.com/api/users#view-all-users
+     * 
+     * @return array    Array of User Objects
+     */
     public function get_all()
     {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts.xml"))
+        {
+            return FALSE;
+        }
+        
+        // Default user array
+        $users = array();
 
+        // Extract user data from its 'user' container
+        foreach (@$response->user as $user)
+        {
+            $users[] = $user;
+        }
+
+        // Return restructured array of users
+        return $users;
     }
 
     public function get()
@@ -282,7 +331,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * 
      * @link   http://freshdesk.com/api/forums/forum-category#view-all-forum-categories
      * 
-     * @return array Array of Forum Category Objects
+     * @return array    Array of Forum Category Objects
      */
     public function get_all()
     {
