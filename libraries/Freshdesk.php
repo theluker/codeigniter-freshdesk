@@ -251,7 +251,7 @@ class FreshdeskUser extends FreshdeskAPI
     /**
      * View a User.
      *
-     * Request URL: domain_URL/contacts/[id].xml
+     * Request URL: domain_URL/contacts/[user_id].xml
      * Request method: GET
      *
      * Response:
@@ -294,9 +294,46 @@ class FreshdeskUser extends FreshdeskAPI
         return $response;
     }
 
-    public function update()
+    /**
+     * Update an existing User.
+     *
+     * Request URL: domain_URL/contacts/[user_id].xml
+     * Request method: PUT
+     *
+     * Request:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <user>
+     *       <name>Your User</name>                  <!--(Mandatory)-->
+     *       <email>youruser@yourcompany.com</email> <!--(Mandatory)-->
+     *     </user>
+     *  Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/users#modify-user-details
+     * 
+     * @param  string $name  User Name
+     * @param  string $email User Description
+     * @return object        User object
+     * @return integer       HTTP response code
+     */
+    public function update($name, $email)
     {
+        // Build array of request data
+        $data = array(
+            'user' => array(
+                'name' => $name,
+                'email' => $email
+            )
+        );
 
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts/{$user_id}.xml", 'PUT', $data))
+        {
+            return FALSE;
+        }
+
+        // Return HTTP response
+        return $response;
     }
 
     public function delete()
@@ -410,7 +447,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
     /**
      * View Forums in a Category.
      *
-     * Request URL: domain_URL/categories/[id].xml
+     * Request URL: domain_URL/categories/[category_id].xml
      * Request method: GET
      *
      * Response:
@@ -477,7 +514,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
     }
 
     /**
-     * Updated an existing Forum Category.
+     * Update an existing Forum Category.
      *
      * Request URL: domain_URL/categories/[category_id].xml
      * Request method: PUT
