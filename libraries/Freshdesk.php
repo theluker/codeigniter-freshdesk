@@ -13,6 +13,7 @@ class Freshdesk
     protected $base_url;
 
     public $User;
+    public $Agent;
     public $ForumCategory;
 
     public function __construct($params = array())
@@ -43,6 +44,7 @@ class Freshdesk
 
         // Instantiate API accessors
         $this->User = new FreshdeskUser($this->base_url, $this->username, $this->password);
+        $this->Agent = new FreshdeskAgent($this->base_url, $this->username, $this->password);
         $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
     }
 }
@@ -372,6 +374,50 @@ class FreshdeskUser extends FreshdeskAPI
 
         // Return HTTP response
         return $response;
+    }
+}
+
+/**
+ * Freshdesk Agent
+ */
+class FreshdeskAgent extends FreshdeskAPI
+{
+    public function get($agent_id = NULL)
+    {
+        // Return all agents if no Agent ID was passed
+        if ( ! $agent_id)
+        {
+            return $this->get_all();
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("agents/{$agent_id}.xml"))
+        {
+            return FALSE;
+        }
+
+        // Return Agent object
+        return $response;
+    }
+
+    public function get_all()
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("agents.xml"))
+        {
+            return FALSE;
+        }
+
+        // Default agent array
+        $agents = array();
+
+        // Extract agent data from its agents container
+        foreach ($response as $agent)
+        {
+            $agents[] = $agent;
+        }
+
+        // Return restructured array of agents
+        return $agents;
     }
 }
 
