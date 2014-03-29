@@ -91,7 +91,8 @@ class FreshdeskAPI
         // Set POST data if passed to method
         if ($data)
         {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_toXML($data));
+            $root = array_keys($data)[0];
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_toXML($data[$root], $root)->asXML());
         }
 
         $data = curl_exec($ch);
@@ -131,12 +132,11 @@ class FreshdeskAPI
         return $info['http_code'];
     }
 
-    private function _toXML($data, $xml = null)
+    private function _toXML($data, $root, &$xml = null)
     {
         // Initialize XML if first run
-        if ( ! $xml)
+        if (is_null($xml))
         {
-            $root = array_keys($data)[0];
             $xml = new SimpleXMLElement("<{$root}/>");
         }
 
@@ -147,16 +147,16 @@ class FreshdeskAPI
             if (is_array($value))
             {
                 $node = $xml->addChild($key);
-                $this->_toXML($value, $node);
+                $this->_toXML($value, $root, $node);
             }
             else
             {
-                $node = $xml->addChild($key, $value);
+                $xml->addChild($key, $value);
             }
         }
 
         // Return XML
-        return $xml->asXML();
+        return $xml;
     }
 }
 
@@ -759,8 +759,8 @@ class FreshdeskForum extends FreshdeskAPI
     public function create($category_id, $name, $type, $visibility, $description = '')
     {
         // Determine type and visibility
-        $type = is_string($type) ? @$this->TYPE[$type] : $type;
-        $visibility = is_string($visibility) ? @$this->VISIBILITY[$visibility] : $visibility;
+        $type = is_string($type) ? @self::$TYPE[$type] : $type;
+        $visibility = is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
 
         // Build array of request data
         $data = array(
