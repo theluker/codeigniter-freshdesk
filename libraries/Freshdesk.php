@@ -344,8 +344,8 @@ class FreshdeskUser extends FreshdeskAPI
      * Request:
      *     <?xml version="1.0" encoding="UTF-8"?>
      *     <user>
-     *       <name>Your User</name>                  <!--(Mandatory)-->
-     *       <email>youruser@yourcompany.com</email> <!--(Mandatory)-->
+     *       <name>Your User</name>                   <!--- (Optional) --->
+     *       <email>youruser@yourcompany.com</email>  <!--- (Optional) --->
      *     </user>
      *  Response:
      *      HTTP Status: 200 OK
@@ -357,7 +357,7 @@ class FreshdeskUser extends FreshdeskAPI
      * @return object        User object
      * @return integer       HTTP response code
      */
-    public function update($name, $email)
+    public function update($name = '', $email = '')
     {
         // Build array of request data
         $data = array(
@@ -628,8 +628,8 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request:
      *     <?xml version="1.0" encoding="UTF-8"?>
      *     <forum-category>
-     *       <name>Test</name>                                 <!--- (Mandatory) -->
-     *       <description>New testing category</description>   <!--- (Optional) --->
+     *       <name>Test</name>                                <!--- (Optional) --->
+     *       <description>New testing category</description>  <!--- (Optional) --->
      *     </forum-category>
      *  Response:
      *      HTTP Status: 200 OK
@@ -732,10 +732,10 @@ class FreshdeskForum extends FreshdeskAPI
      * Request:
      *     <?xml version="1.0" encoding="UTF-8"?>
      *     <forum>
-     *       <name>Announcement</name>                   <!--Mandatory-->
-     *       <forum-visibility>1</forum-visibility>      <!--Mandatory-->
-     *       <forum-type>2</forum-type>                  <!--Mandatory-->
-     *       <description>Testing for API</description>  <!--Optional-->
+     *       <name>Announcement</name>                   <!--- (Mandatory) --->
+     *       <forum-visibility>1</forum-visibility>      <!--- (Mandatory) --->
+     *       <forum-type>2</forum-type>                  <!--- (Mandatory) --->
+     *       <description>Testing for API</description>  <!--- (Optional) --->
      *     </forum>
      * Response:
      *     <?xml version="1.0" encoding="UTF-8"?>
@@ -892,7 +892,7 @@ class FreshdeskForum extends FreshdeskAPI
     }
 
     /**
-     * View Forums in a Category.
+     * View all Forums.
      *
      * Request URL: domain_URL/categories/[category_id]/forums/[forum_id].xml
      * Request method: POST
@@ -960,6 +960,60 @@ class FreshdeskForum extends FreshdeskAPI
         }
 
         // Return Forum object(s)
+        return $response;
+    }
+
+    /**
+     * Update an existing Forum.
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id].xml
+     * Request method: PUT
+     *
+     * Request:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum>
+     *       <name>Announcement</name>                   <!--- (Optional) --->
+     *       <forum-visibility>1</forum-visibility>      <!--- (Optional) --->
+     *       <forum-type>2</forum-type>                  <!--- (Optional) --->
+     *       <description>Testing for API</description>  <!--- (Optional) --->
+     *     </forum>
+     *  Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/forums/forum#update-a-forum
+     *
+     * @todo   Determine avilable type/visibility options.
+     * @todo   Determine commonly default type/visibility option.
+     *
+     * @param  string $name        Forum Name
+     * @param  string $type        Forum Type
+     * @param  string $visibility  Forum Visibility
+     * @param  string $description Forum Description
+     * @return integer             HTTP response code
+     */
+    public function update($category_id, $forum_id, $name = '', $type = '', $visibility = '', $description = '')
+    {
+        // Determine type and visibility
+        $type = $type and is_string($type) ? @self::$TYPE[$type] : $type;
+        $visibility = $visibility and is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
+
+        // Build array of request data
+        $data = array(
+            'forum' => array(
+                'name' => $name,
+                'forum-type' => $type,
+                'forum-visibility' => $visibility,
+                'description' => $description
+            )
+        );
+
+       // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.xml", 'PUT', $data))
+        {
+            return FALSE;
+        }
+
+        // Return HTTP response
         return $response;
     }
 }
