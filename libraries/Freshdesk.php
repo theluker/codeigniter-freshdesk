@@ -1,4 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * All documentation Copyright © Freshdesk Inc. (http://freshdesk.com/api)
+ */
 
 # TODO: change access methods: $this->freshdesk->Forum($forum_id)->update();
 # TODO: determine if update() methods require args if no change
