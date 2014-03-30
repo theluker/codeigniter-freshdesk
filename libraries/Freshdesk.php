@@ -53,7 +53,7 @@ class Freshdesk
         $this->User = new FreshdeskUser($this->base_url, $this->username, $this->password);
         $this->Agent = new FreshdeskAgent($this->base_url, $this->username, $this->password);
         $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
-        $this->Forum = new FreshdeskForum($this->ForumCategory, $this->base_url, $this->username, $this->password);
+        $this->Forum = new FreshdeskForum($this->base_url, $this->username, $this->password);
     }
 }
 
@@ -464,6 +464,14 @@ class FreshdeskAgent extends FreshdeskAPI
  */
 class FreshdeskForumCategory extends FreshdeskAPI
 {
+    public $Forum;
+
+    public function __construct($base_url, $username, $password)
+    {
+        FreshdeskAPI::__construct($base_url, $username, $password);
+        $this->Forum = new FreshdeskForum($this->base_url, $this->username, $this->password);
+    }
+
     /**
      * Create a new Forum Category.
      *
@@ -712,7 +720,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
  */
 class FreshdeskForum extends FreshdeskAPI
 {
-    protected $category;
+    public $ForumCategory;
 
     # TODO: More meaningful key names once types are determined
     public static $TYPE = array(
@@ -724,10 +732,10 @@ class FreshdeskForum extends FreshdeskAPI
         'VIS_1' => 1
     );
 
-    public function __construct($category, $base_url, $username, $password)
+    public function __construct($base_url, $username, $password)
     {
-        $this->category = $category;
         FreshdeskAPI::__construct($base_url, $username, $password);
+        $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
     }
 
     /**
@@ -851,7 +859,7 @@ class FreshdeskForum extends FreshdeskAPI
      */
     public function getAll($category_id)
     {
-        return $this->category->get($category_id);
+        return $this->ForumCategory->get($category_id);
     }
 
         /**
