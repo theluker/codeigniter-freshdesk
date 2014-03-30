@@ -331,7 +331,7 @@ class FreshdeskUser extends FreshdeskAPI
             return FALSE;
         }
 
-        // Return User object
+        // Return User object(s)
         return $response;
     }
 
@@ -422,7 +422,7 @@ class FreshdeskAgent extends FreshdeskAPI
             return FALSE;
         }
 
-        // Return Agent object
+        // Return Agent object(s)
         return $response;
     }
 
@@ -615,7 +615,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
             return FALSE;
         }
 
-        // Return Forum Category object
+        // Return Forum Category object(s)
         return $response;
     }
 
@@ -847,9 +847,120 @@ class FreshdeskForum extends FreshdeskAPI
         return $this->category->get($category_id);
     }
 
-    public function get($category_id, $forum_id)
+        /**
+     * View all Forum Categories.
+     *
+     * Request URL: domain_URL/categories.xml
+     * Request method: GET
+     *
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-categories type="array">
+     *       <forum-category>
+     *         <created-at type="datetime">2011-03-15T02:23:15-07:00</created-at>
+     *         <description>Welcome to the Freshdesk community forums</description>
+     *         <id type="integer">2</id>
+     *         <name>Freshdesk Forums</name>
+     *         <updated-at type="datetime">2011-03-21T02:42:58-07:00</updated-at>
+     *       </forum-category>
+     *       ...
+     *     </forum-categories>
+     *
+     * @link   http://freshdesk.com/api/forums/forum-category#view-all-forum-categories
+     *
+     * @return array    Array of Forum Category Objects
+     */
+    public function getAll()
     {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories.xml"))
+        {
+            return FALSE;
+        }
 
+        // Default category array
+        $categories = array();
+
+        // Extract category data from its 'forum-category' container
+        foreach (@$response->{'forum-category'} as $category)
+        {
+            $categories[] = $category;
+        }
+
+        // Return restructured array of categories
+        return $categories;
+    }
+
+    /**
+     * View Forums in a Category.
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id].xml
+     * Request method: POST
+     *
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum>
+     *       <description>Customers can voice their ideas here.</description>
+     *       <description-html>
+     *         <p>Customers can voice their ideas here.</p>
+     *       </description-html>
+     *       <forum-category-id type="integer">2</forum-category-id>
+     *       <forum-type type="integer">2</forum-type>
+     *       <id type="integer">6</id>
+     *       <name>Feature Requests</name>
+     *       <position type="integer">6</position>
+     *       <posts-count type="integer">11</posts-count>
+     *       <topics-count type="integer">7</topics-count>
+     *       <forum-category>
+     *         <created-at type="datetime">2011-03-15T02:23:15-07:00</created-at>
+     *         <description>Welcome to the Freshdesk community forums</description>
+     *         <id type="integer">2</id>
+     *         <name>Freshdesk Forums</name>
+     *         <updated-at type="datetime">2011-03-21T02:42:58-07:00</updated-at>
+     *       </forum-category>
+     *       <topics type="array">
+     *         <topic>
+     *           <created-at type="datetime">2011-04-06T07:38:15-07:00</created-at>
+     *           <delta type="boolean">false</delta>
+     *           <forum-id type="integer">6</forum-id>
+     *           <hits type="integer">4</hits>
+     *           <id type="integer">41</id>
+     *           <last-post-id type="integer">66</last-post-id>
+     *           <locked type="boolean">false</locked>
+     *           <posts-count type="integer">0</posts-count>
+     *           <replied-at type="datetime">2011-04-06T07:38:15-07:00</replied-at>
+     *           <replied-by type="integer">464</replied-by>
+     *           <stamp-type type="integer" nil="true"></stamp-type>
+     *           <sticky type="integer">0</sticky>
+     *           <title>Group tickets by type</title>
+     *           <updated-at type="datetime">2011-04-06T07:38:15-07:00</updated-at>
+     *           <user-id type="integer">464</user-id>
+     *         </topic>
+     *         ...
+     *       </topics>
+     *     </forum>
+     *
+     * @link   http://freshdesk.com/api/forums/forum#view-topics-in-a-forum
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @return mixed                Array or single Forum Object
+     */
+    public function get($category_id, $forum_id = NULL)
+    {
+        // Return all forums if no Forum ID was passed
+        if ( ! $forum_id)
+        {
+            return $this->getAll($category_id);
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("domain_URL/categories/{$category_id}/forums/{$forum_id}.xml", 'POST'))
+        {
+            return FALSE;
+        }
+
+        // Return Forum object(s)
+        return $response;
     }
 }
 
