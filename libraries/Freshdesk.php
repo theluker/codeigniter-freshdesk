@@ -47,7 +47,7 @@ class Freshdesk
         $this->User = new FreshdeskUser($this->base_url, $this->username, $this->password);
         $this->Agent = new FreshdeskAgent($this->base_url, $this->username, $this->password);
         $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
-        $this->Forum = new FreshdeskForum($this->base_url, $this->username, $this->password);
+        $this->Forum = new FreshdeskForum($this->ForumCategory, $this->base_url, $this->username, $this->password);
     }
 }
 
@@ -705,6 +705,8 @@ class FreshdeskForumCategory extends FreshdeskAPI
  */
 class FreshdeskForum extends FreshdeskAPI
 {
+    protected $category;
+
     # TODO: More meaningful key names once types are determined
     public static $TYPE = array(
         'TYPE_1' => 1,
@@ -714,6 +716,12 @@ class FreshdeskForum extends FreshdeskAPI
     public static $VISIBILITY = array(
         'VIS_1' => 1
     );
+
+    public function __construct($category, $base_url, $username, $password)
+    {
+        $this->category = $category;
+        FreshdeskAPI::__construct($base_url, $username, $password);
+    }
 
     /**
      * Create a new Forum.
@@ -780,6 +788,68 @@ class FreshdeskForum extends FreshdeskAPI
 
         // Return Forum object
         return $response;
+    }
+
+    /**
+     * View Forums in a Category.
+     *
+     * Request URL: domain_URL/categories/[category_id].xml
+     * Request method: GET
+     *
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-category>
+     *       <created-at type="datetime">2012-12-05T16:04:12+05:30</created-at>
+     *       <description>New testing category</description>
+     *       <id type="integer">2</id>
+     *       <name>Test</name>
+     *       <position type="integer">2</position>
+     *       <updated-at type="datetime">2012-12-05T16:04:12+05:30</updated-at>
+     *       <forums type="array">
+     *         <forum>
+     *           <description>General helpdesk announcements to the customers.</description>
+     *           <description-html>
+     *             <p>General helpdesk announcements to the customers.</p>
+     *           </description-html>
+     *           <forum-category-id type="integer">2</forum-category-id>
+     *           <forum-type type="integer">4</forum-type>
+     *           <id type="integer">5</id>
+     *           <name>Announcements</name>
+     *           <position type="integer">5</position>
+     *           <posts-count type="integer">0</posts-count>
+     *           <topics-count type="integer">0</topics-count>
+     *         </forum>
+     *         <forum>
+     *           <account-id type="integer">2</account-id>
+     *           <description>Customers can voice their ideas here.</description>
+     *           <description-html>
+     *             <p>Customers can voice their ideas here.</p>
+     *           </description-html>
+     *           <forum-category-id type="integer">2</forum-category-id>
+     *           <forum-type type="integer">2</forum-type>
+     *           <id type="integer">6</id>
+     *           <name>Feature Requests</name>
+     *           <position type="integer">6</position>
+     *           <posts-count type="integer">11</posts-count>
+     *           <topics-count type="integer">7</topics-count>
+     *         </forum>
+     *         ...
+     *       </forums>
+     *     </forum-category>
+     *
+     * @link   http://freshdesk.com/api/forums/forum-category#viewing-forums-in-a-category
+     *
+     * @param  integer $category_id Forum Category ID
+     * @return mixed                Array or single Forum Category Object
+     */
+    public function getAll($category_id)
+    {
+        return $this->category->get($category_id);
+    }
+
+    public function get($category_id, $forum_id)
+    {
+
     }
 }
 
