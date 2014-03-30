@@ -355,12 +355,13 @@ class FreshdeskUser extends FreshdeskAPI
      *
      * @link   http://freshdesk.com/api/users#modify-user-details
      *
-     * @param  string $name  User Name
-     * @param  string $email User Description
-     * @return object        User object
-     * @return integer       HTTP response code
+     * @param  integer $user_id  User ID
+     * @param  string  $name     User Name
+     * @param  string  $email    User Description
+     * @return object            User object
+     * @return integer           HTTP response code
      */
-    public function update($name = '', $email = '')
+    public function update($user_id, $name = '', $email = '')
     {
         // Build array of request data
         $data = array(
@@ -988,11 +989,13 @@ class FreshdeskForum extends FreshdeskAPI
      * @todo   Determine avilable type/visibility options.
      * @todo   Determine commonly default type/visibility option.
      *
-     * @param  string $name        Forum Name
-     * @param  string $type        Forum Type
-     * @param  string $visibility  Forum Visibility
-     * @param  string $description Forum Description
-     * @return integer             HTTP response code
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  string  $name        Forum Name
+     * @param  string  $type        Forum Type
+     * @param  string  $visibility  Forum Visibility
+     * @param  string  $description Forum Description
+     * @return integer              HTTP response code
      */
     public function update($category_id, $forum_id, $name = '', $type = '', $visibility = '', $description = '')
     {
@@ -1017,6 +1020,33 @@ class FreshdeskForum extends FreshdeskAPI
         }
 
         // Return HTTP response
+        return $response;
+    }
+
+    /**
+     * Delete an existing Forum.
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id].xml
+     * Request method: DELETE
+     *
+     *  Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/users#delete-a-user
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @return integer              HTTP response code
+     */
+    public function delete($category_id, $forum_id)
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.xml", 'DELETE'))
+        {
+            return FALSE;
+        }
+
+        // Return Forum Category object
         return $response;
     }
 }
