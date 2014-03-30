@@ -27,9 +27,7 @@ $params = array(
 $this->load->library('freshdesk', $params);
 ```
 
-You can also pass parameters stored in a config file.
-
- Note that if you dynamically pass parameters as described above, the config file option will not be available.
+You can also pass parameters stored in a config file. Note that if you dynamically pass parameters as described above, the config file option will not be available.
 
 Note that if you pass the `api_key` parameter, the `username` and `password` options will be ignored.
 
