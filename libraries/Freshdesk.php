@@ -1062,5 +1062,38 @@ class FreshdeskForum extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk Topic
+ *
+ * Create, View, Update, Delete and Monitor Topics.
+ *
+ * @link http://freshdesk.com/api/forums/forum-topic
+ */
+class FreshdeskTopic extends FreshdeskAPI
+{
+    public function create() {}
+    public function getAll() {}
+    public function get() {}
+    public function update() {}
+    public function delete() {}
+    public function monitor() {}
+    public function unmonitor() {}
+}
+
+/**
+ * Freshdesk Post
+ *
+ * Create, View, Update, and Delete Posts.
+ *
+ * @link http://freshdesk.com/api/forums/forum-topic
+ */
+class FreshdeskPost extends FreshdeskAPI
+{
+    public function create() {}
+    public function getAll() {}
+    public function get() {}
+    public function update() {}
+}
+
 /* End of file Freshdesk.php */
 /* Location: ./application/libraries/Freshdesk.php */
