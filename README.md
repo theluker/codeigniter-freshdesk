@@ -50,6 +50,38 @@ Common methods provided are:
 `create()`, `getAll()`, `get()`, `update()`, and `delete()`.
 
 ### Examples
+#### Users
+Create a User:
+```php
+$user = $this->freshdesk->User->create('Name', 'user@domain.com');
+```
+Retrieve a User:
+```php
+$user = $this->freshdesk->User->get($user_id);
+```
+Update a User:
+```php
+$this->freshdesk->User->update($user_id, 'Name', 'user@domain.com');
+```
+Delete a User:
+```php
+$this->freshdesk->User->delete($user_id);
+```
+Retrieve a list of Users:
+```php
+$users = $this->freshdesk->User->getAll();
+
+foreach ($users as $user)
+{
+    $name = $user->name;
+    $email = $user->email;
+    $created = $user->{'created-at'};
+
+    echo "User '{$name}' ({$email}) was created {$created}.";
+}
+```
+
+#### Forums
 Retrieve a list of Forums:
 ```php
 $forums = $this->freshdesk->Forum->getAll();
@@ -62,6 +94,21 @@ foreach ($forums as $forum)
 
     echo "Forum '{$name}' has {$posts} posts in {$topics} topics.";
 }
+```
+Create a Topic in a Forum:
+```php
+#TODO
+$this->freshdesk->Topic->create();
+```
+Post a reply to a Topic:
+```php
+#TODO
+$this->freshdesk->Post->create();
+```
+Monitor a Topic:
+```php
+#TODO
+$this->freshdesk->Topic->monitor();
 ```
 
 ### License
