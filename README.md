@@ -16,13 +16,17 @@ $this->load->library('freshdesk');
 In the library loading function you can dynamically pass data as an array via the second parameter and it will be passed to the library class constructor:
 ```php
 $params = array(
-    'base_url' => 'your_helpdesk_domain_name',
-
     'api_key' => 'your_helpdesk_api_key',
-    // OR
-    'username' => 'your_helpdesk_username',
-    'password' => 'your_helpdesk_password'
+    'base_url' => 'your_helpdesk_domain_name'
 );
+
+# OR
+
+$params = array(
+    'username' => 'your_helpdesk_username',
+    'password' => 'your_helpdesk_password',
+    'base_url' => 'your_helpdesk_domain_name'
+); 
 
 $this->load->library('freshdesk', $params);
 ```
