@@ -80,7 +80,11 @@ $users = $this->freshdesk->User->get_all();         // method 2
 
 foreach ($users as $user)
 {
-    echo "User '{$user->name}' ({$user->email}) was created {$user->created_at}.";
+    $name = $user->name;
+    $email = $user->email;
+    $created = $user->created_at;
+
+    echo "User '{$name}' ({$email}) was created {$created}.";
 }
 ```
 
