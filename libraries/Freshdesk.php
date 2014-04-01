@@ -69,9 +69,9 @@ class Freshdesk
  */
 class FreshdeskAPI
 {
+    private $base_url;
     private $username;
     private $password;
-    protected $base_url;
 
     public function __construct($base_url, $username, $password)
     {
@@ -473,6 +473,7 @@ class FreshdeskUserWrapper extends FreshdeskUser
 {
     private $id;
     private $args;
+    private $data;
 
     public function __construct($params, $args)
     {
@@ -497,19 +498,14 @@ class FreshdeskUserWrapper extends FreshdeskUser
         // Get user if id was passed
         if ($this->id)
         {
-            // Set internal arg value from results if not already set
-            foreach (get_object_vars($this->get()) as $key => $value) {
-                if ( ! @$this->args[$key])
-                {
-                    $this->args[$key] = $value;
-                }
-            }
+            $this->data = $this->get();
         }
     }
 
     public function __get($name)
     {
-        if ($value = @$this->args[$name]) {
+        if ($value = (@$this->args[$name] ?: @$this->data->$name))
+        {
             return $value;
         }
     }
@@ -521,25 +517,21 @@ class FreshdeskUserWrapper extends FreshdeskUser
 
     public function create($args = NULL)
     {
-        // Return create using internal args if no args were passed
         return FreshdeskUser::create($args ?: $this->args);
     }
 
     public function get()
     {
-        // Return get using internal id
         return FreshdeskUser::get($this->id);
     }
 
     public function update($args = NULL)
     {
-        // Return update using internal args if no args were passed
         return FreshdeskUser::update($this->id, $args ?: $this->args);
     }
 
     public function delete()
     {
-        // Return delete using internal id
         return FreshdeskUser::delete($this->id);
     }
 }
