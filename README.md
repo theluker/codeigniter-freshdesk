@@ -43,38 +43,40 @@ $this->freshdesk->{$resource}->{$method}();
 Common methods provided are: `create()`, `getAll()`, `get()`, `update()`, and `delete()`.
 
 ### Examples
+The following examples demonstrate various methods of utilizing the library.
+
 #### Users
 ```php
 # Create a User
 
 $data = array('name' => 'Name', 'email' => 'user@domain.com');
-$user = $this->freshdesk->User->create($data);
-$user = $this->freshdesk->User($data)->create();
+$user = $this->freshdesk->User->create($data);      // method 1
+$user = $this->freshdesk->User($data)->create();    // method 2
 
 # Update a User
 
 $user_id = 12345;
 $data = array('name' => 'New Name');
-$this->freshdesk->User->update($user_id, $data);
-$this->freshdesk->User($user_id)->update($data);
-$this->freshdesk->User($user_id, $data)->update();
+$this->freshdesk->User->update($user_id, $data);    // method 1
+$this->freshdesk->User($user_id)->update($data);    // method 2
+$this->freshdesk->User($user_id, $data)->update();  // method 3
 
 # Delete a User
 
 $user_id = 12345;
-$this->freshdesk->User->delete($user_id);
-$this->freshdesk->User($user_id)->delete();
+$this->freshdesk->User->delete($user_id);           // method 1
+$this->freshdesk->User($user_id)->delete();         // method 2
 
 # Retrieve a User
 
 $user_id = 12345;
-$user = $this->freshdesk->User->get($user_id);
-$user = $this->freshdesk->User($user_id)->get();
+$user = $this->freshdesk->User->get($user_id);      // method 1
+$user = $this->freshdesk->User($user_id)->get();    // method 2
 
 # Retrieve a list of Users
 
-$users = $this->freshdesk->User->get();
-$users = $this->freshdesk->User->get_all();
+$users = $this->freshdesk->User->get();             // method 1
+$users = $this->freshdesk->User->get_all();         // method 2
 
 foreach ($users as $user)
 {
