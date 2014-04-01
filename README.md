@@ -45,33 +45,34 @@ Common methods provided are: `create()`, `getAll()`, `get()`, `update()`, and `d
 ### Examples
 #### Users
 ```php
-# Create a User:
-$data = array('name' => 'Name', 'email' => 'user@domain.com');
+# Create a User
 
+$data = array('name' => 'Name', 'email' => 'user@domain.com');
 $user = $this->freshdesk->User->create($data);
 $user = $this->freshdesk->User($data)->create();
 
-# Update a User:
+# Update a User
+
 $user_id = 12345;
 $data = array('name' => 'New Name');
-
 $this->freshdesk->User->update($user_id, $data);
 $this->freshdesk->User($user_id)->update($data);
 $this->freshdesk->User($user_id, $data)->update();
 
-# Delete a User:
-$user_id = 12345;
+# Delete a User
 
+$user_id = 12345;
 $this->freshdesk->User->delete($user_id);
 $this->freshdesk->User($user_id)->delete();
 
-# Retrieve a User:
-$user_id = 12345;
+# Retrieve a User
 
+$user_id = 12345;
 $user = $this->freshdesk->User->get($user_id);
 $user = $this->freshdesk->User($user_id)->get();
 
-# Retrieve a list of Users:
+# Retrieve a list of Users
+
 $users = $this->freshdesk->User->get();
 $users = $this->freshdesk->User->get_all();
 
@@ -87,5 +88,4 @@ foreach ($users as $user)
 
 ### License
 Freshdesk documentation Copyright &copy; Freshdesk Inc. (http://freshdesk.com/api)
-
 CodeIgniter documentation Copyright &copy; EllisLab, Inc. (http://ellislab.com/codeigniter/user-guide)
