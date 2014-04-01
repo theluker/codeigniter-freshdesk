@@ -213,7 +213,7 @@ class FreshdeskUser extends FreshdeskAPI
 
     public function get($user_id = NULL)
     {
-        // Return all users if no Category ID was passed
+        // Return all users if no User ID or a string was passed
         if ( ! $user_id or is_string($user_id))
         {
             return $this->get_all($user_id);
