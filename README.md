@@ -33,41 +33,47 @@ Note that if you pass the `api_key` parameter, the `username` and `password` opt
 
 ### Accessing the API
 
-The library provides access to the following APIs:
-
-`User`, `ForumCategory`, `Forum`, `Topic`, `Post`
-
+The library provides access to the following APIs: `User`
 Limited access is provided to the (currently undocumented) `Agent` API.
 
 API methods can be accessed via a standardized scheme:
 ```php
-$this->freshdesk->{$api}->{$method}();
+$this->freshdesk->{$resource}->{$method}();
 ```
-
-Common methods provided are:
-`create()`, `getAll()`, `get()`, `update()`, and `delete()`.
+Common methods provided are: `create()`, `getAll()`, `get()`, `update()`, and `delete()`.
 
 ### Examples
 #### Users
-Create a User:
-```php
-$user = $this->freshdesk->User->create('Name', 'user@domain.com');
-```
-Retrieve a User:
-```php
-$user = $this->freshdesk->User->get($user_id);
-```
-Update a User:
-```php
-$this->freshdesk->User->update($user_id, 'Name', 'user@domain.com');
-```
-Delete a User:
-```php
+'''php
+# Create a User:
+$data = array('name' => 'Name', 'email' => 'user@domain.com');
+
+$user = $this->freshdesk->User->create($data);
+$user = $this->freshdesk->User($data)->create();
+
+# Update a User:
+$user_id = 12345;
+$data = array('name' => 'New Name');
+
+$this->freshdesk->User->update($user_id, $data);
+$this->freshdesk->User($user_id)->update($data);
+$this->freshdesk->User($user_id, $data)->update();
+
+# Delete a User:
+$user_id = 12345;
+
 $this->freshdesk->User->delete($user_id);
-```
-Retrieve a list of Users:
-```php
-$users = $this->freshdesk->User->getAll();
+$this->freshdesk->User($user_id)->delete();
+
+# Retrieve a User:
+$user_id = 12345;
+
+$user = $this->freshdesk->User->get($user_id);
+$user = $this->freshdesk->User($user_id)->get();
+
+# Retrieve a list of Users:
+$users = $this->freshdesk->User->get();
+$users = $this->freshdesk->User->get_all();
 
 foreach ($users as $user)
 {
@@ -77,36 +83,6 @@ foreach ($users as $user)
 
     echo "User '{$name}' ({$email}) was created {$created}.";
 }
-```
-
-#### Forums
-Retrieve a list of Forums:
-```php
-$forums = $this->freshdesk->Forum->getAll();
-
-foreach ($forums as $forum)
-{
-    $name = $forum->name;
-    $posts = $forum->{'posts-count'};
-    $topics = $forum->{'topics-count'};
-
-    echo "Forum '{$name}' has {$posts} posts in {$topics} topics.";
-}
-```
-Create a Topic in a Forum:
-```php
-#TODO
-$this->freshdesk->Topic->create();
-```
-Post a reply to a Topic:
-```php
-#TODO
-$this->freshdesk->Post->create();
-```
-Monitor a Topic:
-```php
-#TODO
-$this->freshdesk->Topic->monitor();
 ```
 
 ### License
