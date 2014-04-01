@@ -43,7 +43,7 @@ class Freshdesk
         $this->params['password'] = $password;
 
         // Build a list of API accessors
-        $this->accessors = array('User');
+        $this->accessors = ['User'];
 
         // Instantiate API accessors
         foreach ($this->accessors as $accessor)
@@ -92,7 +92,7 @@ class FreshdeskAPI
     {
         $method = strtoupper($method);
         $ch = curl_init ("{$this->base_url}/{$resource}");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -117,7 +117,7 @@ class FreshdeskAPI
             curl_close($ch);
             return FALSE;
         }
-        if (in_array($info['http_code'], array(404, 406, 302)) and $error = $data)
+        if (in_array($info['http_code'], [404, 406, 302]) and $error = $data)
         {
             log_message('error', var_dump($error));
             curl_close($ch);
@@ -158,7 +158,31 @@ class FreshdeskUser extends FreshdeskAPI
         'ROLE_1' => 1,
         'ROLE_2' => 2,
         'ROLE_3' => 3
-    ); 
+    );
+
+    public function create($data)
+    {
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+
+        // Encapsulate data in 'user' container
+        if (array_shift(array_keys($data)) != 'user')
+        {
+            $data = array('user' => $data);
+        }
+
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts.json", 'POST', $data))
+        {
+            return FALSE;
+        }
+
+        // Return User object
+        return $response;
+    }
 
     public function get_all($state = 'verified')
     {
@@ -190,9 +214,9 @@ class FreshdeskUser extends FreshdeskAPI
     public function get($user_id = NULL)
     {
         // Return all users if no Category ID was passed
-        if ( ! $user_id)
+        if ( ! $user_id or is_string($user_id))
         {
-            return $this->get_all();
+            return $this->get_all($user_id);
         }
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("contacts/{$user_id}.json"))
@@ -201,6 +225,42 @@ class FreshdeskUser extends FreshdeskAPI
         }
 
         // Return User object(s)
+        return $response;
+    }
+
+    public function update($user_id, $data)
+    {
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+
+        // Encapsulate data in 'user' container
+        if (array_shift(array_keys($data)) != 'user')
+        {
+            $data = array('user' => $data);
+        }
+
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts/{$user_id}.xml", 'PUT', $data))
+        {
+            return FALSE;
+        }
+
+        // Return HTTP response
+        return $response;
+    }
+
+    public function delete($user_id)
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts/{$user_id}.xml", 'DELETE'))
+        {
+            return FALSE;
+        }
+
+        // Return HTTP response
         return $response;
     }
 }
@@ -216,18 +276,30 @@ class _FreshDeskUser extends FreshdeskUser
 
     public function __construct($params, $args)
     {
+        $this->user_id = @$args[0];
+        $this->data = @$args[1];
         FreshdeskUser::__construct($params['base_url'], $params['username'], $params['password']);
+    }
 
-        if (is_integer(@$args[0]))
-        {
-            $this->user_id = $args[0];
-        }
+    public function create()
+    {
+        return FreshdeskUser::create($this->user_id);
     }
 
     public function get()
     {
         return FreshdeskUser::get($this->user_id);
-    }   
+    }
+
+    public function update($data = NULL)
+    {
+        return FreshdeskUser::update($this->user_id, $data ?: $this->data);
+    }
+
+    public function delete()
+    {
+        return FreshdeskUser::delete($this->user_id);
+    }
 }
 
 /* End of file Freshdesk.php */
