@@ -481,6 +481,12 @@ class FreshdeskUser extends FreshdeskAPI
             return FALSE;
         }
 
+        // Return User object if HTTP 200
+        if ($response == 200)
+        {
+            return $this->get($user_id);
+        }
+
         // Return HTTP response
         return $response;
     }
@@ -511,6 +517,12 @@ class FreshdeskUser extends FreshdeskAPI
             return FALSE;
         }
 
+        // Return TRUE if HTTP 200
+        if ($response == 200)
+        {
+            return TRUE;
+        }
+
         // Return HTTP response
         return $response;
     }
@@ -537,25 +549,21 @@ class FreshdeskWrapper extends FreshdeskAPI
         $api = substr(get_class($this), 0, -strlen('Wrapper'));
         $this->api = new $api($params);
 
-        // If an argument was passed
-        if ($arg0 = @$args[0])
+        // Return if no args were passed
+        if ( ! $arg0 = @$args[0])
         {
-            // If first argument is an array...
-            if (is_array($arg0))
-            {
-                // ...assign as args
-                $this->args = $arg0;
-            } else {
-                // ...assign as id
-                $this->id = intval($arg0);
-            }
-        } else {
-            $this->args = @$args[1];
+            return;
         }
 
-        // Get data if id was passed
-        if ($this->id)
+        // Set args if only args passed
+        if (is_array($arg0))
         {
+            $this->args = $arg0;
+        }
+        // Set args and data if id was passed
+        else if ($this->id = intval(array_shift($args)))
+        {
+            $this->args = @$args[0];
             $this->data = $this->get();
         }
     }
