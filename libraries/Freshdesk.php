@@ -380,7 +380,7 @@ class FreshdeskUser extends FreshdeskAPI
         }
 
         // Return User object(s)
-        return $response;
+        return $response->user;
     }
 
     /**
@@ -471,33 +471,79 @@ class FreshdeskUser extends FreshdeskAPI
  */
 class FreshdeskUserWrapper extends FreshdeskUser
 {
-    private $user_id;
+    private $id;
+    private $args;
+    private $data;
 
     public function __construct($params, $args)
     {
-        $this->user_id = @$args[0];
-        $this->data = @$args[1];
         FreshdeskUser::__construct($params['base_url'], $params['username'], $params['password']);
+
+        // If an argument was passed
+        if ($arg0 = @$args[0])
+        {
+            // If first argument is an array...
+            if (is_array($arg0))
+            {
+                // ...assign as args
+                $this->args = $arg0;
+            } else {
+                // ...assign as id
+                $this->id = intval($arg0);
+            }
+        } else {
+            $this->args = @$args[1];
+        }
+
+        // Get user if id was passed
+        if ($this->id)
+        {
+            $this->data = $this->get();
+        }
     }
 
-    public function create()
+    public function __get($name)
     {
-        return FreshdeskUser::create($this->user_id);
+        return $this->data->{$name};
     }
 
-    public function get()
+    public function create($args = NULL)
     {
-        return FreshdeskUser::get($this->user_id);
+        // Return create with internal args if none were passed
+        return FreshdeskUser::create($args ?: $this->args);
     }
 
-    public function update($data = NULL)
+    public function get($arg0 = NULL, $arg1 = NULL)
     {
-        return FreshdeskUser::update($this->user_id, $data ?: $this->data);
+        // Return get($user_id) if $arg0 is integer
+        if (is_integer($arg0))
+        {
+            return FreshdeskUser::get($arg0);
+        }
+        // Return get($state, $query) if $arg0 is string
+        if (is_string($arg0))
+        {
+            return FreshdeskUser::get($arg0, $arg1);
+        }
+        // Return get with internal ID if no args were passed
+        return FreshdeskUser::get($this->id);
     }
 
-    public function delete()
+    public function update($arg0 = NULL, $arg1 = NULL)
     {
-        return FreshdeskUser::delete($this->user_id);
+        // Return update($user_id, $data) if $arg0 is interger
+        if (is_integer($arg0))
+        {
+            FreshdeskUser::update($arg0, $arg1 ?: $this->args);
+        }
+        // Return update with internal data if no args were passed
+        return FreshdeskUser::update($this->id, $arg0 ?: $this->args);
+    }
+
+    public function delete($arg0 = NULL)
+    {
+        // Return delete with internal ID if no args were passed
+        return FreshdeskUser::delete($arg0 ?: $this->id);
     }
 }
 
