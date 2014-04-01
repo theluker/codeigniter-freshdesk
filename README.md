@@ -32,9 +32,8 @@ You can also pass parameters stored in a config file. Note that if you dynamical
 Note that if you pass the `api_key` parameter, the `username` and `password` options will be ignored.
 
 ### Accessing the API
-
-The library provides access to the following APIs: `User`
-Limited access is provided to the (currently undocumented) `Agent` API.
+ * The library provides access to the following APIs: `User`
+ * Limited access is provided to the (currently undocumented) `Agent` API.
 
 API methods can be accessed via a standardized scheme:
 ```php
@@ -89,5 +88,5 @@ foreach ($users as $user)
 ```
 
 ### License
-Freshdesk documentation Copyright &copy; Freshdesk Inc. (http://freshdesk.com/api)
-CodeIgniter documentation Copyright &copy; EllisLab, Inc. (http://ellislab.com/codeigniter/user-guide)
+ * Freshdesk documentation Copyright &copy; Freshdesk Inc. (http://freshdesk.com/api)
+ * CodeIgniter documentation Copyright &copy; EllisLab, Inc. (http://ellislab.com/codeigniter/user-guide)
