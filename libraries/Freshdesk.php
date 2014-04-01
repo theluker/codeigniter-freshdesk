@@ -482,13 +482,7 @@ class FreshdeskUser extends FreshdeskAPI
         }
 
         // Return User object if HTTP 200
-        if ($response == 200)
-        {
-            return $this->get($user_id);
-        }
-
-        // Return HTTP response
-        return $response;
+        return $response == 200 ? $this->get($user_id) : FALSE;
     }
 
     /**
@@ -518,13 +512,7 @@ class FreshdeskUser extends FreshdeskAPI
         }
 
         // Return TRUE if HTTP 200
-        if ($response == 200)
-        {
-            return TRUE;
-        }
-
-        // Return HTTP response
-        return $response;
+        return $response == 200 ? TRUE : FALSE;
     }
 }
 
