@@ -117,9 +117,9 @@ class FreshdeskAPI
             curl_close($ch);
             return FALSE;
         }
-        if (in_array($info['http_code'], [404, 406, 302]) and $error = $data)
+        if (in_array($info['http_code'], [400, 404, 406, 302]))
         {
-            log_message('error', var_dump($error));
+            log_message('error', var_dump($data));
             curl_close($ch);
             return FALSE;
         }
