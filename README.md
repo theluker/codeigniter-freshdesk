@@ -26,7 +26,7 @@ $params = array(
     'username' => 'your_helpdesk_username',
     'password' => 'your_helpdesk_password',
     'base_url' => 'your_helpdesk_domain_name'
-); 
+);
 
 $this->load->library('freshdesk', $params);
 ```
@@ -89,6 +89,18 @@ foreach ($users as $user)
 
     echo "User '{$name}' ({$email}) was created {$created}.";
 }
+
+# Performing multiple actions
+
+$user = $this->freshdesk->User();
+$user->name = 'Name';
+$user->email = 'user@host.com';
+$user->create();
+
+$this->freshdesk->User(12345)->update(['name' => 'Updated Name 2']);
+
+$this->freshdesk->User(12345, ['name' => 'Updated Name 3'])->update();
+$this->freshdesk->User(12345)->delete();
 ```
 
 ### License
