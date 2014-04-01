@@ -44,7 +44,7 @@ Common methods provided are: `create()`, `getAll()`, `get()`, `update()`, and `d
 
 ### Examples
 #### Users
-'''php
+```php
 # Create a User:
 $data = array('name' => 'Name', 'email' => 'user@domain.com');
 
