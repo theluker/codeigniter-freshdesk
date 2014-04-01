@@ -38,18 +38,20 @@ class Freshdesk
         }
 
         // Build list of default params
-        $this->params['base_url'] = $base_url;
-        $this->params['username'] = $username;
-        $this->params['password'] = $password;
+        $this->params = array(
+            'base_url' => $base_url,
+            'username' => $username,
+            'password' => $password
+        );
 
         // Build a list of API accessors
-        $this->accessors = ['User'];
+        $this->accessors = ['Agent', 'User'];
 
         // Instantiate API accessors
         foreach ($this->accessors as $accessor)
         {
             $class = "Freshdesk{$accessor}";
-            $this->$accessor = new $class($this->params['base_url'], $this->params['username'], $this->params['password']);
+            $this->$accessor = new $class($this->params);
         }
     }
 
@@ -73,11 +75,11 @@ class FreshdeskAPI
     private $username;
     private $password;
 
-    public function __construct($base_url, $username, $password)
+    public function __construct($params)
     {
-        $this->base_url = $base_url;
-        $this->username  = $username;
-        $this->password  = $password;
+        $this->base_url = $params['base_url'];
+        $this->username  = $params['username'];
+        $this->password  = $params['password'];
     }
 
     /**
@@ -141,6 +143,56 @@ class FreshdeskAPI
 
         // Return HTTP response code by default
         return $info['http_code'];
+    }
+}
+
+/**
+ * Freshdesk Agent
+ */
+class FreshdeskAgent extends FreshdeskAPI
+{
+    public function get_all()
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("agents.json"))
+        {
+            return FALSE;
+        }
+
+        // Default agent array
+        $agents = array();
+
+        // Return empty array of users if HTTP 200 received
+        if ($response == 200)
+        {
+            return $agents;
+        }
+
+        // Extract agent data from its 'agent' container
+        foreach ($response as $agent)
+        {
+            $agents[] = $agent->agent;
+        }
+
+        // Return restructured array of agents
+        return $agents;
+    }
+
+    public function get($agent_id = NULL)
+    {
+        // Return all agents if no Agent ID was passed
+        if ( ! $agent_id)
+        {
+            return $this->get_all();
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("agents/{$agent_id}.json"))
+        {
+            return FALSE;
+        }
+
+        // Return Agent object(s)
+        return $response->agent;
     }
 }
 
@@ -465,19 +517,25 @@ class FreshdeskUser extends FreshdeskAPI
 }
 
 /**
- * Wrapped Freshdesk User
+ * Wrapped Freshdesk Class
  *
- * Allows `user_id` and `data` to be passed at instantiation.
+ * Allows `id` and `args` to be passed at instantiation.
+ *
+ * Returns an object that can be used similar to a Model.
  */
-class FreshdeskUserWrapper extends FreshdeskUser
+class FreshdeskWrapper extends FreshdeskAPI
 {
-    private $id;
-    private $args;
-    private $data;
+    protected $id;
+    protected $api;
+    protected $args;
+    protected $data;
 
     public function __construct($params, $args)
     {
-        FreshdeskUser::__construct($params['base_url'], $params['username'], $params['password']);
+        FreshdeskAPI::__construct($params);
+
+        $api = substr(get_class($this), 0, -strlen('Wrapper'));
+        $this->api = new $api($params);
 
         // If an argument was passed
         if ($arg0 = @$args[0])
@@ -495,7 +553,7 @@ class FreshdeskUserWrapper extends FreshdeskUser
             $this->args = @$args[1];
         }
 
-        // Get user if id was passed
+        // Get data if id was passed
         if ($this->id)
         {
             $this->data = $this->get();
@@ -517,24 +575,30 @@ class FreshdeskUserWrapper extends FreshdeskUser
 
     public function create($args = NULL)
     {
-        return FreshdeskUser::create($args ?: $this->args);
+        return $this->api->create($args ?: $this->args);
     }
 
     public function get()
     {
-        return FreshdeskUser::get($this->id);
+        return $this->api->get($this->id);
     }
 
     public function update($args = NULL)
     {
-        return FreshdeskUser::update($this->id, $args ?: $this->args);
+        return $this->api->update($this->id, $args ?: $this->args);
     }
 
     public function delete()
     {
-        return FreshdeskUser::delete($this->id);
+        return $this->api->delete($this->id);
     }
 }
+
+/**
+ * Wrapped Freshdesk Classes
+ */
+class FreshdeskAgentWrapper extends FreshdeskWrapper {}
+class FreshdeskUserWrapper extends FreshdeskWrapper {}
 
 /* End of file Freshdesk.php */
 /* Location: ./application/libraries/Freshdesk.php */
