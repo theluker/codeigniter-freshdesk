@@ -37,7 +37,7 @@ class Freshdesk
             $password = 'X';
         }
 
-        // Build list of default params        
+        // Build list of default params
         $this->params['base_url'] = $base_url;
         $this->params['username'] = $username;
         $this->params['password'] = $password;
@@ -58,7 +58,7 @@ class Freshdesk
         // Dynamically load and return wrapped API accessor
         if (in_array($name, $this->accessors))
         {
-            $class = "_Freshdesk{$name}";
+            $class = "Freshdesk{$name}Wrapper";
             return new $class($this->params, $args);
         }
     }
@@ -149,6 +149,26 @@ class FreshdeskAPI
  *
  * Create, View, Update, and Delete Users.
  *
+ * Data:
+ *     {'user': {
+ *         'id':             (integer)  User's ID              // read-only
+ *         'name':           (string)   User's Name            // required
+ *         'email':          (string)   User's Email address   // required
+ *         'address':        (string)   User's Address
+ *         'description':    (string)   User's Description
+ *         'job_title':      (string)   User's Job Title
+ *         'twitter_id':     (integer)  User's Twitter ID
+ *         'fb_profile_id':  (integer)  User's Facebook ID
+ *         'phone':          (integer)  User's Telephone number
+ *         'mobile':         (integer)  User's Mobile number
+ *         'language':       (string)   User's Language. 'en' default
+ *         'time_zone':      (string)   User's Time Zone
+ *         'customer_id':    (integer)  User's Customer ID
+ *         'deleted':        (boolean)  True if deleted
+ *         'helpdesk_agent': (boolean)  True if agent           // read-only
+ *         'active':         (boolean)  True if active
+ *     }}
+ *
  * @link http://freshdesk.com/api/users
  */
 class FreshdeskUser extends FreshdeskAPI
@@ -160,6 +180,50 @@ class FreshdeskUser extends FreshdeskAPI
         'ROLE_3' => 3
     );
 
+    /**
+     * Create a new User
+     *
+     * Request URL: /contacts.xml
+     * Request method: POST
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     *         -d '{ "user": { "name":"Super Man", "email":"superman@marvel.com" }}' \
+     *         http://domain.freshdesk.com/contacts.json
+     *
+     * Request:
+     *     {"user": {
+     *         "name":"Super Man",
+     *         "email":"superman@marvel.com"
+     *     }}
+     *
+     * Response:
+     *     {"user": {
+     *         "active":false,
+     *         "address":null,
+     *         "created_at":"2014-01-07T19:33:43+05:30",
+     *         "customer_id":null,
+     *         "deleted":false,
+     *         "description":null,
+     *         "email":"superman@marvel.com",
+     *         "external_id":null,
+     *         "fb_profile_id":null,
+     *         "id":19,
+     *         "job_title":null,
+     *         "language":"en",
+     *         "mobile":null,
+     *         "name":"Super Man",
+     *         "phone":null,
+     *         "time_zone":"Hawaii",
+     *         "twitter_id":null,
+     *         "updated_at":"2014-01-07T19:33:43+05:30"
+     *     }}
+     *
+     * @link   http://freshdesk.com/api/#create_user
+     *
+     * @param  array $data  Array of User data
+     * @return object       JSON User object
+     */
     public function create($data)
     {
         // Return FALSE if we did not receive an array of data
@@ -184,10 +248,61 @@ class FreshdeskUser extends FreshdeskAPI
         return $response;
     }
 
-    public function get_all($state = 'verified')
+    /**
+     * Retrieve all Users
+     *
+     * Request URL: /contacts.xml
+     * Request method: GET
+     *
+     * Filter:
+     *     State: /contacts?state=[state]
+     *     Note: state may be 'verified', 'unverified', 'all', or 'deleted'
+     *     Example: /contacts.json?state=all
+     *
+     *     Query: /contacts.json?query=[condition]
+     *     Note: condition may be 'email', 'mobile', or 'phone'
+     *     Example: /contacts.json?query=email is user@yourcompany.com
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *         http://domain.freshdesk.com/contacts.json
+     *
+     * Response:
+     *     [
+     *         {"user": {
+     *             "active":false,
+     *             "address":"",
+     *             "created_at":"2013-12-20T15:04:16+05:30",
+     *             "customer_id":null,
+     *             "deleted":false,
+     *             "description":"",
+     *             "email":"superman@marvel.com",
+     *             "external_id":null,
+     *             "fb_profile_id":null,
+     *             "helpdesk_agent":false,
+     *             "id":19,
+     *             "job_title":"Super Hero",
+     *             "language":"en",
+     *             "mobile":"",
+     *             "name":"Super Man",
+     *             "phone":"",
+     *             "time_zone":"Hawaii",
+     *             "twitter_id":"",
+     *             "updated_at":"2013-12-20T15:04:16+05:30"
+     *          }},
+     *          ...
+     *      ]
+     *
+     * @link   http://freshdesk.com/api/#view_all_user
+     *
+     * @param  string $state Filter state
+     * @param  string $query Filter query
+     * @return array         Array of JSON User objects
+     */
+    public function get_all($state = 'all', $query = '')
     {
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts.json?state={$state}"))
+        if ( ! $response = $this->_request("contacts.json?state={$state}&query={$query}"))
         {
             return FALSE;
         }
@@ -211,12 +326,52 @@ class FreshdeskUser extends FreshdeskAPI
         return $users;
     }
 
-    public function get($user_id = NULL)
+    /**
+     * Retrieve a User
+     *
+     * Request URL: /contacts/[user_id].xml
+     * Request method: GET
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *         -d '{ "user": { "name":"SuperMan", "job_title":"Avenger" }}' \
+     *         http://domain.freshdesk.com/contacts/19.json
+     *
+     * Response:
+     *     {"user":{
+     *         "active":false,
+     *         "address":null,
+     *         "created_at":"2014-01-07T19:33:43+05:30",
+     *         "customer_id":null,
+     *         "deleted":false,
+     *         "description":null,
+     *         "email":"superman@marvel.com",
+     *         "external_id":null,
+     *         "fb_profile_id":null,
+     *         "id":19,
+     *         "job_title":null,
+     *         "language":"en",
+     *         "mobile":null,
+     *         "name":"Super Man",
+     *         "phone":null,
+     *         "time_zone":"Hawaii",
+     *         "twitter_id":null,
+     *         "updated_at":"2014-01-07T19:33:43+05:30"
+     *      }}
+     *
+     *
+     * @link   http://freshdesk.com/api/#view_user
+     *
+     * @param  mixed  $user_id User ID or Filter state
+     * @param  string $query   Filter query
+     * @return object          JSON User object
+     */
+    public function get($user_id = NULL, $query = NULL)
     {
-        // Return all users if no User ID or a string was passed
-        if ( ! $user_id or is_string($user_id))
+        // Return all users if no User ID or if get_all() args were passed
+        if ( ! $state = $user_id or is_string($state) or is_string($query))
         {
-            return $this->get_all($user_id);
+            return $this->get_all($state, $query);
         }
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("contacts/{$user_id}.json"))
@@ -228,6 +383,32 @@ class FreshdeskUser extends FreshdeskAPI
         return $response;
     }
 
+    /**
+     * Update a User
+     *
+     * Request URL: /contacts/[user_id].xml
+     * Request method: PUT
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *         -d '{ "user": { "name":"SuperMan", "job_title":"Avenger" }}' \
+     *         http://domain.freshdesk.com/contacts/19.json
+     *
+     * Request:
+     *     {"user": {
+     *         "name":"SuperMan",
+     *         "job_title":"Avenger"
+     *     }}
+     *
+     * Response:
+     *     HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#update_user
+     *
+     * @param  integer $user_id  User ID
+     * @param  array   $data     User data
+     * @return integer           HTTP response code
+     */
     public function update($user_id, $data)
     {
         // Return FALSE if we did not receive an array of data
@@ -243,7 +424,7 @@ class FreshdeskUser extends FreshdeskAPI
         }
 
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.xml", 'PUT', $data))
+        if ( ! $response = $this->_request("contacts/{$user_id}.json", 'PUT', $data))
         {
             return FALSE;
         }
@@ -252,10 +433,28 @@ class FreshdeskUser extends FreshdeskAPI
         return $response;
     }
 
+    /**
+     * Delete a User
+     *
+     * Request URL: /contacts/[user_id].xml
+     * Request method: DELETE
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     *         http://domain.freshdesk.com/contacts/1.json
+     *
+     * Response:
+     *     HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#delete_user
+     *
+     * @param  integer $user_id  User ID
+     * @return integer           HTTP response code
+     */
     public function delete($user_id)
     {
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.xml", 'DELETE'))
+        if ( ! $response = $this->_request("contacts/{$user_id}.json", 'DELETE'))
         {
             return FALSE;
         }
@@ -268,9 +467,9 @@ class FreshdeskUser extends FreshdeskAPI
 /**
  * Wrapped Freshdesk User
  *
- * Allows various class values to be set at instantiation.
+ * Allows `user_id` and `data` to be passed at instantiation.
  */
-class _FreshDeskUser extends FreshdeskUser
+class FreshdeskUserWrapper extends FreshdeskUser
 {
     private $user_id;
 
