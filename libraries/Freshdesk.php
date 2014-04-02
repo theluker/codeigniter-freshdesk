@@ -10,6 +10,7 @@ class Freshdesk
 {
     private $CI;
     private $params;
+    private static $accessors = array('Agent', 'User');
 
     public function __construct($params = array())
     {
@@ -43,9 +44,6 @@ class Freshdesk
             'username' => $username,
             'password' => $password
         );
-
-        // Build a list of API accessors
-        $this->accessors = ['Agent', 'User'];
 
         // Instantiate API accessors
         foreach ($this->accessors as $accessor)
@@ -203,25 +201,25 @@ class FreshdeskAgent extends FreshdeskAPI
  *
  * Data:
  *     {'user': {
- *         'id':             (integer)  User's ID              // read-only
- *         'name':           (string)   User's Name            // required
- *         'email':          (string)   User's Email address   // required
- *         'address':        (string)   User's Address
- *         'description':    (string)   User's Description
- *         'job_title':      (string)   User's Job Title
- *         'twitter_id':     (integer)  User's Twitter ID
- *         'fb_profile_id':  (integer)  User's Facebook ID
- *         'phone':          (integer)  User's Telephone number
- *         'mobile':         (integer)  User's Mobile number
- *         'language':       (string)   User's Language. 'en' default
- *         'time_zone':      (string)   User's Time Zone
- *         'customer_id':    (integer)  User's Customer ID
+ *         'id':             (integer)  User ID                  // read-only
+ *         'name':           (string)   User Name                // required
+ *         'email':          (string)   User Email address       // required
+ *         'address':        (string)   User Address
+ *         'description':    (string)   User Description
+ *         'job_title':      (string)   User Job Title
+ *         'twitter_id':     (integer)  User Twitter ID
+ *         'fb_profile_id':  (integer)  User Facebook ID
+ *         'phone':          (integer)  User Telephone number
+ *         'mobile':         (integer)  User Mobile number
+ *         'language':       (string)   User Language. 'en' default
+ *         'time_zone':      (string)   User Time Zone
+ *         'customer_id':    (integer)  User Customer ID
  *         'deleted':        (boolean)  True if deleted
- *         'helpdesk_agent': (boolean)  True if agent           // read-only
+ *         'helpdesk_agent': (boolean)  True if agent            // read-only
  *         'active':         (boolean)  True if active
  *     }}
  *
- * @link http://freshdesk.com/api/users
+ * @link http://freshdesk.com/api/#user
  */
 class FreshdeskUser extends FreshdeskAPI
 {
@@ -514,6 +512,54 @@ class FreshdeskUser extends FreshdeskAPI
         // Return TRUE if HTTP 200
         return $response == 200 ? TRUE : FALSE;
     }
+}
+
+/**
+ * Freshdesk Forum Category
+ *
+ * Create, View, Update, and Delete Forum Categories.
+ *
+ * Data:
+ *     {'forum_category': {
+ *         'id':            (integer)   Forum Category ID        // read-only
+ *         'name':          (string)    Forum Category Name      // required
+ *         'description':   (string)    Forum Category Description
+ *         'postition':     (integer)   Forum Category Position  // read-only
+ *     }}
+ *
+ * @link http://freshdesk.com/api/#forum-category
+ */
+class FreshdeskForumCategory extends FreshdeskAPI
+{
+    public function create() {}
+    public function get_all() {}
+    public function get() {}
+    public function update() {}
+    public function delete() {}
+}
+
+class FreshdeskForum extends FreshdeskAPI
+{
+    public static $TYPE = array(
+        'HOWTO' => 1,
+        'IDEA' => 2,
+        'PROBLEM' => 3,
+        'ANNOUNCEMENT' => 4
+    );
+    public static $VISIBILITY = array(
+        'ALL' => 1,
+        'USERS' => 2,
+        'AGENTS' => 3
+    );
+}
+
+class FreshdeskTopic extends FreshdeskAPI
+{
+    public static $STAMP = array(
+        'PLANNED' => 1,
+        'IMPLEMENTED' => 2,
+        'TAKEN' => 3
+    );
 }
 
 /**
