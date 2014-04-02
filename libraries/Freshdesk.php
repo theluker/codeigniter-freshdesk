@@ -584,7 +584,7 @@ class FreshdeskPost extends FreshdeskAPI
             return FALSE;
         }
 
-        // Return User object
+        // Return Post object
         return $response;
 	}
 
@@ -608,7 +608,7 @@ class FreshdeskPost extends FreshdeskAPI
             return FALSE;
         }
    
-        // Return posts object
+        // Return Post object
         return $response;
 	}
 	
@@ -627,6 +627,53 @@ class FreshdeskPost extends FreshdeskAPI
 
 }
 
+/**
+ * Freshdesk Monitor Class
+ */
+class FreshdeskMonitor extends FreshdeskAPI
+{
+	public function monitor($category_id = '', $forum_id = '', $topic_id = '')
+	{
+		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "POST"))
+		{
+			return FALSE;
+		}
+		
+		// Return monitor object
+		return $response;
+	}
+	
+	public function unmonitor($categoy_id = '', $forum_id = '', $topic_id = '')
+	{
+		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "POST"))
+		{
+			return FALSE;
+		}
+		
+		return $response;
+	}
+	
+	public function get_monitored($user_id = '')
+	{
+		if ( ! $response = $this->_request("support/discussions/user_monitored?{$user_id}", "GET"))
+		{
+			return FALSE;
+		}
+		
+		return $response;
+	}
+	
+	public function monitor_status($topic_id = '', $user_id = '')
+	{
+		if ( ! $response = $this->_request("support/discussions/topics/{$topic_id}/check_monitor.json?user_id={$user_id}"))
+		{
+			return FALSE;
+		}
+		 
+		return $response;
+	}
+	
+}
 
 /**
  * Wrapped Freshdesk Class
