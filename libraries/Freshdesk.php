@@ -562,6 +562,117 @@ class FreshdeskTopic extends FreshdeskAPI
     );
 }
 
+class FreshdeskPost extends FreshdeskAPI
+{
+	public function create($data)
+	{
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+
+        // Encapsulate data in 'post' container
+        if (array_shift(array_keys($data)) != 'post')
+        {
+            $data = array('post' => $data);
+        }
+
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("posts.json", 'POST', $data))
+        {
+            return FALSE;
+        }
+
+        // Return User object
+        return $response;
+	}
+	public function update($data)
+	{
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+
+        // Encapsulate data in 'post' container
+        if (array_shift(array_keys($data)) != 'post')
+        {
+            $data = array('post' => $data);
+        }
+
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("posts.json", 'POST', $data))
+        {
+            return FALSE;
+        }
+
+        // Return posts object
+        return $response;
+	}
+}
+
+class FreshDeskSolutionCategory extends FreshdeskAPI 
+{
+	public function create(){}
+	public function update(){}
+	public function get(){}
+	public function get_all(){}
+	public function delete(){}
+}
+class FreshDeskSolutionFolder extends FreshdeskAPI
+{
+	public function create(){}
+	public function update(){}
+	public function get(){}
+	public function delete(){}
+
+}
+class FreshDeskSolutionArticle extends FreshdeskAPI
+{
+	public function create(){}
+	public function update(){}
+	public function get(){}
+	public function get_all(){}
+	public function delete(){}
+}
+class FreshDeskTimeEntries extends FreshdeskAPI 
+{
+	public function create(){}
+	public function get(){}
+	public function get_all(){}
+	public function update(){}
+	public function toggle_timer(){}
+	public function delete(){}
+}
+class FreshDeskSurvey extends FreshdeskAPI
+{
+	public function create(){}
+	public function get(){}
+}
+class FreshDeskGroup extends FreshdeskAPI
+{
+	public function create(){}
+	public function update(){}
+	public function get(){}
+	public function get_all(){}
+	public function delete(){}
+}
+
+class FreshDeskTicket extends FreshDeskAPI
+{
+	public function create(){}
+	public function get(){}
+	public function get_all(){}
+	public function update(){}
+	public function pick(){}
+	public function delete(){}
+	public function restore(){}
+	public function assign(){}
+	public function ticket_fields(){}
+	public function note(){}
+}
+
 /**
  * Wrapped Freshdesk Class
  *
@@ -635,6 +746,8 @@ class FreshdeskWrapper extends FreshdeskAPI
         return $this->api->delete($this->id);
     }
 }
+
+
 
 /**
  * Wrapped Freshdesk Classes
