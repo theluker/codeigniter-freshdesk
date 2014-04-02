@@ -261,6 +261,21 @@ class FreshdeskAgent extends FreshdeskBaseAPI
 {
     protected $node = 'agent';
     protected $resource = 'agents';
+
+    public function create($data)
+    {
+        return FALSE;
+    }
+
+    public function update($agent_id, $data)
+    {
+        return FALSE;
+    }
+
+    public function delete($agent_id)
+    {
+        return FALSE;
+    }
 }
 
 /**
@@ -352,6 +367,56 @@ class FreshdeskUser extends FreshdeskBaseAPI
     }
 
     /**
+     * Retrieve a User
+     *
+     * Request URL: /contacts/[user_id].xml
+     * Request method: GET
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *         -d '{ "user": { "name":"SuperMan", "job_title":"Avenger" }}' \
+     *         http://domain.freshdesk.com/contacts/19.json
+     *
+     * Response:
+     *     {"user":{
+     *         "active":false,
+     *         "address":null,
+     *         "created_at":"2014-01-07T19:33:43+05:30",
+     *         "customer_id":null,
+     *         "deleted":false,
+     *         "description":null,
+     *         "email":"superman@marvel.com",
+     *         "external_id":null,
+     *         "fb_profile_id":null,
+     *         "id":19,
+     *         "job_title":null,
+     *         "language":"en",
+     *         "mobile":null,
+     *         "name":"Super Man",
+     *         "phone":null,
+     *         "time_zone":"Hawaii",
+     *         "twitter_id":null,
+     *         "updated_at":"2014-01-07T19:33:43+05:30"
+     *      }}
+     *
+     *
+     * @link   http://freshdesk.com/api/#view_user
+     *
+     * @param  mixed  $user_id User ID or Filter state
+     * @param  string $query   Filter query
+     * @return object          JSON User object
+     */
+    public function get($user_id = NULL, $query = NULL)
+    {
+        // Return all users if no User ID or if get_all() args were passed
+        if ( ! ($state = $user_id) or is_string($state) or is_string($query))
+        {
+            return $this->get_all($state, $query);
+        }
+        return FreshdeskBaseAPI::get($user_id);
+    }
+
+    /**
      * Retrieve all Users
      *
      * Request URL: /contacts.xml
@@ -405,56 +470,6 @@ class FreshdeskUser extends FreshdeskBaseAPI
     public function get_all($state = '', $query = '')
     {
         return FreshdeskBaseAPI::get_all("?state={$state}&query={$query}");
-    }
-
-    /**
-     * Retrieve a User
-     *
-     * Request URL: /contacts/[user_id].xml
-     * Request method: GET
-     *
-     * Curl:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
-     *         -d '{ "user": { "name":"SuperMan", "job_title":"Avenger" }}' \
-     *         http://domain.freshdesk.com/contacts/19.json
-     *
-     * Response:
-     *     {"user":{
-     *         "active":false,
-     *         "address":null,
-     *         "created_at":"2014-01-07T19:33:43+05:30",
-     *         "customer_id":null,
-     *         "deleted":false,
-     *         "description":null,
-     *         "email":"superman@marvel.com",
-     *         "external_id":null,
-     *         "fb_profile_id":null,
-     *         "id":19,
-     *         "job_title":null,
-     *         "language":"en",
-     *         "mobile":null,
-     *         "name":"Super Man",
-     *         "phone":null,
-     *         "time_zone":"Hawaii",
-     *         "twitter_id":null,
-     *         "updated_at":"2014-01-07T19:33:43+05:30"
-     *      }}
-     *
-     *
-     * @link   http://freshdesk.com/api/#view_user
-     *
-     * @param  mixed  $user_id User ID or Filter state
-     * @param  string $query   Filter query
-     * @return object          JSON User object
-     */
-    public function get($user_id = NULL, $query = NULL)
-    {
-        // Return all users if no User ID or if get_all() args were passed
-        if ( ! ($state = $user_id) or is_string($state) or is_string($query))
-        {
-            return $this->get_all($state, $query);
-        }
-        return FreshdeskBaseAPI::get($user_id);
     }
 
     /**
@@ -626,11 +641,11 @@ class FreshdeskPost extends FreshdeskAPI
         {
             return FALSE;
         }
-   
+
         // Return posts object
         return $response;
 	}
-	
+
 	public function delete($category_id = '', $forum_id = '', $topic_id='', $post_id = '')
     {
         // Return FALSE if we've failed to get a request response
