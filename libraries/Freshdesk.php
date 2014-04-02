@@ -607,7 +607,7 @@ class FreshdeskPost extends FreshdeskAPI
         {
             return FALSE;
         }
- 
+   
         // Return posts object
         return $response;
 	}
@@ -627,66 +627,6 @@ class FreshdeskPost extends FreshdeskAPI
 
 }
 
-class FreshDeskSolutionCategory extends FreshdeskAPI 
-{
-	public function create(){}
-	public function update(){}
-	public function get(){}
-	public function get_all(){}
-	public function delete(){}
-}
-class FreshDeskSolutionFolder extends FreshdeskAPI
-{
-	public function create(){}
-	public function update(){}
-	public function get(){}
-	public function delete(){}
-
-}
-class FreshDeskSolutionArticle extends FreshdeskAPI
-{
-	public function create(){}
-	public function update(){}
-	public function get(){}
-	public function get_all(){}
-	public function delete(){}
-}
-class FreshDeskTimeEntries extends FreshdeskAPI 
-{
-	public function create(){}
-	public function get(){}
-	public function get_all(){}
-	public function update(){}
-	public function toggle_timer(){}
-	public function delete(){}
-}
-class FreshDeskSurvey extends FreshdeskAPI
-{
-	public function create(){}
-	public function get(){}
-}
-class FreshDeskGroup extends FreshdeskAPI
-{
-	public function create(){}
-	public function update(){}
-	public function get(){}
-	public function get_all(){}
-	public function delete(){}
-}
-
-class FreshDeskTicket extends FreshDeskAPI
-{
-	public function create(){}
-	public function get(){}
-	public function get_all(){}
-	public function update(){}
-	public function pick(){}
-	public function delete(){}
-	public function restore(){}
-	public function assign(){}
-	public function ticket_fields(){}
-	public function note(){}
-}
 
 /**
  * Wrapped Freshdesk Class
