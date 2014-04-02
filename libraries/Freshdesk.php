@@ -144,54 +144,123 @@ class FreshdeskAPI
     }
 }
 
-/**
- * Freshdesk Agent
- */
-class FreshdeskAgent extends FreshdeskAPI
+class FreshdeskAPIBase extends FreshdeskAPI
 {
-    public function get_all()
+    protected $node;
+    protected $resource;
+
+    public function create($data)
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("agents.json"))
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
         {
             return FALSE;
         }
 
-        // Default agent array
-        $agents = array();
-
-        // Return empty array of users if HTTP 200 received
-        if ($response == 200)
+        // Encapsulate data in 'node' container
+        if (array_shift(array_keys($data)) != $this->node)
         {
-            return $agents;
+            $data = array($this->node => $data);
         }
 
-        // Extract agent data from its 'agent' container
-        foreach ($response as $agent)
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("{$this->resource}.json", 'POST', $data))
         {
-            $agents[] = $agent->agent;
+            return FALSE;
         }
 
-        // Return restructured array of agents
-        return $agents;
+        // Return object
+        return $response->{$this->resource};
     }
 
-    public function get($agent_id = NULL)
+    public function get($id = NULL)
     {
-        // Return all agents if no Agent ID was passed
-        if ( ! $agent_id)
+        // Return all objects if no Agent ID was passed
+        if ( ! $id)
         {
             return $this->get_all();
         }
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("agents/{$agent_id}.json"))
+        if ( ! $response = $this->_request("{$this->resource}/{$id}.json"))
         {
             return FALSE;
         }
 
-        // Return Agent object(s)
-        return $response->agent;
+        // Return object(s)
+        return $response->{$this->node};
     }
+
+    public function get_all($query = '')
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("{$this->resource}.json{$query}"))
+        {
+            return FALSE;
+        }
+
+        // Default object array
+        $objects = array();
+
+        // Return empty array of objects if HTTP 200 received
+        if ($response == 200)
+        {
+            return $objects;
+        }
+
+        // Extract objects data from its 'node' container
+        foreach ($response as $object)
+        {
+            $objects[] = $object->{$this->node};
+        }
+
+        // Return restructured array of objects
+        return $objects;
+    }
+
+    public function update($id, $data)
+    {
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+
+        // Encapsulate data in 'node' container
+        if (array_shift(array_keys($data)) != $this->node)
+        {
+            $data = array($this->node => $data);
+        }
+
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("{$this->resource}/{$id}.json", 'PUT', $data))
+        {
+            return FALSE;
+        }
+
+        // Return object if HTTP 200
+        return $response == 200 ? $this->get($id) : FALSE;
+    }
+
+    public function delete($id)
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("{$this->resource}/{$id}.json", 'DELETE'))
+        {
+            return FALSE;
+        }
+
+        // Return TRUE if HTTP 200
+        return $response == 200 ? TRUE : FALSE;
+    }
+}
+
+/**
+ * Freshdesk Agent
+ */
+class FreshdeskAgent extends FreshdeskBaseAPI
+{
+    protected $node = 'agent';
+    protected $resource = 'agents';
 }
 
 /**
@@ -221,8 +290,11 @@ class FreshdeskAgent extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#user
  */
-class FreshdeskUser extends FreshdeskAPI
+class FreshdeskUser extends FreshdeskBaseAPI
 {
+    protected $node = 'user';
+    protected $resource = 'contacts';
+
     # TODO: More meaningful key names once roles are determined
     public static $ROLE = array(
         'ROLE_1' => 1,
@@ -276,26 +348,7 @@ class FreshdeskUser extends FreshdeskAPI
      */
     public function create($data)
     {
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
-
-        // Encapsulate data in 'user' container
-        if (array_shift(array_keys($data)) != 'user')
-        {
-            $data = array('user' => $data);
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts.json", 'POST', $data))
-        {
-            return FALSE;
-        }
-
-        // Return User object
-        return $response;
+        return FreshdeskBaseAPI::create($data);
     }
 
     /**
@@ -351,29 +404,7 @@ class FreshdeskUser extends FreshdeskAPI
      */
     public function get_all($state = '', $query = '')
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts.json?state={$state}&query={$query}"))
-        {
-            return FALSE;
-        }
-
-        // Default user array
-        $users = array();
-
-        // Return empty array of users if HTTP 200 received
-        if ($response == 200)
-        {
-            return $users;
-        }
-
-        // Extract user data from its 'user' container
-        foreach ($response as $user)
-        {
-            $users[] = $user->user;
-        }
-
-        // Return restructured array of users
-        return $users;
+        return FreshdeskBaseAPI::get_all("?state={$state}&query={$query}");
     }
 
     /**
@@ -423,14 +454,7 @@ class FreshdeskUser extends FreshdeskAPI
         {
             return $this->get_all($state, $query);
         }
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.json"))
-        {
-            return FALSE;
-        }
-
-        // Return User object(s)
-        return $response->user;
+        return FreshdeskBaseAPI::get($user_id);
     }
 
     /**
@@ -461,26 +485,7 @@ class FreshdeskUser extends FreshdeskAPI
      */
     public function update($user_id, $data)
     {
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
-
-        // Encapsulate data in 'user' container
-        if (array_shift(array_keys($data)) != 'user')
-        {
-            $data = array('user' => $data);
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.json", 'PUT', $data))
-        {
-            return FALSE;
-        }
-
-        // Return User object if HTTP 200
-        return $response == 200 ? $this->get($user_id) : FALSE;
+        return FreshdeskBaseAPI::update($user_id, $data);
     }
 
     /**
@@ -503,14 +508,7 @@ class FreshdeskUser extends FreshdeskAPI
      */
     public function delete($user_id)
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.json", 'DELETE'))
-        {
-            return FALSE;
-        }
-
-        // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;
+        return FreshdeskBaseAPI::delete($user_id);
     }
 }
 
@@ -529,13 +527,34 @@ class FreshdeskUser extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#forum-category
  */
-class FreshdeskForumCategory extends FreshdeskAPI
+class FreshdeskForumCategory extends FreshdeskAPIBase
 {
-    public function create() {}
-    public function get_all() {}
-    public function get() {}
-    public function update() {}
-    public function delete() {}
+    protected $node = 'forum_category';
+    protected $resource = 'categories';
+
+    public function create($data)
+    {
+        return FreshdeskAPIBase::create($data);
+    }
+
+    public function get_all()
+    {
+        return FreshdeskAPIBase::get_all();
+    }
+
+    public function get($category_id)
+    {
+        return FreshdeskAPIBase::get($category_id);
+    }
+
+    public function update($category_id, $data)
+    {
+        return FreshdeskAPIBase::update($category_id, $data);
+    }
+
+    public function delete($category_id) {
+        return FreshdeskAPIBase::delete($category_id);
+    }
 }
 
 class FreshdeskForum extends FreshdeskAPI
