@@ -1012,35 +1012,209 @@ class FreshdeskTopic extends FreshdeskAPI
         'IMPLEMENTED' => 2,
         'TAKEN' => 3
     );
-    
+    /**
+     * Create a new Forum Topic
+     *
+     * Request URL: /categories/[id]/forums/[id]/topics.json
+     * Request method: POST
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     *		-d '{ "topic": { "sticky":0, "locked":0, "title":"how to create a custom field", "body_html":"Can someone give me the steps ..." }}'
+     *		 http://domain.freshdesk.com/categories/1/forums/1/topics.json
+     * Request:
+	 *		{"topic": {
+     *       	"sticky":0, 
+	 *			"locked":0,
+	 *			"title":"how to create a custom field",
+	 *			"body_html":"Can someone give me the steps..."
+	 *		}}    
+     * Response:
+	 *		{"topic":{
+     *       	 "account_id":1,
+	 *		 	 "created_at":"2014-01-08T08:54:01+05:30",
+	 *		 	 "delta":true,
+	 *		 	 "forum_id":5,
+	 *		 	 "hits":0,
+	 *		 	 "id":3,
+	 *		 	 "import_id":null,
+	 *           "last_post_id":null,
+	 *           "locked":false,
+	 *           "posts_count":0,
+	 *           "replied_at":"2014-01-08T08:54:01+05:30",
+	 *           "replied_by":null,
+	 *           "stamp_type":null,
+	 *           "sticky":0,
+	 *           "title":"how to create a custom field",
+	 *           "updated_at":"2014-01-08T08:54:01+05:30",
+	 *           "user_id":1,
+	 *           "user_votes":0
+	 *       }}
+     *
+     * @link http://freshdesk.com/api/#create_topic
+     *
+     * @todo   Determine avilable type/visibility options.
+     * @todo   Determine commonly default type/visibility option.
+     *
+     * @param  integer  $category_id Forum Category ID
+     * @param  integer  $forum_id    Forum ID
+	 * @param  object   $data		 Forum Topic JSON object
+     * @return object                Forum Topic JSON object
+     */    
     public function create($category_id = '', $forum_id = '', $data = '')
     {
-	    if (!$response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics.json"))
-	    {
-		    return FALSE;
-	    }
-	    return $response;
+    	// Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+        // Encapsulate data in 'forum' container
+        if (array_shift(array_keys($data)) != 'topic')
+        {
+            $data = array('topic' => $data);
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics.json", 'POST', $data))
+        {
+            return FALSE;
+        }
+        // Return Forum object
+        return $response;
     }
-    public function update($category_id = '', $forum_id = '', $data = '')
+    
+    /**
+     * Update an existing forum Topic
+     *
+     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json 
+     * Request method: PUT
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
+     *		-d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}' 
+     *		http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
+     * Request:
+	 *		{"topic":{
+     *       	"sticky":0,
+	 * 			"locked":0,
+	 *			"title":"How to create a new ticket field",
+	 *			"body_html": "Steps: Go to Admin tab ..."
+     *      }}
+     * Response:
+	 *		HTTP Status: 200 OK
+	 *
+     * @link http://freshdesk.com/api/#update_topic
+     *
+     *
+     * @param  integer  $category_id Forum Category ID
+     * @param  integer  $forum_id    Forum ID
+     * @param  integer  $topic_id	 Forum Topic ID
+	 * @param  object   $data		 Forum Topic JSON object
+     * @return integer               HTTP Status: 200 OK
+     */        
+    public function update($category_id = '', $forum_id = '', $topic_id ='',  $data = '')
     {
-	    if (!$response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics.json", "PUT", $data))
-	    {
-		    return FALSE;
-	    }
-	    
-	    return $response;
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+        // Encapsulate data in 'topic' container
+        if (array_shift(array_keys($data)) != 'topic')
+        {
+            $data = array('topic' => $data);
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'POST', $data))
+        {
+            return FALSE;
+        }
+        // Return Forum object
+        return $response;
     }
-    public function get()
+    /**
+     * View all conversations in a forum Topic
+     *
+     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json  
+     * Request method: GET
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     *		-X GET http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
+     * Response:
+	 *		{
+     *      "topic":{
+     *         "account_id":1,
+     *         "created_at":"2014-01-08T08:54:01+05:30",
+     *         "delta":true,
+     *         "forum_id":5,
+     *         "hits":0,
+     *         "id":3,
+     *         "import_id":null,
+     *         "last_post_id":9,
+     *         "locked":false,
+     *         "posts_count":0,
+     *         "replied_at":"2014-01-08T08:54:01+05:30",
+     *         "replied_by":1,
+     *         "stamp_type":null,
+     *         "sticky":0,
+     *         "title":"How to create a ticket field",
+     *         "updated_at":"2014-01-08T08:54:01+05:30",
+     *         "user_id":1,
+     *         "user_votes":0,
+     *         "posts":[
+     *            {
+     *               "account_id":1,
+     *               "answer":false,
+     *               "body":"Steps: Go to Admin tab ...",
+     *               "body_html":"Steps: Go to Admin tab ...",
+     *               "created_at":"2014-01-08T08:54:01+05:30",
+     *               "forum_id":5,
+     *               "id":9,
+     *               "import_id":null,
+     *               "topic_id":3,
+     *               "updated_at":"2014-01-08T08:54:01+05:30",
+     *               "user_id":1
+     *            }
+     *         ]
+     *      }
+     *   
+	 *
+     * @link http://freshdesk.com/api/#view_topic
+     *
+     * @param  integer  $category_id Forum Category ID
+     * @param  integer  $forum_id    Forum ID
+     * @param  integer  $topic_id	 Forum Topic ID
+	 * @param  object   $data		 Forum Topic JSON object
+     * @return object                Forum Topic JSON Object
+     */        
+    public function get($category_id = '', $forum_id = '', $topic_id = '')
     {
-	    if (!$response = $this->_request("categories/{$category_id}", "PUT", $data))
+	    if (!$response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json ", "GET"))
 	    {
 		    return FALSE;
 	    }
-	    
 	    return $response;
     }
-
-    public function delete()
+    /**
+     * Delete Topic
+     *
+     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json  
+     * Request method: DELETE
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     *		-X DELETE http://domain.freshdesk.com/categories/1/forums/1/topics/1.json
+     * Response:
+	 *		TRUE if HTTP Status: 200 OK
+	 *
+     * @link http://freshdesk.com/api/#delete_topic
+     *
+     * @param  integer  $category_id Forum Category ID
+     * @param  integer  $forum_id    Forum ID
+     * @param  integer  $topic_id	 Forum Topic ID
+     * @return bool		TRUE         Return TRUE if HTTP Status: 200 OK
+     */        
+    public function delete($category_id = '', $forum_id = '', $topic_id = '')
     {
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'DELETE'))
