@@ -428,11 +428,9 @@ class FreshdeskUser extends FreshdeskAPI
         {
             return FALSE;
         }
-
         // Return User object(s)
         return $response->user;
     }
-
     /**
      * Update a User
      *
@@ -550,20 +548,20 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * 		-d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' http://domain.freshdesk.com/categories.json     
      *
      * Request:
-	 *	  {"forum_category": { 
+     *	  {"forum_category": { 
      *         "name":"How to",
      *         "description":"Queries on How to ?"
      *      }}   
      * Response:
-	 * 	   {"forum_category":{
+     *     {"forum_category":{
      *         "created_at":"2014-01-08T06:38:11+05:30",
      *         "description":"Getting Started",
      *         "id":3,
      *         "name":"How to",
      *         "position":3,
      *         "updated_at":"2014-01-08T06:38:11+05:30"
-     *      }
-     * 
+     *      }}
+     *
      *
      * @link http://freshdesk.com/api/#create_forum_category
      *
@@ -604,7 +602,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
      *		-X GET http://domain.freshdesk.com/categories.json
      * Response:
-	 * 		{"forum_category":{
+     *      {"forum_category":{
      *            "created_at":"2014-01-08T06:38:11+05:30",
      *            "description":"Tell us your problems",
      *            "id":3,
@@ -624,7 +622,6 @@ class FreshdeskForumCategory extends FreshdeskAPI
         {
             return FALSE;
         }
-
         // Return restructured array of categories
         return $response;
     }
@@ -636,15 +633,15 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request method: GET
      *
      * Response:
-	 *		{"forum_category":{
-     *        	"created_at":"2014-01-08T06:38:11+05:30",
-	 *		 	"description":"Recently Changed",
-	 *		 	"id":2,
-	 *		 	"name":"Latest Updates",
-	 *		 	"position":4,
-	 *		 	"updated_at":"2014-01-08T06:38:11+05:30"
-	 *		 }
-     *   
+     *      {"forum_category":{
+     *          "created_at":"2014-01-08T06:38:11+05:30",
+     *          "description":"Recently Changed",
+     *          "id":2,
+     *          "name":"Latest Updates",
+     *          "position":4,
+     *          "updated_at":"2014-01-08T06:38:11+05:30"
+     *      }}
+     *
      *
      * @link   http://freshdesk.com/api/#view_forum_category
      *
@@ -711,14 +708,14 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
      *		-X DELETE http://domain.freshdesk.com/categories/3.json
      * Response:
-	 *		{"forum_category":{
-     *        	"created_at":"2014-01-08T06:38:11+05:30",
-	 *		 	"description":"How to Queries",
-	 *		 	"id":3,
-	 *		 	"name":"How and What?",
-	 *		 	"position":null,
-	 *		 	"updated_at":"2014-01-08T07:13:56+05:30"
-	 *		 }}
+     *      {"forum_category":{
+     *          "created_at":"2014-01-08T06:38:11+05:30",
+     *          "description":"How to Queries",
+     *          "id":3,
+     *          "name":"How and What?",
+     *          "position":null,
+     *          "updated_at":"2014-01-08T07:13:56+05:30"
+     *     }}
      *
      * @link   http://freshdesk.com/api/#delete_forum_category
      *
@@ -741,9 +738,23 @@ class FreshdeskForumCategory extends FreshdeskAPI
 /**
  * Freshdesk Forum
  *
- * Create, View, Update, and Delete Forums.
+ * Create, View, Update, and Delete Forums
  *
- * @link http://freshdesk.com/api/forums/forum
+ * Data:
+ *      {'post': {
+ *          'id'                    (number)    Unique id of the forum          // Read-Only
+ *          'name'                  (string)    Name of the forum               // Mandatory
+ *          'description'           (string)    Description about the forum
+ *          'forum_category_id'     (number)    ID of the category of this forum
+ *          'forum_type'            (number)    Describes the type of forum     // Mandatory
+ *                                              (Supported types can be referred in Forum properties above)
+ *          'forum_visibility'      (number)    Describes whether the forum is visible to all or logged in user or Agents or selected companies    // Mandatory
+ *          'position'              (number)    The rank of the forum in the forum listing
+ *          'posts_count'           (number)    The number of comments on that forum
+ *          'topics_count'          (number)    The number of topics in the forum
+ *     }}
+ *
+ * @link http://freshdesk.com/api/#forum
  */
 class FreshdeskForum extends FreshdeskAPI
 {
@@ -774,28 +785,28 @@ class FreshdeskForum extends FreshdeskAPI
      * Request method: POST
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
-     *		-d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}' 
-     *		http://domain.freshdesk.com/categories/1/forums.json
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     *     -d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}' 
+     *     http://domain.freshdesk.com/categories/1/forums.json
      * Request:
-	 *		{"forum": {
-     *        	 "description":"Ticket related functions",
-	 *		 	 "forum_type":2,
-	 *		 	 "forum_visibility":1,
-	 *		 	 "name":"Ticket Operations"
-	 *		 }}  
+     *        {"forum": {
+     *            "description":"Ticket related functions",
+     *            "forum_type":2,
+     *            "forum_visibility":1,
+     *            "name":"Ticket Operations"
+     *        }}
      * Response:
-	 * 		{"forum":{
-     *       	 "description":"Ticket related functions",
-	 *		 	 "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
-	 *		 	 "forum_category_id":1,
-	 *		 	 "forum_type":2,
-	 *		 	 "forum_visibility":1,
-	 *		 	 "id":2,
-	 *		 	 "name":"Ticket Operations",
-	 *		 	 "position":5,
-	 *		 	 "posts_count":0,
-	 *		 	 "topics_count":0
+     *       {"forum":{
+     *           "description":"Ticket related functions",
+     *           "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
+     *           "forum_category_id":1,
+     *           "forum_type":2,
+     *           "forum_visibility":1,
+     *           "id":2,
+     *           "name":"Ticket Operations",
+     *           "position":5,
+     *           "posts_count":0,
+     *           "topics_count":0
      *       }} 
      *
      * @link http://freshdesk.com/api/#create_forum
@@ -804,7 +815,7 @@ class FreshdeskForum extends FreshdeskAPI
      * @todo   Determine commonly default type/visibility option.
      *
      * @param  string $name        Forum Name
-	 * @param  object $data		   Forum JSON object
+     * @param  object $data		   Forum JSON object
      * @return object              Forum JSON object
      */
     public function create($category_id, $data)
@@ -896,7 +907,7 @@ class FreshdeskForum extends FreshdeskAPI
      * Request method: GET
      *
      * Response:
-	 *		{"forum":{
+     *    {"forum":{
      *         "description":"Ticket related functions",
      *         "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
      *         "forum_category_id":1,
@@ -909,7 +920,6 @@ class FreshdeskForum extends FreshdeskAPI
      *         "topics_count":0,
      *         "topics":[]
      *      }
-	 *
      * @link   http://freshdesk.com/api/#view_forum
      *
      * @param  integer $category_id Forum Category ID
@@ -940,11 +950,11 @@ class FreshdeskForum extends FreshdeskAPI
      * Request method: PUT
      *
      * Request:
-	 *		{"forum": {
-     *       	"forum_type":2,
-     *       	"description":"Tickets and Ticket fields related queries",
-     *       	"forum_visibility":1
-     *    	 }}
+     *     {"forum": {
+     *         "forum_type":2,
+     *         "description":"Tickets and Ticket fields related queries",
+     *         "forum_visibility":1
+     *      }}
      *  Response:
      *      HTTP Status: 200 OK
      *
@@ -955,7 +965,7 @@ class FreshdeskForum extends FreshdeskAPI
      *
      * @param  integer $category_id Forum Category ID
      * @param  integer $forum_id    Forum ID
-	 * @param  object  $data		Forum JSON Object
+     * @param  object  $data		Forum JSON Object
      * @return integer              HTTP response code
      */
     public function update($category_id, $forum_id, $data)
@@ -981,11 +991,10 @@ class FreshdeskForum extends FreshdeskAPI
      * Request method: DELETE
      *
      * CURL: 
-     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
-     *		http://domain.freshdesk.com/categories/1/forums/2.json
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     *      http://domain.freshdesk.com/categories/1/forums/2.json
      * Response:
      *      HTTP Status: 200 OK
-     *
      * @link   http://freshdesk.com/api/#delete_forum
      *
      * @param  integer $category_id Forum Category ID
@@ -1012,18 +1021,18 @@ class FreshdeskForum extends FreshdeskAPI
  *
  * Data:
  *     {'topic': {
- *			'id':			(number) 	Unique id of the topic 								// Read-Only
- *			'title': 		(script) 	Title of the forum 									// Mandatory
- *			'forum_id': 	(number) 	ID of the Forum in which this topic is present
- *			'hits':			(number) 	Number of views of that forum 						// Read-Only
- *			'last_post_id': (number) 	ID of the latest comment on the forum 				// Read-Only
- *			'locked': 		(boolean) 	Set as true if the forum is locked
- *			'posts_count': 	(number) 	Number of posts in that topic
- *			'sticky': 		(number) 	Describes whether a topic can be deleted or not
- *			'user_id': 		(number) 	ID of the user 										// Read-Only
- *			'user_votes': 	(number) 	Number of votes in the topic 						// Read-Only
- *			'replied_at': 	(datetime) 	Timestamp of the latest comment made in the topic 	// Read-Only
- *			'replied_by': 	(datetime) 	Id of the user who made the latest comment in that topic 
+ *          'id':			(number) 	Unique id of the topic 								// Read-Only
+ *          'title': 		(script) 	Title of the forum 									// Mandatory
+ *          'forum_id': 	(number) 	ID of the Forum in which this topic is present
+ *          'hits':			(number) 	Number of views of that forum 						// Read-Only
+ *          'last_post_id': (number) 	ID of the latest comment on the forum 				// Read-Only
+ *          'locked': 		(boolean) 	Set as true if the forum is locked
+ *          'posts_count': 	(number) 	Number of posts in that topic
+ *          'sticky': 		(number) 	Describes whether a topic can be deleted or not
+ *          'user_id': 		(number) 	ID of the user 										// Read-Only
+ *          'user_votes': 	(number) 	Number of votes in the topic 						// Read-Only
+ *          'replied_at': 	(datetime) 	Timestamp of the latest comment made in the topic 	// Read-Only
+ *          'replied_by': 	(datetime) 	Id of the user who made the latest comment in that topic 
  *     }}
  *
  * @link http://freshdesk.com/api/#topic
@@ -1046,33 +1055,33 @@ class FreshdeskTopic extends FreshdeskAPI
      *		-d '{ "topic": { "sticky":0, "locked":0, "title":"how to create a custom field", "body_html":"Can someone give me the steps ..." }}'
      *		 http://domain.freshdesk.com/categories/1/forums/1/topics.json
      * Request:
-	 *		{"topic": {
-     *       	"sticky":0, 
-	 *			"locked":0,
-	 *			"title":"how to create a custom field",
-	 *			"body_html":"Can someone give me the steps..."
-	 *		}}    
+     *    {"topic": {
+     *        "sticky":0, 
+     *        "locked":0,
+     *        "title":"how to create a custom field",
+     *        "body_html":"Can someone give me the steps..."
+     *    }}
      * Response:
-	 *		{"topic":{
-     *       	 "account_id":1,
-	 *		 	 "created_at":"2014-01-08T08:54:01+05:30",
-	 *		 	 "delta":true,
-	 *		 	 "forum_id":5,
-	 *		 	 "hits":0,
-	 *		 	 "id":3,
-	 *		 	 "import_id":null,
-	 *           "last_post_id":null,
-	 *           "locked":false,
-	 *           "posts_count":0,
-	 *           "replied_at":"2014-01-08T08:54:01+05:30",
-	 *           "replied_by":null,
-	 *           "stamp_type":null,
-	 *           "sticky":0,
-	 *           "title":"how to create a custom field",
-	 *           "updated_at":"2014-01-08T08:54:01+05:30",
-	 *           "user_id":1,
-	 *           "user_votes":0
-	 *       }}
+     *    {"topic":{
+     *        "account_id":1,
+     *        "created_at":"2014-01-08T08:54:01+05:30",
+     *        "delta":true,
+     *        "forum_id":5,
+     *        "hits":0,
+     *        "id":3,
+     *        "import_id":null,
+     *        "last_post_id":null,
+     *        "locked":false,
+     *        "posts_count":0,
+     *        "replied_at":"2014-01-08T08:54:01+05:30",
+     *        "replied_by":null,
+     *        "stamp_type":null,
+     *        "sticky":0,
+     *        "title":"how to create a custom field",
+     *        "updated_at":"2014-01-08T08:54:01+05:30",
+     *        "user_id":1,
+     *        "user_votes":0
+     *    }}
      *
      * @link http://freshdesk.com/api/#create_topic
      *
@@ -1081,12 +1090,12 @@ class FreshdeskTopic extends FreshdeskAPI
      *
      * @param  integer  $category_id Forum Category ID
      * @param  integer  $forum_id    Forum ID
-	 * @param  object   $data		 Forum Topic JSON object
+     * @param  object   $data        Forum Topic JSON object
      * @return object                Forum Topic JSON object
-     */    
+     */
     public function create($category_id = '', $forum_id = '', $data = '')
     {
-    	// Return FALSE if we did not receive an array of data
+        // Return FALSE if we did not receive an array of data
         if ( ! is_array($data))
         {
             return FALSE;
@@ -1112,28 +1121,28 @@ class FreshdeskTopic extends FreshdeskAPI
      * Request method: PUT
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
-     *		-d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}' 
-     *		http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
+     *    curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
+     *    -d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}' 
+     *    http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
      * Request:
-	 *		{"topic":{
-     *       	"sticky":0,
-	 * 			"locked":0,
-	 *			"title":"How to create a new ticket field",
-	 *			"body_html": "Steps: Go to Admin tab ..."
+     *    {"topic":{
+     *        "sticky":0,
+     *        "locked":0,
+     *        "title":"How to create a new ticket field",
+     *        "body_html": "Steps: Go to Admin tab ..."
      *      }}
      * Response:
-	 *		HTTP Status: 200 OK
-	 *
+     *    HTTP Status: 200 OK
+     *
      * @link http://freshdesk.com/api/#update_topic
      *
      *
      * @param  integer  $category_id Forum Category ID
      * @param  integer  $forum_id    Forum ID
-     * @param  integer  $topic_id	 Forum Topic ID
-	 * @param  object   $data		 Forum Topic JSON object
+     * @param  integer  $topic_id    Forum Topic ID
+     * @param  object   $data        Forum Topic JSON object
      * @return integer               HTTP Status: 200 OK
-     */        
+     */
     public function update($category_id = '', $forum_id = '', $topic_id ='',  $data = '')
     {
         // Return FALSE if we did not receive an array of data
@@ -1164,7 +1173,7 @@ class FreshdeskTopic extends FreshdeskAPI
      * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
      *		-X GET http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
      * Response:
-	 *		{
+     *		{
      *      "topic":{
      *         "account_id":1,
      *         "created_at":"2014-01-08T08:54:01+05:30",
@@ -1201,13 +1210,13 @@ class FreshdeskTopic extends FreshdeskAPI
      *         ]
      *      }
      *   
-	 *
+     *
      * @link http://freshdesk.com/api/#view_topic
      *
      * @param  integer  $category_id Forum Category ID
      * @param  integer  $forum_id    Forum ID
      * @param  integer  $topic_id	 Forum Topic ID
-	 * @param  object   $data		 Forum Topic JSON object
+     * @param  object   $data		 Forum Topic JSON object
      * @return object                Forum Topic JSON Object
      */        
     public function get($category_id = '', $forum_id = '', $topic_id = '')
@@ -1228,8 +1237,8 @@ class FreshdeskTopic extends FreshdeskAPI
      * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
      *		-X DELETE http://domain.freshdesk.com/categories/1/forums/1/topics/1.json
      * Response:
-	 *		TRUE if HTTP Status: 200 OK
-	 *
+     *		TRUE if HTTP Status: 200 OK
+     *
      * @link http://freshdesk.com/api/#delete_topic
      *
      * @param  integer  $category_id Forum Category ID
@@ -1302,7 +1311,7 @@ class FreshdeskPost extends FreshdeskAPI
      * @param  integer  $category_id Forum Category ID
      * @param  integer  $forum_id    Forum ID
      * @param  integer  $topic_id    Forum Topic ID
-	 * @param  object   $data		 Forum POST JSON object
+     * @param  object   $data		 Forum POST JSON object
      * @return object                Forum POST JSON object
      */
 	public function create($category_id = '', $forum_id = '', $topic_id = '', $data)
@@ -1350,7 +1359,7 @@ class FreshdeskPost extends FreshdeskAPI
      * @param  integer  $category_id Forum Category ID
      * @param  integer  $forum_id    Forum ID
      * @param  integer  $topic_id    Forum Topic ID
-	 * @param  object   $data		 Forum POST JSON object
+     * @param  object   $data		 Forum POST JSON object
      * @return object                Forum POST JSON object
      */
 	public function update($category_id = '', $forum_id = '', $topic_id = '', $data)
