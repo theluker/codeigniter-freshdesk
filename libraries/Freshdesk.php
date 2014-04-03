@@ -666,6 +666,46 @@ class FreshdeskPost extends FreshdeskAPI
 
 }
 
+class FreshDeskMonitor extends FreshdeskAPI 
+{
+	public function get_monitored($user_id = '') 
+	{
+		if (! $response = $this->_request("support/discussions/user_monitored?user_id={$user_id}", "GET"))
+		{
+			return FALSE;
+		}
+		return $response;
+	}
+	public function check_monitor($topic_id = '', $user_id = '') 
+	{
+		
+		if ( ! $response = $this->_request("support/discussions/topics/{$topic_id}/check_monitor.json?user_id={$user_id}", "GET"))
+		{
+			return FALSE;
+		}
+		return $response;
+	}
+	public function monitor($category_id = '', $forum_id = '', $topic_id = '') 
+	{
+	
+		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "POST"))
+		{
+			return FALSE;
+		}
+		return $response;
+	}
+	public function unmonitor($category_id = '', $forum_id = '', $topic_id = '') 
+	{
+		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "DELETE"))
+		{
+			return FALSE;
+		}
+		
+		// Return TRUE if HTTP 200
+		return $response == 200 ? TRUE : FALSE;
+	}
+}
+
 
 /**
  * Wrapped Freshdesk Class
