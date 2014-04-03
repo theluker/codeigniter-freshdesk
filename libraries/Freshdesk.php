@@ -585,7 +585,7 @@ class FreshdeskTopic extends FreshdeskAPI
 		    return FALSE;
 	    }
 	    
-	    return $response;	    
+	    return $response;
     }
 
     public function delete()
