@@ -1005,6 +1005,29 @@ class FreshdeskForum extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk Forum Topic
+ *
+ * Create, View, Update, and Delete Forum Topics
+ *
+ * Data:
+ *     {'topic': {
+ *			'id':			(number) 	Unique id of the topic 								// Read-Only
+ *			'title': 		(script) 	Title of the forum 									// Mandatory
+ *			'forum_id': 	(number) 	ID of the Forum in which this topic is present
+ *			'hits':			(number) 	Number of views of that forum 						// Read-Only
+ *			'last_post_id': (number) 	ID of the latest comment on the forum 				// Read-Only
+ *			'locked': 		(boolean) 	Set as true if the forum is locked
+ *			'posts_count': 	(number) 	Number of posts in that topic
+ *			'sticky': 		(number) 	Describes whether a topic can be deleted or not
+ *			'user_id': 		(number) 	ID of the user 										// Read-Only
+ *			'user_votes': 	(number) 	Number of votes in the topic 						// Read-Only
+ *			'replied_at': 	(datetime) 	Timestamp of the latest comment made in the topic 	// Read-Only
+ *			'replied_by': 	(datetime) 	Id of the user who made the latest comment in that topic 
+ *     }}
+ *
+ * @link http://freshdesk.com/api/#topic
+ */
 class FreshdeskTopic extends FreshdeskAPI
 {
     public static $STAMP = array(
@@ -1227,8 +1250,61 @@ class FreshdeskTopic extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk Forum Post
+ *
+ * Create, View, Update, and Delete Forum Posts
+ *
+ * Data:
+ *     {'post': {
+ *			'id' 		(number) 	Unique ID of the post or comment		// Read-Only
+ *			'body' 		(string) 	Content of the post in plaintext
+ *			'body_html' (string) 	Content of the post in HTML. 			// Mandatory
+ *									(You can pass either body or body_html)
+ *			'forum_id' 	(number) 	ID of the forum where the comment was posted
+ *			'topic_id' 	(number) 	ID of the topic where the comment was posted
+ *			'user_id' 	(number) 	ID of the user who posted the comment 
+ *     }}
+ *
+ * @link http://freshdesk.com/api/#post
+ */
 class FreshdeskPost extends FreshdeskAPI
 {
+    /**
+     * Create a new Forum Post
+     *
+     * Request URL: /posts.json
+     * Request method: POST
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     *		-d '{ "post": { "body_html":"What type of ticket field you are creating" }}' 
+     * 		http://domain.freshdesk.com/posts.json?forum_id=1&category_id=1&topic_id=2
+     * Request:
+     *		{"post": { 
+     *       	"body_html":"What type of ticket field you are creating"
+     *       }
+     * Response:
+     *		{"post": {
+     *		    "answer": false,
+     *		    "body": "What type of ticket field you are creating",
+     *		    "body_html": "What type of ticket field you are creating",
+     *		    "created_at": "2014-02-07T12:32:34+05:30",
+     *		    "forum_id": 1,
+     *		    "id": 12,
+     *		    "topic_id": 2,
+     *		    "updated_at": "2014-02-07T12:32:34+05:30",
+     *			"user_id": 1
+     *		}}
+     *
+     * @link http://freshdesk.com/api/#create_post
+     *
+     * @param  integer  $category_id Forum Category ID
+     * @param  integer  $forum_id    Forum ID
+     * @param  integer  $topic_id    Forum Topic ID
+	 * @param  object   $data		 Forum POST JSON object
+     * @return object                Forum POST JSON object
+     */
 	public function create($category_id = '', $forum_id = '', $topic_id = '', $data)
 	{
         // Return FALSE if we did not receive an array of data
@@ -1252,7 +1328,31 @@ class FreshdeskPost extends FreshdeskAPI
         // Return User object
         return $response;
 	}
-
+    /**
+     * Update an existing post
+     *
+     * Request URL: /posts/[id].json
+     * Request method: PUT
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
+     *		-d '{ "post": { "body_html": "Ticket field have different types ..." }}' 
+     *		http:/2domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=2
+     * Request:
+     *		{"post": { 
+     *       	"body_html":"What type of ticket field you are creating"
+     *       }
+     * Response:
+     *		TRUE if HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/#update_post
+     *
+     * @param  integer  $category_id Forum Category ID
+     * @param  integer  $forum_id    Forum ID
+     * @param  integer  $topic_id    Forum Topic ID
+	 * @param  object   $data		 Forum POST JSON object
+     * @return object                Forum POST JSON object
+     */
 	public function update($category_id = '', $forum_id = '', $topic_id = '', $data)
 	{
         // Return FALSE if we did not receive an array of data
@@ -1276,7 +1376,25 @@ class FreshdeskPost extends FreshdeskAPI
         // Return posts object
         return $response;
 	}
-	
+    /**
+     * Delete an existing post
+     *
+     * Request URL: /posts/[id].json
+     * Request method: DELETE
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     *		http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
+     * Response:
+     *		TRUE if HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/#delete_post
+     *
+     * @param	integer	$category_id	Forum Category ID
+     * @param	integer	$forum_id		Forum ID
+     * @param	integer	$topic_id		Forum Topic ID
+     * @return	bool					TRUE if HTTP Status: 200 OK 
+     */	
 	public function delete($category_id = '', $forum_id = '', $topic_id='', $post_id = '')
     {
         // Return FALSE if we've failed to get a request response
@@ -1284,7 +1402,6 @@ class FreshdeskPost extends FreshdeskAPI
         {
             return FALSE;
         }
-
         // Return TRUE if HTTP 200
         return $response == 200 ? TRUE : FALSE;
     }
