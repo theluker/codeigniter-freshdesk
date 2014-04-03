@@ -738,8 +738,17 @@ class FreshdeskForumCategory extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk Forum
+ *
+ * Create, View, Update, and Delete Forums.
+ *
+ * @link http://freshdesk.com/api/forums/forum
+ */
 class FreshdeskForum extends FreshdeskAPI
 {
+    public $ForumCategory;
+
     public static $TYPE = array(
         'HOWTO' => 1,
         'IDEA' => 2,
@@ -751,6 +760,249 @@ class FreshdeskForum extends FreshdeskAPI
         'USERS' => 2,
         'AGENTS' => 3
     );
+
+    public function __construct($base_url, $username, $password)
+    {
+        FreshdeskAPI::__construct($base_url, $username, $password);
+        $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
+    }
+
+    /**
+     * Create a new Forum.
+     *
+     * Request URL: categories/[id]/forums.json 
+     * Request method: POST
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     *		-d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}' 
+     *		http://domain.freshdesk.com/categories/1/forums.json
+     * Request:
+	 *		{"forum": {
+     *        	 "description":"Ticket related functions",
+	 *		 	 "forum_type":2,
+	 *		 	 "forum_visibility":1,
+	 *		 	 "name":"Ticket Operations"
+	 *		 }}  
+     * Response:
+	 * 		{"forum":{
+     *       	 "description":"Ticket related functions",
+	 *		 	 "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
+	 *		 	 "forum_category_id":1,
+	 *		 	 "forum_type":2,
+	 *		 	 "forum_visibility":1,
+	 *		 	 "id":2,
+	 *		 	 "name":"Ticket Operations",
+	 *		 	 "position":5,
+	 *		 	 "posts_count":0,
+	 *		 	 "topics_count":0
+     *       }} 
+     *
+     * @link http://freshdesk.com/api/#create_forum
+     *
+     * @todo   Determine avilable type/visibility options.
+     * @todo   Determine commonly default type/visibility option.
+     *
+     * @param  string $name        Forum Name
+	 * @param  object $data		   Forum JSON object
+     * @return object              Forum JSON object
+     */
+    public function create($category_id, $data)
+    {
+        // Determine type and visibility
+        // $type = is_string($type) ? @self::$TYPE[$type] : $type;
+        // $visibility = is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
+        
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+        // Encapsulate data in 'forum' container
+        if (array_shift(array_keys($data)) != 'forum')
+        {
+            $data = array('forum' => $data);
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums.json", 'POST', $data))
+        {
+            return FALSE;
+        }
+        // Return Forum object
+        return $response;
+    }
+
+    /**
+     * View Forums in a Category.
+     *
+     * Request URL: domain_URL/categories/[category_id].xml
+     * Request method: GET
+     *
+     * Response:
+     *     <?xml version="1.0" encoding="UTF-8"?>
+     *     <forum-category>
+     *       <created-at type="datetime">2012-12-05T16:04:12+05:30</created-at>
+     *       <description>New testing category</description>
+     *       <id type="integer">2</id>
+     *       <name>Test</name>
+     *       <position type="integer">2</position>
+     *       <updated-at type="datetime">2012-12-05T16:04:12+05:30</updated-at>
+     *       <forums type="array">
+     *         <forum>
+     *           <description>General helpdesk announcements to the customers.</description>
+     *           <description-html>
+     *             <p>General helpdesk announcements to the customers.</p>
+     *           </description-html>
+     *           <forum-category-id type="integer">2</forum-category-id>
+     *           <forum-type type="integer">4</forum-type>
+     *           <id type="integer">5</id>
+     *           <name>Announcements</name>
+     *           <position type="integer">5</position>
+     *           <posts-count type="integer">0</posts-count>
+     *           <topics-count type="integer">0</topics-count>
+     *         </forum>
+     *         <forum>
+     *           <account-id type="integer">2</account-id>
+     *           <description>Customers can voice their ideas here.</description>
+     *           <description-html>
+     *             <p>Customers can voice their ideas here.</p>
+     *           </description-html>
+     *           <forum-category-id type="integer">2</forum-category-id>
+     *           <forum-type type="integer">2</forum-type>
+     *           <id type="integer">6</id>
+     *           <name>Feature Requests</name>
+     *           <position type="integer">6</position>
+     *           <posts-count type="integer">11</posts-count>
+     *           <topics-count type="integer">7</topics-count>
+     *         </forum>
+     *         ...
+     *       </forums>
+     *     </forum-category>
+     *
+     * @link   http://freshdesk.com/api/forums/forum-category#viewing-forums-in-a-category
+     *
+     * @param  integer $category_id Forum Category ID
+     * @return mixed                Array or single Forum Category Object
+     */
+    public function get_all($category_id)
+    {
+        return $this->ForumCategory->get($category_id);
+    }
+
+    /**
+     * View Forum
+     *
+     * Request URL: categories/[id]/forums/[id].json 
+     * Request method: GET
+     *
+     * Response:
+	 *		{"forum":{
+     *         "description":"Ticket related functions",
+     *         "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
+     *         "forum_category_id":1,
+     *         "forum_type":2,
+     *         "forum_visibility":1,
+     *         "id":2,
+     *         "name":"Ticket Operations",
+     *         "position":5,
+     *         "posts_count":0,
+     *         "topics_count":0,
+     *         "topics":[]
+     *      }
+	 *
+     * @link   http://freshdesk.com/api/#view_forum
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @return mixed                Array or single Forum Object
+     */
+    public function get($category_id, $forum_id = NULL)
+    {
+        // Return all forums if no Forum ID was passed
+        if ( ! $forum_id)
+        {
+            return $this->get_all($category_id);
+        }
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{forum_id}.json", 'POST'))
+        {
+            return FALSE;
+        }
+
+        // Return Forum object(s)
+        return $response;
+    }
+
+    /**
+     * Update an existing Forum.
+     *
+     * Request URL: categories/[id]/forums/[id].json
+     * Request method: PUT
+     *
+     * Request:
+	 *		{"forum": {
+     *       	"forum_type":2,
+     *       	"description":"Tickets and Ticket fields related queries",
+     *       	"forum_visibility":1
+     *    	 }}
+     *  Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/#update_forum
+     *
+     * @todo   Determine avilable type/visibility options.
+     * @todo   Determine commonly default type/visibility option.
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+	 * @param  object  $data		Forum JSON Object
+     * @return integer              HTTP response code
+     */
+    public function update($category_id, $forum_id, $data)
+    {
+        // Determine type and visibility
+        // $type = $type and is_string($type) ? @self::$TYPE[$type] : $type;
+        // $visibility = $visibility and is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
+
+       // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'PUT', $data))
+        {
+            return FALSE;
+        }
+
+        // Return HTTP response
+        return $response;
+    }
+
+    /**
+     * Delete an existing Forum.
+     *
+     * Request URL: categories/[id]/forums/[id].json 
+     * Request method: DELETE
+     *
+     * CURL: 
+     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     *		http://domain.freshdesk.com/categories/1/forums/2.json
+     * Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#delete_forum
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @return integer              HTTP response code
+     */
+    public function delete($category_id, $forum_id)
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'DELETE'))
+        {
+            return FALSE;
+        }
+
+        // Return TRUE if HTTP 200
+        return $response == 200 ? TRUE : FALSE;	  
+    }
 }
 
 class FreshdeskTopic extends FreshdeskAPI
