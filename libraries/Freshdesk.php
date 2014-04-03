@@ -665,9 +665,79 @@ class FreshdeskPost extends FreshdeskAPI
 
 
 }
-
+/**
+ * Freshdesk Monitor
+ *
+ * Monitor, Un-Monitor, Check Monitoring Status, and get User Monitored Topics
+ *
+ * Data:
+ *     [{
+ *         "topic": {
+ *           "account_id":16699,
+ *           "created_at":"2013-10-16T17:58:59+05:30",
+ *           "delta":true,
+ *           "forum_id":68251,
+ *           "hits":4,
+ *           "id":35774,
+ *           "import_id":12345,
+ *           "last_post_id":84456,
+ *           "locked":false,
+ *           "posts_count":3,
+ *           "published":true,
+ *           "replied_at":"2013-10-16T18:03:09+05:30",
+ *           "replied_by":1218912,
+ *           "stamp_type":9,
+ *           "sticky":0,
+ *           "title":"Ticket creation",
+ *           "updated_at":"2013-10-16T17:58:59+05:30",
+ *           "user_id":1218912,
+ *           "user_votes":0
+ *           }
+ *       
+ *
+ * @link http://freshdesk.com/api/#monitor
+ */
 class FreshDeskMonitor extends FreshdeskAPI 
 {
+    /**
+     * Get a user's Monitored Topics 
+     *
+     * Request URL: /support/discussions/user_monitored?user_id=[id]
+     * Request method: GET
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET 
+     *	   "http://domain.freshdesk.com/support/discussions/user_monitored?user_id=1218912"
+     *
+     * Response:
+	 *	[{
+     *     "topic": {
+     *       "account_id":16699,
+     *       "created_at":"2013-10-16T17:58:59+05:30",
+     *       "delta":true,
+     *       "forum_id":68251,
+     *       "hits":4,
+     *       "id":35774,
+     *       "import_id":12345,
+     *       "last_post_id":84456,
+     *       "locked":false,
+     *       "posts_count":3,
+     *       "published":true,
+     *       "replied_at":"2013-10-16T18:03:09+05:30",
+     *       "replied_by":1218912,
+     *       "stamp_type":9,
+     *       "sticky":0,
+     *       "title":"Ticket creation",
+     *       "updated_at":"2013-10-16T17:58:59+05:30",
+     *       "user_id":1218912,
+     *       "user_votes":0
+     *       }  
+     *
+     * @link   http://freshdesk.com/api/#user_monitored_topic
+     *
+     * @param  string $user_id User's Freshdesk ID
+     * @return object       JSON Topic object
+     */
 	public function get_monitored($user_id = '') 
 	{
 		if (! $response = $this->_request("support/discussions/user_monitored?user_id={$user_id}", "GET"))
@@ -676,6 +746,32 @@ class FreshDeskMonitor extends FreshdeskAPI
 		}
 		return $response;
 	}
+    /**
+     * Monitoring Status 
+     *
+     * Request URL: /support/discussions/topics/[id]/check_monitor.json?user_id=[id] 
+     * Request method: GET
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET 
+     *	   "http://domain.freshdesk.com/support/discussions/user_monitored?user_id=1218912"
+     *
+     * Response:
+	 *	{"monitorship": { 
+     *       "active":false,
+     *       "id":18112,
+     *       "monitorable_id":15483,
+     *       "monitorable_type":"Topic",
+     *       "user_id":1791107
+     *     }}
+     *   
+     *
+     * @link   http://freshdesk.com/api/#view_monitor_status
+     *
+     * @param  string $topic_id Freshdesk Topic ID
+     * @param  string $user_id User's Freshdesk ID
+     * @return object       JSON Monitor object
+     */
 	public function check_monitor($topic_id = '', $user_id = '') 
 	{
 		
@@ -685,17 +781,59 @@ class FreshDeskMonitor extends FreshdeskAPI
 		}
 		return $response;
 	}
+    /**
+     * Monitor Topic 
+     *
+     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json 
+     * Request method: POST
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     *		"http://domain.freshdesk.com/categories/1/forums/2/topics/3/monitorship.json"
+     *
+     * Response:
+	 *	HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#monitor_topic
+     *
+     * @param  string $category_id Freshdesk Category ID
+     * @param  string $forum_id Freshdesk Forum ID
+     * @param  string $topic_id Freshdesk Topic ID
+     * @return TRUE if HTTP Status: 200 OK
+     */
 	public function monitor($category_id = '', $forum_id = '', $topic_id = '') 
 	{
-	
+		// Return FALSE if we've failed to get a request response
 		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "POST"))
 		{
 			return FALSE;
 		}
-		return $response;
+		// Return TRUE if HTTP 200
+		return $response == 200 ? TRUE : FALSE;
 	}
+    /**
+     * Un-Monitor Topic 
+     *
+     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json 
+     * Request method: DELETE
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     *		"http://domain.freshdesk.com/discussions/topic/1/subscriptions/unfollow.json"
+     *
+     * Response:
+	 *	HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#unmonitor_topic
+     *
+     * @param  string $category_id Freshdesk Category ID
+     * @param  string $forum_id Freshdesk Forum ID
+     * @param  string $topic_id Freshdesk Topic ID
+     * @return TRUE if HTTP Status: 200 OK
+     */
 	public function unmonitor($category_id = '', $forum_id = '', $topic_id = '') 
 	{
+		// Return FALSE if we've failed to get a request response
 		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "DELETE"))
 		{
 			return FALSE;
