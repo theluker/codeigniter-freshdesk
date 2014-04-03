@@ -531,11 +531,211 @@ class FreshdeskUser extends FreshdeskAPI
  */
 class FreshdeskForumCategory extends FreshdeskAPI
 {
-    public function create() {}
-    public function get_all() {}
-    public function get() {}
-    public function update() {}
-    public function delete() {}
+    public $Forum;
+
+    public function __construct($base_url, $username, $password)
+    {
+        FreshdeskAPI::__construct($base_url, $username, $password);
+        $this->Forum = new FreshdeskForum($this->base_url, $this->username, $this->password);
+    }
+
+    /**
+     * Create a new Forum Category.
+     *
+     * Request URL:  /categories.json
+     * Request method: POST
+     *
+     * CURL:
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     * 		-d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' http://domain.freshdesk.com/categories.json     
+     *
+     * Request:
+	 *	  {"forum_category": { 
+     *         "name":"How to",
+     *         "description":"Queries on How to ?"
+     *      }}   
+     * Response:
+	 * 	   {"forum_category":{
+     *         "created_at":"2014-01-08T06:38:11+05:30",
+     *         "description":"Getting Started",
+     *         "id":3,
+     *         "name":"How to",
+     *         "position":3,
+     *         "updated_at":"2014-01-08T06:38:11+05:30"
+     *      }
+     * 
+     *
+     * @link http://freshdesk.com/api/#create_forum_category
+     *
+     * @param  JSON object $data Forum Category Data '{ "forum_category": { "name":"How to", "description":"Getting Started" }}'
+     * @return JSON object              Forum Category JSON object
+     */
+    public function create($data)
+    {
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data))
+        {
+            return FALSE;
+        }
+
+        // Encapsulate data in 'forum-category' container
+        if (array_shift(array_keys($data)) != 'forum-category')
+        {
+            $data = array('forum-category' => $data);
+        }
+
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories.json", 'POST', $data))
+        {
+            return FALSE;
+        }
+
+        // Return forum-category object
+        return $response;
+    }
+
+    /**
+     * View all Forum Categories.
+     *
+     * Request URL: categories.json
+     * Request method: GET
+     *
+     * CURL:
+     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     *		-X GET http://domain.freshdesk.com/categories.json
+     * Response:
+	 * 		{"forum_category":{
+     *            "created_at":"2014-01-08T06:38:11+05:30",
+     *            "description":"Tell us your problems",
+     *            "id":3,
+     *            "name":"Report Problems",
+     *            "position":3,
+     *            "updated_at":"2014-01-08T06:38:11+05:30"
+     *        }
+     *
+     * @link   http://freshdesk.com/api/#view_all_forum_category
+     *
+     * @return Object    JSON Object of Forum Category Objects
+     */
+    public function get_all()
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories.json"))
+        {
+            return FALSE;
+        }
+
+        // Return restructured array of categories
+        return $response;
+    }
+
+    /**
+     * View Forums in a Category.
+     *
+     * Request URL: /categories/[id].json
+     * Request method: GET
+     *
+     * Response:
+	 *		{"forum_category":{
+     *        	"created_at":"2014-01-08T06:38:11+05:30",
+	 *		 	"description":"Recently Changed",
+	 *		 	"id":2,
+	 *		 	"name":"Latest Updates",
+	 *		 	"position":4,
+	 *		 	"updated_at":"2014-01-08T06:38:11+05:30"
+	 *		 }
+     *   
+     *
+     * @link   http://freshdesk.com/api/#view_forum_category
+     *
+     * @param  integer $category_id Forum Category ID
+     * @return Object  JSON Forum Category Object
+     */
+    public function get($category_id = NULL)
+    {
+        // Return all categories if no Category ID was passed
+        if ( ! $category_id)
+        {
+            return $this->get_all();
+        }
+        
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}.json"))
+        {
+            return FALSE;
+        }
+
+        // Return Forum Category object(s)
+        return $response;
+    }
+
+    /**
+     * Update an existing Forum Category.
+     *
+     * Request URL: /categories/[id].json
+     * Request method: PUT
+     *
+     * Request:
+     *     {"forum_category":{
+     *         "name":"Report Problems",
+     *         "description":"Tell us your problems"
+     *      }}
+     *  Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#update_forum_category
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  object  $data        Forum Category JSON Object 
+     * @return bool	   TRUE			Return TRUE if HTTP 200 OK
+     */
+    public function update($category_id, $data)
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}.json", 'PUT', $data))
+        {
+            return FALSE;
+        }
+
+        // Return HTTP response
+        return $response;
+    }
+
+    /**
+     * Delete an existing Forum Category.
+     *
+     * Request URL: categories/[id].json 
+     * Request method: DELETE
+     *
+     * CURL:
+     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     *		-X DELETE http://domain.freshdesk.com/categories/3.json
+     * Response:
+	 *		{"forum_category":{
+     *        	"created_at":"2014-01-08T06:38:11+05:30",
+	 *		 	"description":"How to Queries",
+	 *		 	"id":3,
+	 *		 	"name":"How and What?",
+	 *		 	"position":null,
+	 *		 	"updated_at":"2014-01-08T07:13:56+05:30"
+	 *		 }}
+     *
+     * @link   http://freshdesk.com/api/#delete_forum_category
+     *
+     * @param  integer	$category_id 	Forum Category ID
+     * @return bool		TRUE			Returns TRUE if HTTP Response: 200 OK
+     */
+    public function delete($category_id)
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("categories/{$category_id}.json", 'DELETE'))
+        {
+            return FALSE;
+        }
+
+        // Return TRUE if HTTP 200
+        return $response == 200 ? TRUE : FALSE;
+    }
 }
 
 class FreshdeskForum extends FreshdeskAPI
