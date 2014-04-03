@@ -670,31 +670,6 @@ class FreshdeskPost extends FreshdeskAPI
  *
  * Monitor, Un-Monitor, Check Monitoring Status, and get User Monitored Topics
  *
- * Data:
- *     [{
- *         "topic": {
- *           "account_id":16699,
- *           "created_at":"2013-10-16T17:58:59+05:30",
- *           "delta":true,
- *           "forum_id":68251,
- *           "hits":4,
- *           "id":35774,
- *           "import_id":12345,
- *           "last_post_id":84456,
- *           "locked":false,
- *           "posts_count":3,
- *           "published":true,
- *           "replied_at":"2013-10-16T18:03:09+05:30",
- *           "replied_by":1218912,
- *           "stamp_type":9,
- *           "sticky":0,
- *           "title":"Ticket creation",
- *           "updated_at":"2013-10-16T17:58:59+05:30",
- *           "user_id":1218912,
- *           "user_votes":0
- *           }
- *       
- *
  * @link http://freshdesk.com/api/#monitor
  */
 class FreshDeskMonitor extends FreshdeskAPI 
