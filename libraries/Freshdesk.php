@@ -46,7 +46,7 @@ class Freshdesk
         );
 
         // Instantiate API accessors
-        foreach ($this->accessors as $accessor)
+        foreach (self::$accessors as $accessor)
         {
             $class = "Freshdesk{$accessor}";
             $this->$accessor = new $class($this->params);
@@ -56,7 +56,7 @@ class Freshdesk
     public function __call($name, $args)
     {
         // Dynamically load and return wrapped API accessor
-        if (in_array($name, $this->accessors))
+        if (in_array($name, self::$accessors))
         {
             $class = "Freshdesk{$name}Wrapper";
             return new $class($this->params, $args);
@@ -547,10 +547,10 @@ class FreshdeskForumCategory extends FreshdeskAPI
 {
     public $Forum;
 
-    public function __construct($base_url, $username, $password)
+    public function __construct($params)
     {
-        FreshdeskAPI::__construct($base_url, $username, $password);
-        $this->Forum = new FreshdeskForum($base_url, $username, $password);
+        FreshdeskAPI::__construct($params);
+        // $this->Forum = new FreshdeskForum($params);
     }
 
     /**
@@ -788,10 +788,10 @@ class FreshdeskForum extends FreshdeskAPI
         'AGENTS' => 3
     );
 
-    public function __construct($base_url, $username, $password)
+    public function __construct($params)
     {
-        FreshdeskAPI::__construct($base_url, $username, $password);
-        $this->ForumCategory = new FreshdeskForumCategory($base_url, $username, $password);
+        FreshdeskAPI::__construct($params);
+        //$this->ForumCategory = new FreshdeskForumCategory($params);
     }
 
     /**
