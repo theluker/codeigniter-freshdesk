@@ -345,7 +345,13 @@ class FreshdeskUser extends FreshdeskAPI
         {
             return $this->get_all($state, $query);
         }
-        return FreshdeskBaseAPI::get($user_id);
+         // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request("contacts/{$user_id}.json"))
+        {
+            return FALSE;
+        }
+        // Return User object(s)
+        return $response->user;
     }
 
     /**
