@@ -92,7 +92,7 @@ class FreshdeskAPI
     {
         $method = strtoupper($method);
         $ch = curl_init ("{$this->base_url}/{$resource}");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -117,7 +117,7 @@ class FreshdeskAPI
             curl_close($ch);
             return FALSE;
         }
-        if (in_array($info['http_code'], [400, 404, 406, 302]))
+        if (in_array($info['http_code'], array(400, 404, 406, 302)))
         {
             log_message('error', var_export($data, TRUE));
             curl_close($ch);
@@ -926,7 +926,7 @@ class FreshdeskForum extends FreshdeskAPI
             return $this->get_all($category_id);
         }
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums/{forum_id}.json", 'POST'))
+        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'GET'))
         {
             return FALSE;
         }
@@ -1215,7 +1215,7 @@ class FreshdeskTopic extends FreshdeskAPI
      */
     public function get($category_id = '', $forum_id = '', $topic_id = '')
     {
-	    if (!$response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json ", "GET"))
+	    if (!$response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", "GET"))
 	    {
 		    return FALSE;
 	    }
