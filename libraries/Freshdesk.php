@@ -1266,13 +1266,13 @@ class FreshdeskTopic extends FreshdeskAPI
  *
  * Data:
  *     {'post': {
- *			'id' 		(number) 	Unique ID of the post or comment		// Read-Only
- *			'body' 		(string) 	Content of the post in plaintext
- *			'body_html' (string) 	Content of the post in HTML. 			// Mandatory
- *									(You can pass either body or body_html)
- *			'forum_id' 	(number) 	ID of the forum where the comment was posted
- *			'topic_id' 	(number) 	ID of the topic where the comment was posted
- *			'user_id' 	(number) 	ID of the user who posted the comment 
+ *          'id'          (number)    Unique ID of the post or comment		// Read-Only
+ *          'body'        (string)    Content of the post in plaintext
+ *          'body_html'   (string)    Content of the post in HTML. 			// Mandatory
+ *                                    (You can pass either body or body_html)
+ *          'forum_id'    (number)    ID of the forum where the comment was posted
+ *          'topic_id'    (number)    ID of the topic where the comment was posted
+ *          'user_id'     (number)    ID of the user who posted the comment 
  *     }}
  *
  * @link http://freshdesk.com/api/#post
@@ -1294,17 +1294,17 @@ class FreshdeskPost extends FreshdeskAPI
      *       	"body_html":"What type of ticket field you are creating"
      *       }
      * Response:
-     *		{"post": {
-     *		    "answer": false,
-     *		    "body": "What type of ticket field you are creating",
-     *		    "body_html": "What type of ticket field you are creating",
-     *		    "created_at": "2014-02-07T12:32:34+05:30",
-     *		    "forum_id": 1,
-     *		    "id": 12,
-     *		    "topic_id": 2,
-     *		    "updated_at": "2014-02-07T12:32:34+05:30",
-     *			"user_id": 1
-     *		}}
+     *      {"post": {
+     *          "answer": false,
+     *          "body": "What type of ticket field you are creating",
+     *          "body_html": "What type of ticket field you are creating",
+     *          "created_at": "2014-02-07T12:32:34+05:30",
+     *          "forum_id": 1,
+     *          "id": 12,
+     *          "topic_id": 2,
+     *          "updated_at": "2014-02-07T12:32:34+05:30",
+     *          "user_id": 1
+     *      }}
      *
      * @link http://freshdesk.com/api/#create_post
      *
@@ -1344,15 +1344,15 @@ class FreshdeskPost extends FreshdeskAPI
      * Request method: PUT
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
-     *		-d '{ "post": { "body_html": "Ticket field have different types ..." }}' 
-     *		http:/2domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=2
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
+     *      -d '{ "post": { "body_html": "Ticket field have different types ..." }}' 
+     *      http:/2domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=2
      * Request:
-     *		{"post": { 
-     *       	"body_html":"What type of ticket field you are creating"
-     *       }
+     *       {"post": { 
+     *           "body_html":"What type of ticket field you are creating"
+     *       }}
      * Response:
-     *		TRUE if HTTP Status: 200 OK
+     *      TRUE if HTTP Status: 200 OK
      *
      * @link http://freshdesk.com/api/#update_post
      *
@@ -1392,17 +1392,17 @@ class FreshdeskPost extends FreshdeskAPI
      * Request method: DELETE
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
-     *		http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     *      http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
      * Response:
-     *		TRUE if HTTP Status: 200 OK
+     *      TRUE if HTTP Status: 200 OK
      *
      * @link http://freshdesk.com/api/#delete_post
      *
-     * @param	integer	$category_id	Forum Category ID
-     * @param	integer	$forum_id		Forum ID
-     * @param	integer	$topic_id		Forum Topic ID
-     * @return	bool					TRUE if HTTP Status: 200 OK 
+     * @param    integer    $category_id    Forum Category ID
+     * @param    integer    $forum_id       Forum ID
+     * @param    integer    $topic_id       Forum Topic ID
+     * @return   bool                       TRUE if HTTP Status: 200 OK 
      */	
 	public function delete($category_id = '', $forum_id = '', $topic_id='', $post_id = '')
     {
@@ -1437,8 +1437,7 @@ class FreshDeskMonitor extends FreshdeskAPI
      *	   "http://domain.freshdesk.com/support/discussions/user_monitored?user_id=1218912"
      *
      * Response:
-	 *	[{
-     *     "topic": {
+     *    {"topic": {
      *       "account_id":16699,
      *       "created_at":"2013-10-16T17:58:59+05:30",
      *       "delta":true,
@@ -1458,7 +1457,7 @@ class FreshDeskMonitor extends FreshdeskAPI
      *       "updated_at":"2013-10-16T17:58:59+05:30",
      *       "user_id":1218912,
      *       "user_votes":0
-     *       }  
+     *       }
      *
      * @link   http://freshdesk.com/api/#user_monitored_topic
      *
@@ -1481,10 +1480,10 @@ class FreshDeskMonitor extends FreshdeskAPI
      *
      * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET 
-     *	   "http://domain.freshdesk.com/support/discussions/user_monitored?user_id=1218912"
+     *     "http://domain.freshdesk.com/support/discussions/user_monitored?user_id=1218912"
      *
      * Response:
-	 *	{"monitorship": { 
+     *  {"monitorship": { 
      *       "active":false,
      *       "id":18112,
      *       "monitorable_id":15483,
@@ -1516,10 +1515,10 @@ class FreshDeskMonitor extends FreshdeskAPI
      *
      * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
-     *		"http://domain.freshdesk.com/categories/1/forums/2/topics/3/monitorship.json"
+     *     "http://domain.freshdesk.com/categories/1/forums/2/topics/3/monitorship.json"
      *
      * Response:
-	 *	HTTP Status: 200 OK
+     *    HTTP Status: 200 OK
      *
      * @link   http://freshdesk.com/api/#monitor_topic
      *
@@ -1546,10 +1545,10 @@ class FreshDeskMonitor extends FreshdeskAPI
      *
      * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
-     *		"http://domain.freshdesk.com/discussions/topic/1/subscriptions/unfollow.json"
+     *     "http://domain.freshdesk.com/discussions/topic/1/subscriptions/unfollow.json"
      *
      * Response:
-	 *	HTTP Status: 200 OK
+     *    HTTP Status: 200 OK
      *
      * @link   http://freshdesk.com/api/#unmonitor_topic
      *
