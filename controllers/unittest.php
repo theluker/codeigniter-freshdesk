@@ -21,7 +21,7 @@ class UnitTest extends CI_Controller {
             {
                 if (get_class($_class) == $type)
                 {
-                    $this->{"_test_{$property}"}($value);
+                    $this->{"_test_{$property}"}($name, $value);
                     break 2;
                 }
             }
@@ -61,9 +61,9 @@ class UnitTest extends CI_Controller {
         echo $this->unit->report();
     }
 
-    private function _test_agent($result)
+    private function _test_agent($name, $result)
     {
-        $this->__test_schema("TestAgent", $result, $this->freshdesk->Agent);
+        $this->__test_schema("TestAgent({$name})", $result, $this->freshdesk->Agent);
     }
 
     private function _test_agent_get()
@@ -76,7 +76,7 @@ class UnitTest extends CI_Controller {
 
         if ($agent = @$result[0])
         {
-            $this->_test_agent($agent);
+            $this->_test_agent($test, $agent);
         }
 
         $test = "\$this->freshdesk->Agent()->get()";
@@ -86,12 +86,22 @@ class UnitTest extends CI_Controller {
         if ($agent_id = @$agent->id)
         {
             $test = "\$this->freshdesk->Agent->get(\$agent_id)";
-            $result = $this->freshdesk->Agent->get($agent_id);
-            $this->unit->run($result, 'is_object', $name, $test);
+            $agent = $this->freshdesk->Agent->get($agent_id);
+            $this->unit->run($agent, 'is_object', $name, $test);
+
+            if ($agent)
+            {
+                $this->_test_agent($test, $agent);
+            }
 
             $test = "\$this->freshdesk->Agent(\$agent_id)->get()";
-            $result = $this->freshdesk->Agent($agent_id)->get();
-            $this->unit->run($result, 'is_object', $name, $test);
+            $agent = $this->freshdesk->Agent($agent_id)->get();
+            $this->unit->run($agent, 'is_object', $name, $test);
+
+            if ($agent)
+            {
+                $this->_test_agent($test, $agent);
+            }
 
             $test = "\$this->freshdesk->Agent()->get(\$agent_id)";
             $result = $this->freshdesk->Agent()->get($agent_id);
@@ -108,9 +118,9 @@ class UnitTest extends CI_Controller {
         $this->unit->run($result, 'is_array', $name, $test);
     }
 
-    public function _test_user($result)
+    public function _test_user($name, $result)
     {
-        $this->__test_schema("TestUser", $result, $this->freshdesk->User);
+        $this->__test_schema("TestUser({$name})", $result, $this->freshdesk->User);
     }
 
     public function test_user()
