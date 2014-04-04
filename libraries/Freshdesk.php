@@ -10,13 +10,13 @@ class Freshdesk
 {
     private $CI;
     private $params;
-    private static $accessors = array('Agent', 'User');
 
     public function __construct($params = array())
     {
         // Get CI instance
         $this->CI =& get_instance($params);
-
+		$this->accessors = array('Agent', 'User', 'ForumCategory', 'Forum', 'Topic', 'Post', 'Monitor');
+        
         // Attempt to load config values from file
         if ($config = $this->CI->config->load('freshdesk', TRUE, TRUE))
         {
@@ -37,19 +37,19 @@ class Freshdesk
             $username = $api_key;
             $password = 'X';
         }
-
+		
         // Build list of default params
         $this->params = array(
             'base_url' => $base_url,
             'username' => $username,
             'password' => $password
         );
-
+		
         // Instantiate API accessors
         foreach ($this->accessors as $accessor)
         {
             $class = "Freshdesk{$accessor}";
-            $this->$accessor = new $class($this->params);
+            $this->$accessor = new $class($this->params['base_url'], $this->params['username'], $this->params['password']);
         }
     }
 
@@ -92,7 +92,7 @@ class FreshdeskAPI
     {
         $method = strtoupper($method);
         $ch = curl_init ("{$this->base_url}/{$resource}");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -117,7 +117,7 @@ class FreshdeskAPI
             curl_close($ch);
             return FALSE;
         }
-        if (in_array($info['http_code'], [400, 404, 406, 302]))
+        if (in_array($info['http_code'], array(400, 404, 406, 302)))
         {
             log_message('error', var_dump($data));
             curl_close($ch);
@@ -534,7 +534,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
     public function __construct($base_url, $username, $password)
     {
         FreshdeskAPI::__construct($base_url, $username, $password);
-        $this->Forum = new FreshdeskForum($this->base_url, $this->username, $this->password);
+        $this->Forum = new FreshdeskForum($base_url, $username, $password);
     }
 
     /**
@@ -775,7 +775,7 @@ class FreshdeskForum extends FreshdeskAPI
     public function __construct($base_url, $username, $password)
     {
         FreshdeskAPI::__construct($base_url, $username, $password);
-        $this->ForumCategory = new FreshdeskForumCategory($this->base_url, $this->username, $this->password);
+        $this->ForumCategory = new FreshdeskForumCategory($base_url, $username, $password);
     }
 
     /**
@@ -1644,7 +1644,7 @@ class FreshdeskWrapper extends FreshdeskAPI
         return $this->api->delete($this->id);
     }
 }
-
+ 
 
 
 /**
@@ -1652,6 +1652,11 @@ class FreshdeskWrapper extends FreshdeskAPI
  */
 class FreshdeskAgentWrapper extends FreshdeskWrapper {}
 class FreshdeskUserWrapper extends FreshdeskWrapper {}
+class FreshdeskForumCategoryWrapper extends FreshdeskWrapper {}
+class FreshdeskForumWrapper extends FreshdeskWrapper {}
+class FreshdeskTopicWrapper extends FreshdeskWrapper {}
+class FreshdeskPostWrapper extends FreshdeskWrapper {}
+class FreshdeskMonitorWrapper extends FreshdeskWrapper {}
 
 /* End of file Freshdesk.php */
 /* Location: ./application/libraries/Freshdesk.php */
