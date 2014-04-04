@@ -153,7 +153,7 @@ class FreshdeskAgent extends FreshdeskAPI
     {
         return FALSE;
     }
-    
+
 public function get($agent_id = NULL)
     {
         // Return all agents if no Agent ID was passed
@@ -560,14 +560,14 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request method: POST
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
-     * 		-d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' http://domain.freshdesk.com/categories.json     
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST
+     * 		-d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' http://domain.freshdesk.com/categories.json
      *
      * Request:
-     *	  {"forum_category": { 
+     *	  {"forum_category": {
      *         "name":"How to",
      *         "description":"Queries on How to ?"
-     *      }}   
+     *      }}
      * Response:
      *     {"forum_category":{
      *         "created_at":"2014-01-08T06:38:11+05:30",
@@ -615,7 +615,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request method: GET
      *
      * CURL:
-     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json"
      *		-X GET http://domain.freshdesk.com/categories.json
      * Response:
      *      {"forum_category":{
@@ -671,7 +671,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
         {
             return $this->get_all();
         }
-        
+
         // Return FALSE if we've failed to get a request response
         if ( ! $response = $this->_request("categories/{$category_id}.json"))
         {
@@ -699,7 +699,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * @link   http://freshdesk.com/api/#update_forum_category
      *
      * @param  integer $category_id Forum Category ID
-     * @param  object  $data        Forum Category JSON Object 
+     * @param  object  $data        Forum Category JSON Object
      * @return bool	   TRUE			Return TRUE if HTTP 200 OK
      */
     public function update($category_id, $data)
@@ -717,11 +717,11 @@ class FreshdeskForumCategory extends FreshdeskAPI
     /**
      * Delete an existing Forum Category.
      *
-     * Request URL: categories/[id].json 
+     * Request URL: categories/[id].json
      * Request method: DELETE
      *
      * CURL:
-     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     *		curl -u user@yourcompany.com:test -H "Content-Type: application/json"
      *		-X DELETE http://domain.freshdesk.com/categories/3.json
      * Response:
      *      {"forum_category":{
@@ -797,12 +797,12 @@ class FreshdeskForum extends FreshdeskAPI
     /**
      * Create a new Forum.
      *
-     * Request URL: categories/[id]/forums.json 
+     * Request URL: categories/[id]/forums.json
      * Request method: POST
      *
      * CURL:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
-     *     -d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}' 
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST
+     *     -d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}'
      *     http://domain.freshdesk.com/categories/1/forums.json
      *
      * Request:
@@ -825,7 +825,7 @@ class FreshdeskForum extends FreshdeskAPI
      *           "position":5,
      *           "posts_count":0,
      *           "topics_count":0
-     *       }} 
+     *       }}
      *
      * @link http://freshdesk.com/api/#create_forum
      *
@@ -839,7 +839,7 @@ class FreshdeskForum extends FreshdeskAPI
         // Determine type and visibility
         // $type = is_string($type) ? @self::$TYPE[$type] : $type;
         // $visibility = is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
-        
+
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data))
         {
@@ -866,47 +866,9 @@ class FreshdeskForum extends FreshdeskAPI
      * Request method: GET
      *
      * Response:
-     *     <?xml version="1.0" encoding="UTF-8"?>
-     *     <forum-category>
-     *       <created-at type="datetime">2012-12-05T16:04:12+05:30</created-at>
-     *       <description>New testing category</description>
-     *       <id type="integer">2</id>
-     *       <name>Test</name>
-     *       <position type="integer">2</position>
-     *       <updated-at type="datetime">2012-12-05T16:04:12+05:30</updated-at>
-     *       <forums type="array">
-     *         <forum>
-     *           <description>General helpdesk announcements to the customers.</description>
-     *           <description-html>
-     *             <p>General helpdesk announcements to the customers.</p>
-     *           </description-html>
-     *           <forum-category-id type="integer">2</forum-category-id>
-     *           <forum-type type="integer">4</forum-type>
-     *           <id type="integer">5</id>
-     *           <name>Announcements</name>
-     *           <position type="integer">5</position>
-     *           <posts-count type="integer">0</posts-count>
-     *           <topics-count type="integer">0</topics-count>
-     *         </forum>
-     *         <forum>
-     *           <account-id type="integer">2</account-id>
-     *           <description>Customers can voice their ideas here.</description>
-     *           <description-html>
-     *             <p>Customers can voice their ideas here.</p>
-     *           </description-html>
-     *           <forum-category-id type="integer">2</forum-category-id>
-     *           <forum-type type="integer">2</forum-type>
-     *           <id type="integer">6</id>
-     *           <name>Feature Requests</name>
-     *           <position type="integer">6</position>
-     *           <posts-count type="integer">11</posts-count>
-     *           <topics-count type="integer">7</topics-count>
-     *         </forum>
-     *         ...
-     *       </forums>
-     *     </forum-category>
+     *     #TODO
      *
-     * @link   http://freshdesk.com/api/forums/forum-category#viewing-forums-in-a-category
+     * @link   #TODO
      *
      * @param  integer $category_id Forum Category ID
      * @return mixed                Array or single Forum Category Object
@@ -919,7 +881,7 @@ class FreshdeskForum extends FreshdeskAPI
     /**
      * View Forum
      *
-     * Request URL: categories/[id]/forums/[id].json 
+     * Request URL: categories/[id]/forums/[id].json
      * Request method: GET
      *
      * Response:
@@ -1003,11 +965,11 @@ class FreshdeskForum extends FreshdeskAPI
     /**
      * Delete an existing Forum.
      *
-     * Request URL: categories/[id]/forums/[id].json 
+     * Request URL: categories/[id]/forums/[id].json
      * Request method: DELETE
      *
-     * CURL: 
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE
      *      http://domain.freshdesk.com/categories/1/forums/2.json
      * Response:
      *      HTTP Status: 200 OK
@@ -1026,7 +988,7 @@ class FreshdeskForum extends FreshdeskAPI
         }
 
         // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;	  
+        return $response == 200 ? TRUE : FALSE;
     }
 }
 
@@ -1048,7 +1010,7 @@ class FreshdeskForum extends FreshdeskAPI
  *          'user_id': 		(number) 	ID of the user 										// Read-Only
  *          'user_votes': 	(number) 	Number of votes in the topic 						// Read-Only
  *          'replied_at': 	(datetime) 	Timestamp of the latest comment made in the topic 	// Read-Only
- *          'replied_by': 	(datetime) 	Id of the user who made the latest comment in that topic 
+ *          'replied_by': 	(datetime) 	Id of the user who made the latest comment in that topic
  *     }}
  *
  * @link http://freshdesk.com/api/#topic
@@ -1060,6 +1022,7 @@ class FreshdeskTopic extends FreshdeskAPI
         'IMPLEMENTED' => 2,
         'TAKEN' => 3
     );
+
     /**
      * Create a new Forum Topic
      *
@@ -1067,12 +1030,12 @@ class FreshdeskTopic extends FreshdeskAPI
      * Request method: POST
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST
      *		-d '{ "topic": { "sticky":0, "locked":0, "title":"how to create a custom field", "body_html":"Can someone give me the steps ..." }}'
      *		 http://domain.freshdesk.com/categories/1/forums/1/topics.json
      * Request:
      *    {"topic": {
-     *        "sticky":0, 
+     *        "sticky":0,
      *        "locked":0,
      *        "title":"how to create a custom field",
      *        "body_html":"Can someone give me the steps..."
@@ -1129,16 +1092,16 @@ class FreshdeskTopic extends FreshdeskAPI
         // Return Forum object
         return $response;
     }
-    
+
     /**
      * Update an existing forum Topic
      *
-     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json 
+     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json
      * Request method: PUT
      *
      * CURL:
-     *    curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
-     *    -d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}' 
+     *    curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT
+     *    -d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}'
      *    http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
      * Request:
      *    {"topic":{
@@ -1179,14 +1142,15 @@ class FreshdeskTopic extends FreshdeskAPI
         // Return Forum object
         return $response;
     }
+
     /**
      * View all conversations in a forum Topic
      *
-     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json  
+     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json
      * Request method: GET
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json"
      *		-X GET http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
      * Response:
      *		{
@@ -1225,7 +1189,7 @@ class FreshdeskTopic extends FreshdeskAPI
      *            }
      *         ]
      *      }
-     *   
+     *
      *
      * @link http://freshdesk.com/api/#view_topic
      *
@@ -1234,7 +1198,7 @@ class FreshdeskTopic extends FreshdeskAPI
      * @param  integer  $topic_id	 Forum Topic ID
      * @param  object   $data		 Forum Topic JSON object
      * @return object                Forum Topic JSON Object
-     */        
+     */
     public function get($category_id = '', $forum_id = '', $topic_id = '')
     {
 	    if (!$response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json ", "GET"))
@@ -1243,14 +1207,15 @@ class FreshdeskTopic extends FreshdeskAPI
 	    }
 	    return $response;
     }
+
     /**
      * Delete Topic
      *
-     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json  
+     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json
      * Request method: DELETE
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" 
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json"
      *		-X DELETE http://domain.freshdesk.com/categories/1/forums/1/topics/1.json
      * Response:
      *		TRUE if HTTP Status: 200 OK
@@ -1261,7 +1226,7 @@ class FreshdeskTopic extends FreshdeskAPI
      * @param  integer  $forum_id    Forum ID
      * @param  integer  $topic_id	 Forum Topic ID
      * @return bool		TRUE         Return TRUE if HTTP Status: 200 OK
-     */        
+     */
     public function delete($category_id = '', $forum_id = '', $topic_id = '')
     {
         // Return FALSE if we've failed to get a request response
@@ -1271,7 +1236,7 @@ class FreshdeskTopic extends FreshdeskAPI
         }
 
         // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;	    
+        return $response == 200 ? TRUE : FALSE;
     }
 }
 
@@ -1288,7 +1253,7 @@ class FreshdeskTopic extends FreshdeskAPI
  *                                    (You can pass either body or body_html)
  *          'forum_id'    (number)    ID of the forum where the comment was posted
  *          'topic_id'    (number)    ID of the topic where the comment was posted
- *          'user_id'     (number)    ID of the user who posted the comment 
+ *          'user_id'     (number)    ID of the user who posted the comment
  *     }}
  *
  * @link http://freshdesk.com/api/#post
@@ -1302,11 +1267,11 @@ class FreshdeskPost extends FreshdeskAPI
      * Request method: POST
      *
      * CURL:
-     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
-     *		-d '{ "post": { "body_html":"What type of ticket field you are creating" }}' 
+     * 		curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST
+     *		-d '{ "post": { "body_html":"What type of ticket field you are creating" }}'
      * 		http://domain.freshdesk.com/posts.json?forum_id=1&category_id=1&topic_id=2
      * Request:
-     *		{"post": { 
+     *		{"post": {
      *       	"body_html":"What type of ticket field you are creating"
      *       }
      * Response:
@@ -1353,6 +1318,7 @@ class FreshdeskPost extends FreshdeskAPI
         // Return User object
         return $response;
 	}
+
     /**
      * Update an existing post
      *
@@ -1360,11 +1326,11 @@ class FreshdeskPost extends FreshdeskAPI
      * Request method: PUT
      *
      * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT 
-     *      -d '{ "post": { "body_html": "Ticket field have different types ..." }}' 
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT
+     *      -d '{ "post": { "body_html": "Ticket field have different types ..." }}'
      *      http:/2domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=2
      * Request:
-     *       {"post": { 
+     *       {"post": {
      *           "body_html":"What type of ticket field you are creating"
      *       }}
      * Response:
@@ -1401,6 +1367,7 @@ class FreshdeskPost extends FreshdeskAPI
         // Return posts object
         return $response;
 	}
+
     /**
      * Delete an existing post
      *
@@ -1408,7 +1375,7 @@ class FreshdeskPost extends FreshdeskAPI
      * Request method: DELETE
      *
      * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE
      *      http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
      * Response:
      *      TRUE if HTTP Status: 200 OK
@@ -1418,8 +1385,8 @@ class FreshdeskPost extends FreshdeskAPI
      * @param    integer    $category_id    Forum Category ID
      * @param    integer    $forum_id       Forum ID
      * @param    integer    $topic_id       Forum Topic ID
-     * @return   bool                       TRUE if HTTP Status: 200 OK 
-     */	
+     * @return   bool                       TRUE if HTTP Status: 200 OK
+     */
 	public function delete($category_id = '', $forum_id = '', $topic_id='', $post_id = '')
     {
         // Return FALSE if we've failed to get a request response
@@ -1431,9 +1398,8 @@ class FreshdeskPost extends FreshdeskAPI
         // Return TRUE if HTTP 200
         return $response == 200 ? TRUE : FALSE;
     }
-
-
 }
+
 /**
  * Freshdesk Monitor
  *
@@ -1441,16 +1407,16 @@ class FreshdeskPost extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#monitor
  */
-class FreshDeskMonitor extends FreshdeskAPI 
+class FreshDeskMonitor extends FreshdeskAPI
 {
     /**
-     * Get a user's Monitored Topics 
+     * Get a user's Monitored Topics
      *
      * Request URL: /support/discussions/user_monitored?user_id=[id]
      * Request method: GET
      *
      * Curl:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET 
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET
      *	   "http://domain.freshdesk.com/support/discussions/user_monitored?user_id=1218912"
      *
      * Response:
@@ -1481,7 +1447,7 @@ class FreshDeskMonitor extends FreshdeskAPI
      * @param  string $user_id User's Freshdesk ID
      * @return object       JSON Topic object
      */
-	public function get_monitored($user_id = '') 
+	public function get_monitored($user_id = '')
 	{
 		if (! $response = $this->_request("support/discussions/user_monitored?user_id={$user_id}", "GET"))
 		{
@@ -1489,25 +1455,26 @@ class FreshDeskMonitor extends FreshdeskAPI
 		}
 		return $response;
 	}
+
     /**
-     * Monitoring Status 
+     * Monitoring Status
      *
-     * Request URL: /support/discussions/topics/[id]/check_monitor.json?user_id=[id] 
+     * Request URL: /support/discussions/topics/[id]/check_monitor.json?user_id=[id]
      * Request method: GET
      *
      * Curl:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET 
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET
      *     "http://domain.freshdesk.com/support/discussions/user_monitored?user_id=1218912"
      *
      * Response:
-     *  {"monitorship": { 
+     *  {"monitorship": {
      *       "active":false,
      *       "id":18112,
      *       "monitorable_id":15483,
      *       "monitorable_type":"Topic",
      *       "user_id":1791107
      *     }}
-     *   
+     *
      *
      * @link   http://freshdesk.com/api/#view_monitor_status
      *
@@ -1515,23 +1482,24 @@ class FreshDeskMonitor extends FreshdeskAPI
      * @param  string $user_id User's Freshdesk ID
      * @return object       JSON Monitor object
      */
-	public function check_monitor($topic_id = '', $user_id = '') 
+	public function check_monitor($topic_id = '', $user_id = '')
 	{
-		
+
 		if ( ! $response = $this->_request("support/discussions/topics/{$topic_id}/check_monitor.json?user_id={$user_id}", "GET"))
 		{
 			return FALSE;
 		}
 		return $response;
 	}
+
     /**
-     * Monitor Topic 
+     * Monitor Topic
      *
-     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json 
+     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json
      * Request method: POST
      *
      * Curl:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST 
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST
      *     "http://domain.freshdesk.com/categories/1/forums/2/topics/3/monitorship.json"
      *
      * Response:
@@ -1544,7 +1512,7 @@ class FreshDeskMonitor extends FreshdeskAPI
      * @param  string $topic_id Freshdesk Topic ID
      * @return TRUE if HTTP Status: 200 OK
      */
-	public function monitor($category_id = '', $forum_id = '', $topic_id = '') 
+	public function monitor($category_id = '', $forum_id = '', $topic_id = '')
 	{
 		// Return FALSE if we've failed to get a request response
 		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "POST"))
@@ -1554,14 +1522,15 @@ class FreshDeskMonitor extends FreshdeskAPI
 		// Return TRUE if HTTP 200
 		return $response == 200 ? TRUE : FALSE;
 	}
+
     /**
-     * Un-Monitor Topic 
+     * Un-Monitor Topic
      *
-     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json 
+     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json
      * Request method: DELETE
      *
      * Curl:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE 
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE
      *     "http://domain.freshdesk.com/discussions/topic/1/subscriptions/unfollow.json"
      *
      * Response:
@@ -1574,19 +1543,18 @@ class FreshDeskMonitor extends FreshdeskAPI
      * @param  string $topic_id Freshdesk Topic ID
      * @return TRUE if HTTP Status: 200 OK
      */
-	public function unmonitor($category_id = '', $forum_id = '', $topic_id = '') 
+	public function unmonitor($category_id = '', $forum_id = '', $topic_id = '')
 	{
 		// Return FALSE if we've failed to get a request response
 		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "DELETE"))
 		{
 			return FALSE;
 		}
-		
+
 		// Return TRUE if HTTP 200
 		return $response == 200 ? TRUE : FALSE;
 	}
 }
-
 
 /**
  * Wrapped Freshdesk Class
@@ -1661,8 +1629,6 @@ class FreshdeskWrapper extends FreshdeskAPI
         return $this->api->delete($this->id);
     }
 }
-
-
 
 /**
  * Wrapped Freshdesk Classes
