@@ -108,18 +108,18 @@ class FreshdeskAPI
 
         $data = curl_exec($ch);
         $info = curl_getinfo($ch);
-        log_message('debug', var_dump($info, htmlspecialchars($data)));
+        log_message('debug', var_export(array($info, htmlspecialchars($data)), TRUE));
 
         // CURL error handling
         if (curl_errno($ch) and $error = curl_error($ch))
         {
-            log_message('error', var_dump($error));
+            log_message('error', var_export($error, TRUE));
             curl_close($ch);
             return FALSE;
         }
         if (in_array($info['http_code'], [400, 404, 406, 302]))
         {
-            log_message('error', var_dump($data));
+            log_message('error', var_export($data, TRUE));
             curl_close($ch);
             return FALSE;
         }
@@ -131,7 +131,7 @@ class FreshdeskAPI
             // Return FALSE if data contains an error response
             if ($error = @$data->error)
             {
-                log_message('error', var_dump($error));
+                log_message('error', var_export($error, TRUE));
                 return FALSE;
             }
 
@@ -1616,16 +1616,31 @@ class FreshdeskWrapper extends FreshdeskAPI
 
     public function get()
     {
+        if ( ! $this->id)
+        {
+            return FALSE;
+        }
+
         return $this->api->get($this->id);
     }
 
     public function update($args = NULL)
     {
+        if ( ! $this->id)
+        {
+            return FALSE;
+        }
+
         return $this->api->update($this->id, $args ?: $this->args);
     }
 
     public function delete()
     {
+        if ( ! $this->id)
+        {
+            return FALSE;
+        }
+
         return $this->api->delete($this->id);
     }
 }
