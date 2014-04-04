@@ -149,12 +149,27 @@ class FreshdeskAPI
  */
 class FreshdeskAgent extends FreshdeskAPI
 {
+    public static $SCHEMA = array(
+        'available' => 'bool',
+        'created_at' => 'string',
+        'id' => 'numeric',
+        'points' => 'numeric',
+        'occasional' => 'bool',
+        'scoreboard_level_id' => 'numeric',
+        'signature' => 'string',
+        'signature_html' => 'string',
+        'ticket_permission' => 'numeric',
+        'updated_at' => 'string',
+        'user_id' => 'numeric',
+        'user' => 'FreshdeskUser'
+    );
+
     public function create($data)
     {
         return FALSE;
     }
 
-public function get($agent_id = NULL)
+    public function get($agent_id = NULL)
     {
         // Return all agents if no Agent ID was passed
         if ( ! $agent_id)
@@ -214,30 +229,29 @@ public function get($agent_id = NULL)
  *
  * Create, View, Update, and Delete Users.
  *
- * Data:
- *     {'user': {
- *         'id':             (integer)  User ID                  // read-only
- *         'name':           (string)   User Name                // required
- *         'email':          (string)   User Email address       // required
- *         'address':        (string)   User Address
- *         'description':    (string)   User Description
- *         'job_title':      (string)   User Job Title
- *         'twitter_id':     (integer)  User Twitter ID
- *         'fb_profile_id':  (integer)  User Facebook ID
- *         'phone':          (integer)  User Telephone number
- *         'mobile':         (integer)  User Mobile number
- *         'language':       (string)   User Language. 'en' default
- *         'time_zone':      (string)   User Time Zone
- *         'customer_id':    (integer)  User Customer ID
- *         'deleted':        (boolean)  True if deleted
- *         'helpdesk_agent': (boolean)  True if agent            // read-only
- *         'active':         (boolean)  True if active
- *     }}
- *
  * @link http://freshdesk.com/api/#user
  */
 class FreshdeskUser extends FreshdeskAPI
 {
+    public static $SCHEMA = array(
+        'id' => 'numeric',              // User ID             (read-only)
+        'name' => 'string',             // User Name           (required)
+        'email' => 'string',            // User Email address  (required)
+        'address' => 'string',          // User Address
+        'description' => 'string',      // User Description
+        'job_title' => 'string',        // User Job Title
+        'twitter_id' => 'numeric',      // User Twitter ID
+        'fb_profile_id' => 'numeric',   // User Facebook ID
+        'phone' => 'numeric',           // User Telephone number
+        'mobile' => 'numeric',          // User Mobile number
+        'language' => 'string',         // User Language. 'en' is default
+        'time_zone' => 'string',        // User Time Zone
+        'customer_id' => 'numeric',     // User Customer ID
+        'deleted' => 'bool',            // True if deleted
+        'helpdesk_agent' => 'bool',     // True if agent       (read-only)
+        'active' => 'bool',             // True if active
+    );
+
     # TODO: More meaningful key names once roles are determined
     public static $ROLE = array(
         'ROLE_1' => 1,
