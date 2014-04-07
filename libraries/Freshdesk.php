@@ -547,14 +547,6 @@ class FreshdeskUser extends FreshdeskAPI
  *
  * Create, View, Update, and Delete Forum Categories.
  *
- * Data:
- *     {'forum_category': {
- *         'id':            (integer)   Forum Category ID        // read-only
- *         'name':          (string)    Forum Category Name      // required
- *         'description':   (string)    Forum Category Description
- *         'postition':     (integer)   Forum Category Position  // read-only
- *     }}
- *
  * @link http://freshdesk.com/api/#forum-category
  */
 class FreshdeskForumCategory extends FreshdeskAPI
@@ -567,6 +559,12 @@ class FreshdeskForumCategory extends FreshdeskAPI
         // $this->Forum = new FreshdeskForum($params);
     }
 
+    public static $SCHEMA = array(
+        'id' => 'numeric',         // Unique id of the forum category Read-Only
+        'name' => 'string',        // Name of the forum category Mandatory
+        'description' => 'string', // Description of the forum category
+        'position' => 'numeric'    // The rank of the category in the category listing
+    );
     /**
      * Create a new Forum Category.
      *
@@ -770,25 +768,23 @@ class FreshdeskForumCategory extends FreshdeskAPI
  *
  * Create, View, Update, and Delete Forums
  *
- * Data:
- *      {'post': {
- *          'id'                    (number)    Unique id of the forum          // Read-Only
- *          'name'                  (string)    Name of the forum               // Mandatory
- *          'description'           (string)    Description about the forum
- *          'forum_category_id'     (number)    ID of the category of this forum
- *          'forum_type'            (number)    Describes the type of forum     // Mandatory
- *                                              (Supported types can be referred in Forum properties above)
- *          'forum_visibility'      (number)    Describes whether the forum is visible to all or logged in user or Agents or selected companies    // Mandatory
- *          'position'              (number)    The rank of the forum in the forum listing
- *          'posts_count'           (number)    The number of comments on that forum
- *          'topics_count'          (number)    The number of topics in the forum
- *     }}
- *
  * @link http://freshdesk.com/api/#forum
  */
 class FreshdeskForum extends FreshdeskAPI
 {
     public $ForumCategory;
+
+    public static $SCHEMA = array(
+        'id' => 'numeric',                // Unique id of the forum Read-Only
+        'name' => 'string',               // Name of the forum Mandatory
+        'description' => 'string',        // Description about the forum
+        'forum_category_id' => 'numeric', // ID of the category of this forum
+        'forum_type' => 'numeric',        // Describes the type of forum (Supported types can be referred in Forum properties above )Mandatory
+        'forum_visibility' => 'numeric',  // Describes whether the forum is visible to all or logged in user or Agents or selected companies Mandatory
+        'position' => 'numeric',          // The rank of the forum in the forum listing
+        'posts_count' => 'numeric',       // The number of comments on that forum
+        'topics_count' => 'numeric'       // The number of topics in the forum
+    );
 
     public static $TYPE = array(
         'HOWTO' => 1,
@@ -1010,27 +1006,25 @@ class FreshdeskForum extends FreshdeskAPI
  * Freshdesk Forum Topic
  *
  * Create, View, Update, and Delete Forum Topics
- *
- * Data:
- *     {'topic': {
- *          'id':			(number) 	Unique id of the topic 								// Read-Only
- *          'title': 		(script) 	Title of the forum 									// Mandatory
- *          'forum_id': 	(number) 	ID of the Forum in which this topic is present
- *          'hits':			(number) 	Number of views of that forum 						// Read-Only
- *          'last_post_id': (number) 	ID of the latest comment on the forum 				// Read-Only
- *          'locked': 		(boolean) 	Set as true if the forum is locked
- *          'posts_count': 	(number) 	Number of posts in that topic
- *          'sticky': 		(number) 	Describes whether a topic can be deleted or not
- *          'user_id': 		(number) 	ID of the user 										// Read-Only
- *          'user_votes': 	(number) 	Number of votes in the topic 						// Read-Only
- *          'replied_at': 	(datetime) 	Timestamp of the latest comment made in the topic 	// Read-Only
- *          'replied_by': 	(datetime) 	Id of the user who made the latest comment in that topic
- *     }}
- *
  * @link http://freshdesk.com/api/#topic
  */
 class FreshdeskTopic extends FreshdeskAPI
 {
+    public static $SCHEMA = array(
+        'id' => 'numeric',            // Unique id of the topic Read-Only
+        'title' => 'string',          // Title of the forum Mandatory
+        'forum_id' => 'numeric',      // ID of the Forum in which this topic is present
+        'hits' => 'numeric',          // Number of views of that forum Read-Only
+        'last_post_id' => 'numeric',  // ID of the latest comment on the forum Read-Only
+        'locked' => 'boolean',        // Set as true if the forum is locked
+        'posts_count' => 'numeric',   // Number of posts in that topic
+        'sticky' => 'numeric',        // Describes whether a topic can be deleted or not
+        'user_id' => 'numeric',       // ID of the user Read-Only
+        'user_votes' => 'numeric',    // Number of votes in the topic Read-Only
+        'replied_at' => 'string',     // Timestamp of the latest comment made in the topic Read-Only
+        'replied_by' => 'string'      // ID of the user who made the latest comment in that topic Read-Only
+    );
+
     public static $STAMP = array(
         'PLANNED' => 1,
         'IMPLEMENTED' => 2,
