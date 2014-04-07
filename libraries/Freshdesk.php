@@ -1575,65 +1575,48 @@ class FreshDeskMonitor extends FreshdeskAPI
  *
  * Create, View, Update, and Delete Helpdesk Tickets
  *
- * TICKET DATA:
- * display_id         (number)            Ticket ID specific to your account  // Read-Only
- * email              (string)            Email address of the requester. If no contact exists with this email address in Freshdesk, it will be added as a new contact Mandatory
- * requester_id       (number)            User-id of the requester. For existing contacts, requester_id can be passed instead of email
- * subject            (string)            Ticket subject
- * description        (string)            Plain text content of the ticket
- * description_html   (string)            HTML content of the ticket. Description and description_html should not be passed together Mandatory
- * status             (number)            Status of the ticket
- * priority           (number)            Priority of the ticket
- * source             (number)            The channel through which the ticket was created
- * deleted            (boolean)           Set as true if the ticket is deleted/trashed. Deleted tickets will not be considered in any views except "deleted" filter
- * spam               (boolean)           Set as true if the ticket is marked as spam
- * responder_id       (number)            ID of the agent to whom the ticket is assigned
- * group_id           (number)            Id of Group to which the ticket is assigned
- * ticket_type        (number)            Type property field as defined in ticket fields
- * to_email           (array of strings)  Email address to which the incoming ticket email was sent
- * cc_email           (array of strings)  Email address added in the 'cc' field of the incoming ticket email
- * email_config_id    (number)            Id of email config which is used for this ticket
- * isescalated        (boolean)           Set to true if an escalation was sent
- * due_by             (datetime)          Ticket due-by time
- * id                 (number)            unique ID of the ticket Read-Only
- * attachments        (array of objects)  Attached files of the ticket Read-Only
  *
- * NOTE/CONVERSATIONS ATTRIBUTES:
- * Id                 (number)            Id of the note Read-Only
- * body               (string)            Content of the note in plain text
- * body_html          (string)            Content of the note in HTML format. Either body or body_html has to be passed Mandatory
- * attachments        (-)                 Attachments associated with the note Read-Only
- * user_id            (number)            user_id of the agent who is adding the note
- * private            (boolean)           Set as true if the note is private
- * to_emails          (array of strings)  Array of agent email addresses, who need to be notified
- * deleted            (boolean)           Set to true if a particular note is deleted
- *
- * TICKET PROPERTIES
- * Source -  Value
- * Email     1
- * Portal    2
- * Phone     3
- * Forum     4
- * Twitter   5
- * Facebook  6
- * Chat      7
- *
- * Status     Value
- * Open       2
- * Pending    3
- * Resolved   4
- * Closed     5
- *
- * Priorities Value
- * Low        1
- * Medium     2
- * High       3
- * Urgent     4
  *
  * @link http://freshdesk.com/api/#ticket
  */
 class FreshdeskTicket extends FreshdeskAPI
 {
+
+  public static $SCHEMA = array(
+      'ticket' => array(
+          'display_id' => 'numeric',
+          'email' => 'string',
+          'requester_id' => 'numeric',
+          'subject' => 'string',
+          'description' => 'string',
+          'description_html' => 'string',
+          'status' => 'numeric',
+          'priority' => 'numeric',
+          'source' => 'numeric',
+          'deleted' => 'boolean',
+          'spam' => 'boolean',
+          'responder_id' => 'numeric',
+          'group_id' => 'numeric',
+          'ticket_type' => 'numeric',
+          'to_email' => 'array',
+          'cc_email' => 'array',
+          'email_config_id' => 'numeric',
+          'isescalated' => 'boolean',
+          'due_by' => 'datetime',
+          'id' => 'numeric',
+          'attachements' => 'array'
+      ),
+      'note' => array(
+          'id' => 'number',
+          'body' => 'string',
+          'body_html' => 'string',
+          'attachments' => 'array',
+          'user_id' => 'number',
+          'private' => 'boolean',
+          'to_emails' => 'array',
+          'deleted' => 'boolean'
+      )
+  );
   public static $SOURCE = array(
       'EMAIL'    => 1,
       'PORTAL'   => 2,
@@ -1807,6 +1790,70 @@ class FreshdeskTicket extends FreshdeskAPI
       }
       return $response;
   }
+  /**
+  * View all Tickets
+  *
+  * Request URL: /helpdesk/tickets/[id].json
+  * Request method: GET
+  *
+  * Curl:
+  *      curl -u user@yourcompany.com:test -H "Content-Type: application/json"  -X GET http://domain.freshdesk.com/helpdesk/tickets/1.json
+  *
+  * Response:
+  *   {"helpdesk_ticket":{
+  *         "cc_email":{
+  *             "cc_emails":[
+  *                 "superman@marvel.com",
+  *                 "avengers@marvel.com"
+  *             ],
+  *             "fwd_emails":[]
+  *         },
+  *         "created_at":"2014-01-07T14:57:55+05:30",
+  *         "deleted":false,
+  *         "delta":true,
+  *         "description":"Details on the issue ...",
+  *         "description_html":"\u003Cdiv\u003EDetails on the issue ...\u003C/div\u003E",
+  *         "display_id":138,
+  *         "due_by":"2014-01-10T14:57:55+05:30",
+  *         "email_config_id":null,
+  *         "frDueBy":"2014-01-08T14:57:55+05:30",
+  *         "fr_escalated":false,
+  *         "group_id":null,
+  *         "id":138,
+  *         "isescalated":false,
+  *         "notes":[],
+  *         "owner_id":null,
+  *         "priority":1,
+  *         "requester_id":17,
+  *         "responder_id":null,
+  *         "source":2,
+  *         "spam":false,
+  *         "status":2,
+  *         "subject":"Support Needed...",
+  *         "ticket_type":"Problem",
+  *         "to_email":null,
+  *         "trained":false,
+  *         "updated_at":"2014-01-07T15:53:21+05:30",
+  *         "urgent":false,
+  *         "status_name":"Open",
+  *         "requester_status_name":"Being Processed",
+  *         "priority_name":"Low",
+  *           "source_name":"Portal",
+  *         "requester_name":"Test",
+  *         "responder_name":"No Agent",
+  *         "to_emails":null,
+  *         "custom_field":{
+  *            "weapon_1":"Laser Gun"
+  *         },
+  *         "attachments":[]
+  *       }
+  *   }
+  *
+  * @link   http://freshdesk.com/api/#create_ticket
+  *
+  * @param  string $ticket_id Freshdesk Helpdesk Ticket string
+  * @return object JSON Ticket object
+  */
   public function get_all(){}
   public function update(){}
   public function pick(){}
