@@ -1581,7 +1581,6 @@ class FreshDeskMonitor extends FreshdeskAPI
  */
 class FreshdeskTicket extends FreshdeskAPI
 {
-
   public static $SCHEMA = array(
       'ticket' => array(
           'display_id' => 'numeric',
@@ -1602,7 +1601,7 @@ class FreshdeskTicket extends FreshdeskAPI
           'cc_email' => 'array',
           'email_config_id' => 'numeric',
           'isescalated' => 'boolean',
-          'due_by' => 'datetime',
+          'due_by' => 'string',
           'id' => 'numeric',
           'attachements' => 'array'
       ),
@@ -1777,7 +1776,7 @@ class FreshdeskTicket extends FreshdeskAPI
   *       }
   *   }
   *
-  * @link   http://freshdesk.com/api/#create_ticket
+  * @link   http://freshdesk.com/api/#view_a_ticket
   *
   * @param  string $ticket_id Freshdesk Helpdesk Ticket string
   * @return object JSON Ticket object
@@ -1849,12 +1848,71 @@ class FreshdeskTicket extends FreshdeskAPI
   *       }
   *   }
   *
-  * @link   http://freshdesk.com/api/#create_ticket
+  * @link   http://freshdesk.com/api/#view_all_ticket
   *
   * @param  string $ticket_id Freshdesk Helpdesk Ticket string
   * @return object JSON Ticket object
   */
-  public function get_all(){}
+  public function get_all($ticket_id = '', $filter = '', $filter_data = '')
+  {
+      $DEFAULT_FILTERS = array(
+          'ALL' => 'all_tickets',
+          'NEW' => 'new_my_open',
+          'MONITORED' => 'monitored_by',
+          'SPAM' => 'spam',
+          'DELETED' => 'deleted');
+
+      $INFO_FILTERS = array(
+          'NAME' => 'company_name',
+          'ID' => 'company_id',
+          'EMAIL' => 'email'
+      );
+      // If filter variable exists in our default filters we don't require data
+      if(!array_key_exists("{$filter}", $DEFAULT_FILTERS))
+      {
+          if( ! $response = $this->_request("helpdesk/tickets/{$DEFAULT_FILTERS->$filter}/?format=json", "GET"))
+          {
+              return FALSE;
+          }
+          return $response;
+      }
+      // If filter variable exists in our info filters we require data to be passed
+      if(!array_key_exists("{$filter}", $INFO_FILTERS))
+      {
+          if ( ! $response = $this->_request("helpdesk/tickets.json?{$INFO_FILTERS->$filter}={$filter_data}&filter_name=all_tickets", "GET"))
+          {
+              return FALSE;
+          }
+          return $response;
+      }
+      // If filter variable is VIEW we require a view_id
+      if($filter == "VIEW")
+      {
+          if( ! $response = $this->_request("helpdesk/tickets/view/{$filter_data}?format=json", "GET"))
+          {
+              return FALSE;
+          }
+          return $response;
+      }
+      // If filter variable is REQUESTER we require a requester_id
+      if($filter == "REQUESTER")
+      {
+          if( ! $response = $this->_request("helpdesk/tickets/filter/requester/{$filter_data}?format=json", "GET"))
+          {
+              return FALSE;
+          }
+          return $response;
+      }
+      // if FILTER variable doesn't exist in any of our filter arrays return all tickets
+      if(!array_key_exists("{$filter}", $DEFAULT_FILTERS) and !array_key_exists("{$filter}", $INFO_FILTERS and $filter != "REQUESTER" and $filter != "VIEW"))
+    {
+        if(! $response = $this->_request("helpdesk/tickets.json", "GET"))
+        {
+            return FALSE;
+        }
+        return $response;
+    }
+  }
   public function update(){}
   public function pick(){}
   public function delete(){}
