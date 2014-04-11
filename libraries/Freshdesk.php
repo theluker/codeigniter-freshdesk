@@ -698,46 +698,32 @@ class FreshdeskPost extends FreshdeskAPI
 
 class FreshDeskMonitor extends FreshdeskAPI
 {
-	public function get_monitored($user_id = '')
+    # TODO: FreshdeskUser->get_monitored()
+	public function get($user_id)
 	{
-		if (! $response = $this->_request("support/discussions/user_monitored?user_id={$user_id}", "GET"))
-		{
-			return FALSE;
-		}
-		return $response;
+        // Return FALSE if we've failed to get a request response
+		return $this->_request("support/discussions/user_monitored?user_id={$user_id}") ?: FALSE;
 	}
 
-	public function check_monitor($topic_id = '', $user_id = '')
+    # TODO: FreshdeskUser->check_monitored()
+	public function check($user_id, $topic_id)
 	{
-
-		if ( ! $response = $this->_request("support/discussions/topics/{$topic_id}/check_monitor.json?user_id={$user_id}", "GET"))
-		{
-			return FALSE;
-		}
-		return $response;
+        // Return FALSE if we've failed to get a request response
+		return $this->_request("support/discussions/topics/{$topic_id}/check_monitor.json?user_id={$user_id}") ?: FALSE;
 	}
 
-    public function monitor($category_id = '', $forum_id = '', $topic_id = '')
+    # TODO: FreshdeskTopic->monitor()
+    public function monitor($category_id, $forum_id, $topic_id)
 	{
-		// Return FALSE if we've failed to get a request response
-		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "POST"))
-		{
-			return FALSE;
-		}
-		// Return TRUE if HTTP 200
-		return $response == 200 ? TRUE : FALSE;
+		// Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'POST') == 200 ? TRUE : FALSE;
 	}
 
+    # TODO: FreshdeskTopic->unmonitor()
 	public function unmonitor($category_id = '', $forum_id = '', $topic_id = '')
 	{
-		// Return FALSE if we've failed to get a request response
-		if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", "DELETE"))
-		{
-			return FALSE;
-		}
-
-		// Return TRUE if HTTP 200
-		return $response == 200 ? TRUE : FALSE;
+		// Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'DELETE') == 200 ? TRUE : FALSE;
 	}
 }
 
