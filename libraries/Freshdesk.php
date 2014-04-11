@@ -275,13 +275,13 @@ class FreshdeskUser extends FreshdeskBase
             return $this->get_all($state, $query);
         }
         // Return parent method
-        return parent::get("contacts/{$user_id}.json")
+        return parent::get("contacts/{$user_id}.json");
     }
 
     public function get_all($state = '', $query = '')
     {
         // Return parent method
-        return parent::get_all("contacts.json?state={$state}&query={$query}")
+        return parent::get_all("contacts.json?state={$state}&query={$query}");
     }
 
     public function update($user_id, $data)
@@ -653,12 +653,12 @@ class FreshdeskTicket extends FreshdeskAPI
         // If filter variable is VIEW we require a view_id
         if($filter == "VIEW")
         {
-            return $this->_request("helpdesk/tickets/view/{$data}?format=json" ?: FALSE;
+            return $this->_request("helpdesk/tickets/view/{$data}?format=json") ?: FALSE;
         }
         // If filter variable is REQUESTER we require a requester_id
         if($filter == "REQUESTER")
         {
-            return $this->_request("helpdesk/tickets/filter/requester/{$data}?format=json" ?: FALSE;
+            return $this->_request("helpdesk/tickets/filter/requester/{$data}?format=json") ?: FALSE;
         }
         // Return all tickets by default
         return $this->_request("helpdesk/tickets.json") ?: FALSE;
