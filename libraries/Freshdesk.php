@@ -137,7 +137,7 @@ class FreshdeskBase extends FreshdeskAPI
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data)) return FALSE;
         // Encapsulate data in container node
-        if (array_shift(array_keys($data)) != $this->node) $data = array($this->node => $data);
+        if (array_shift(array_keys($data)) != $this->NODE) $data = array($this->NODE => $data);
         // Return object else FALSE if we've failed to get a request response
         return $this->_request($endpoint, 'POST', $data) ?: FALSE;
     }
@@ -157,7 +157,7 @@ class FreshdeskBase extends FreshdeskAPI
         // Return empty array of objects if HTTP 200 received
         if ($response == 200) return $objects;
         // Extract object data from its container node
-        foreach ($response as $object) $objects[] = $object->{$this->node};
+        foreach ($response as $object) $objects[] = $object->{$this->NODE};
         // Return restructured array of objects
         return $objects;
     }
@@ -167,7 +167,7 @@ class FreshdeskBase extends FreshdeskAPI
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data)) return FALSE;
         // Encapsulate data in container node
-        if (array_shift(array_keys($data)) != $this->node) $data = array($this->node => $data);
+        if (array_shift(array_keys($data)) != $this->NODE) $data = array($this->NODE => $data);
         // Return TRUE if HTTP 200 else FALSE
         return $this->_request($endpoint, 'PUT', $data) == 200 ? TRUE : FALSE;
     }
