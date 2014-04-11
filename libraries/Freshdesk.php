@@ -483,32 +483,38 @@ class FreshdeskTopic extends FreshdeskBase
     }
 }
 
-class FreshdeskPost extends FreshdeskAPI
+class FreshdeskPost extends FreshdeskBase
 {
+    protected $NODE = 'post';
+
 	public function create($category_id, $forum_id, $topic_id, $data)
 	{
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'post' container
-        if (array_shift(array_keys($data)) != 'post') $data = array('post' => $data);
-        // Return User object
-        return $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'POST', $data) ?: FALSE;
+        // Return parent method
+        return parent::create("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", $data);
 	}
+
+    public function get($category_id, $forum_id, $topic_id, $post_id = NULL)
+    {
+        // Return all forums if no Forum ID was passed
+        if ( ! $post_id) return $this->get_all($category_id, $forum_id, $topic_id);
+        # TODO: implement
+    }
+
+    public function get_all($category_id, $forum_id, $topic_id)
+    {
+        # TODO implement
+    }
 
 	public function update($category_id, $forum_id, $topic_id, $data)
 	{
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'post' container
-        if (array_shift(array_keys($data)) != 'post') $data = array('post' => $data);
-        // Return posts object else FALSE if we've failed to get a request response
-        return $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", 'POST', $data) ?: FALSE;
+        // Return parent method
+        return parent::update("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", $data);
 	}
 
 	public function delete($category_id, $forum_id, $topic_id, $post_id)
     {
-        // Return TRUE if HTTP 200 else FALSE
-        return $this->_request("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'DELETE') == 200 ? TRUE : FALSE;
+        // Return parent method
+        return parent::update("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
     }
 }
 
