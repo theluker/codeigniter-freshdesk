@@ -638,61 +638,27 @@ class FreshdeskPost extends FreshdeskAPI
 	public function create($category_id = '', $forum_id = '', $topic_id = '', $data)
 	{
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
-
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'post' container
-        if (array_shift(array_keys($data)) != 'post')
-        {
-            $data = array('post' => $data);
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'POST', $data))
-        {
-            return FALSE;
-        }
-
+        if (array_shift(array_keys($data)) != 'post') $data = array('post' => $data);
         // Return User object
-        return $response;
+        return $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'POST', $data) ?: FALSE;
 	}
 
 	public function update($category_id = '', $forum_id = '', $topic_id = '', $data)
 	{
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
-
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'post' container
-        if (array_shift(array_keys($data)) != 'post')
-        {
-            $data = array('post' => $data);
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", 'POST', $data))
-        {
-            return FALSE;
-        }
-
-        // Return posts object
-        return $response;
+        if (array_shift(array_keys($data)) != 'post') $data = array('post' => $data);
+        // Return posts object else FALSE if we've failed to get a request response
+        return $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", 'POST', $data) ?: FALSE;
 	}
 
 	public function delete($category_id = '', $forum_id = '', $topic_id='', $post_id = '')
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'DELETE'))
-        {
-            return FALSE;
-        }
-
-        // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;
+        // Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+        return $this->_request("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'DELETE') == 200 ? TRUE : FALSE;
     }
 }
 
