@@ -73,6 +73,7 @@ class FreshdeskAPI
 
     protected function _request($resource, $method = 'GET', $data = NULL)
     {
+        // Build request
         $method = strtoupper($method);
         $ch = curl_init ("{$this->base_url}/{$resource}");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
@@ -84,11 +85,9 @@ class FreshdeskAPI
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
         // Set POST data if passed to method
-        if ($data)
-        {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        }
+        if ($data) curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
+        // Execute request
         $data = curl_exec($ch);
         $info = curl_getinfo($ch);
         log_message('debug', var_export(array($info, htmlspecialchars($data)), TRUE));
@@ -106,6 +105,8 @@ class FreshdeskAPI
             curl_close($ch);
             return FALSE;
         }
+
+        // Close rqeuest
         curl_close($ch);
 
         // Load JSON object if data was returned and properly parsed
@@ -117,7 +118,6 @@ class FreshdeskAPI
                 log_message('error', var_export($error, TRUE));
                 return FALSE;
             }
-
             // Return data
             return $data;
         }
@@ -152,43 +152,21 @@ class FreshdeskAgent extends FreshdeskAPI
     public function get($agent_id = NULL)
     {
         // Return all agents if no Agent ID was passed
-        if ( ! $agent_id)
-        {
-            return $this->get_all();
-        }
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("agents/{$agent_id}.json"))
-        {
-            return FALSE;
-        }
-
-        // Return Agent object(s)
-        return $response->agent;
+        if ( ! $agent_id) return $this->get_all();
+        // Return Agent object(s) else FALSE if we've failed to get a request response
+        return $response = $this->_request("agents/{$agent_id}.json") ? $response->agent : FALSE;
     }
 
     public function get_all()
     {
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("agents.json"))
-        {
-            return FALSE;
-        }
-
+        if ( ! $response = $this->_request("agents.json")) return FALSE;
         // Default agent array
         $agents = array();
-
         // Return empty array of users if HTTP 200 received
-        if ($response == 200)
-        {
-            return $agents;
-        }
-
+        if ($response == 200) return $agents;
         // Extract agent data from its 'agent' container
-        foreach ($response as $agent)
-        {
-            $agents[] = $agent->agent;
-        }
-
+        foreach ($response as $agent) $agents[] = $agent->agent;
         // Return restructured array of agents
         return $agents;
     }
