@@ -830,37 +830,28 @@ class FreshdeskTicket extends FreshdeskAPI
         );
 
         $filter = strtoupper($filter);
-
         // If filter variable exists in our default filters we don't require data
         if (in_array($filter, array_keys($DEFAULT_FILTERS)))
         {
             return $this->_request("helpdesk/tickets/{$DEFAULT_FILTERS[$filter]}/?format=json") ?: FALSE;
         }
-
         // Data is required past this point
-        if ( ! $data)
-        {
-            return FALSE;
-        }
-
+        if ( ! $data) return FALSE;
         // If filter variable exists in our info filters we require data to be passed
         if (in_array($filter, array_keys($INFO_FILTERS)))
         {
             return $this->_request("helpdesk/tickets.json?{$INFO_FILTERS[$filter]}={$data}&filter_name=all_tickets") ?: FALSE;
         }
-
         // If filter variable is VIEW we require a view_id
         if($filter == "VIEW")
         {
             return $this->_request("helpdesk/tickets/view/{$data}?format=json" ?: FALSE;
         }
-
         // If filter variable is REQUESTER we require a requester_id
         if($filter == "REQUESTER")
         {
             return $this->_request("helpdesk/tickets/filter/requester/{$data}?format=json" ?: FALSE;
         }
-
         // Return all tickets by default
         return $this->_request("helpdesk/tickets.json") ?: FALSE;
     }
@@ -889,16 +880,9 @@ class FreshdeskWrapper extends FreshdeskAPI
         $this->api = new $api($params);
 
         // Return if no args were passed
-        if ( ! $arg0 = @$args[0])
-        {
-            return;
-        }
-
+        if ( ! $arg0 = @$args[0]) return;
         // Set args if only args passed
-        if (is_array($arg0))
-        {
-            $this->args = $arg0;
-        }
+        if (is_array($arg0)) $this->args = $arg0;
         // Set args and data if id was passed
         else if ($this->id = intval(array_shift($args)))
         {
@@ -909,10 +893,7 @@ class FreshdeskWrapper extends FreshdeskAPI
 
     public function __get($name)
     {
-        if ($value = (@$this->args[$name] ?: @$this->data->$name))
-        {
-            return $value;
-        }
+        if ($value = (@$this->args[$name] ?: @$this->data->$name)) return $value;
     }
 
     public function __set($name, $value)
@@ -927,32 +908,17 @@ class FreshdeskWrapper extends FreshdeskAPI
 
     public function get()
     {
-        if ( ! $this->id)
-        {
-            return FALSE;
-        }
-
-        return $this->api->get($this->id);
+        return $this->id ? $this->api->get($this->id) : FALSE;
     }
 
     public function update($args = NULL)
     {
-        if ( ! $this->id)
-        {
-            return FALSE;
-        }
-
-        return $this->api->update($this->id, $args ?: $this->args);
+        return $this->id ? $this->api->update($this->id, $args ?: $this->args) : FALSE;
     }
 
     public function delete()
     {
-        if ( ! $this->id)
-        {
-            return FALSE;
-        }
-
-        return $this->api->delete($this->id);
+        return $this->id ? $this->api->delete($this->id) : FALSE;
     }
 }
 
