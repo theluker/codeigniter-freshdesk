@@ -453,6 +453,7 @@ class FreshdeskForum extends FreshdeskAPI
         'PROBLEM'      => 3,
         'ANNOUNCEMENT' => 4
     );
+
     public static $VISIBILITY = array(
         'ALL'    => 1,
         'USERS'  => 2,
@@ -954,7 +955,7 @@ class FreshdeskWrapper extends FreshdeskAPI
         return $this->api->delete($this->id);
     }
 }
-\
+
 class FreshdeskAgentWrapper extends FreshdeskWrapper {}
 class FreshdeskUserWrapper extends FreshdeskWrapper {}
 class FreshdeskForumCategoryWrapper extends FreshdeskWrapper {}

@@ -438,6 +438,8 @@ class FreshdeskForumCategory extends FreshdeskAPI
  */
 class FreshdeskForum extends FreshdeskAPI
 {
+    public $ForumCategory;
+
     public static $SCHEMA = array(
         'id'                => 'numeric',  // Unique id of the forum Read-Only
         'name'              => 'string',   // Name of the forum Mandatory
@@ -456,6 +458,7 @@ class FreshdeskForum extends FreshdeskAPI
         'PROBLEM'      => 3,
         'ANNOUNCEMENT' => 4
     );
+
     public static $VISIBILITY = array(
         'ALL'    => 1,
         'USERS'  => 2,
