@@ -433,7 +433,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
 
 class FreshdeskForum extends FreshdeskAPI
 {
-    public $ForumCategory;
+    // public $ForumCategory;
 
     public static $SCHEMA = array(
         'id'                => 'numeric',  // Unique id of the forum Read-Only
@@ -473,39 +473,19 @@ class FreshdeskForum extends FreshdeskAPI
         // $visibility = is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
 
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'forum' container
-        if (array_shift(array_keys($data)) != 'forum')
-        {
-            $data = array('forum' => $data);
-        }
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums.json", 'POST', $data))
-        {
-            return FALSE;
-        }
+        if (array_shift(array_keys($data)) != 'forum') $data = array('forum' => $data);
         // Return Forum object
-        return $response;
+        return $this->_request("categories/{$category_id}/forums.json", 'POST', $data) ?: FALSE;
     }
 
     public function get($category_id, $forum_id = NULL)
     {
         // Return all forums if no Forum ID was passed
-        if ( ! $forum_id)
-        {
-            return $this->get_all($category_id);
-        }
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'GET'))
-        {
-            return FALSE;
-        }
-
-        // Return Forum object(s)
-        return $response;
+        if ( ! $forum_id) return $this->get_all($category_id);
+        // Return Forum object(s) or FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}.json") ?: FALSE;
     }
 
     public function get_all($category_id)
@@ -519,26 +499,18 @@ class FreshdeskForum extends FreshdeskAPI
         // $type = $type and is_string($type) ? @self::$TYPE[$type] : $type;
         // $visibility = $visibility and is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
 
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'PUT', $data))
-        {
-            return FALSE;
-        }
-
-        // Return HTTP response
-        return $response;
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data)) return FALSE;
+        // Encapsulate data in 'forum' container
+        if (array_shift(array_keys($data)) != 'forum') $data = array('forum' => $data);
+        // Return HTTP response else FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'PUT', $data) ?: FALSE;
     }
 
     public function delete($category_id, $forum_id)
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'DELETE'))
-        {
-            return FALSE;
-        }
-
-        // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;
+        // Return TRUE if HTTP 200 else FALSE
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
     }
 }
 
@@ -568,28 +540,17 @@ class FreshdeskTopic extends FreshdeskAPI
     public function create($category_id, $forum_id, $data)
     {
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'forum' container
-        if (array_shift(array_keys($data)) != 'topic')
-        {
-            $data = array('topic' => $data);
-        }
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics.json", 'POST', $data))
-        {
-            return FALSE;
-        }
-        // Return Forum object
-        return $response;
+        if (array_shift(array_keys($data)) != 'topic') $data = array('topic' => $data);
+        // Return Forum object else FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics.json", 'POST', $data) ?: FALSE;
     }
 
     public function get($category_id, $forum_id, $topic_id)
     {
 	    // Return FALSE if we've failed to get a request response
-        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'GET') ?: FALSE;
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json") ?: FALSE;
     }
 
     public function get_all() {
@@ -608,7 +569,7 @@ class FreshdeskTopic extends FreshdeskAPI
 
     public function delete($category_id, $forum_id, $topic_id)
     {
-        // Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+        // Return TRUE if HTTP 200 else FALSE
         return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
     }
 }
@@ -637,7 +598,7 @@ class FreshdeskPost extends FreshdeskAPI
 
 	public function delete($category_id, $forum_id, $topic_id, $post_id)
     {
-        // Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+        // Return TRUE if HTTP 200 else FALSE
         return $this->_request("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'DELETE') == 200 ? TRUE : FALSE;
     }
 }
@@ -661,14 +622,14 @@ class FreshDeskMonitor extends FreshdeskAPI
     # TODO: FreshdeskTopic->monitor()
     public function monitor($category_id, $forum_id, $topic_id)
 	{
-		// Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+		// Return TRUE if HTTP 200 else FALSE
 		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'POST') == 200 ? TRUE : FALSE;
 	}
 
     # TODO: FreshdeskTopic->unmonitor()
 	public function unmonitor($category_id, $forum_id, $topic_id)
 	{
-		// Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+		// Return TRUE if HTTP 200 else FALSE
 		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'DELETE') == 200 ? TRUE : FALSE;
 	}
 }
