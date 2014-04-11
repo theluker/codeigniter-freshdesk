@@ -142,10 +142,8 @@ class FreshdeskBase extends FreshdeskAPI
         return $this->_request($endpoint, 'POST', $data) ?: FALSE;
     }
 
-    public function get($endpoint, $id = NULL)
+    public function get($endpoint)
     {
-        // Return all categories if no ID was passed
-        if ( ! $id) return $this->get_all();
         // Return object(s) else FALSE if we've failed to get a request response
         return $this->_request($endpoint) ?: FALSE;
     }
@@ -164,14 +162,14 @@ class FreshdeskBase extends FreshdeskAPI
         return $objects;
     }
 
-    public function update($endpoint, $id, $data)
+    public function update($endpoint, $data)
     {
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data)) return FALSE;
         // Encapsulate data in container node
         if (array_shift(array_keys($data)) != $this->node) $data = array($this->node => $data);
-        // Return object if HTTP 200 else FALSE
-        return $this->_request($endpoint, 'PUT', $data) == 200 ? $this->get($id) : FALSE;
+        // Return TRUE if HTTP 200 else FALSE
+        return $this->_request($endpoint, 'PUT', $data) == 200 ? TRUE : FALSE;
     }
 
     public function delete($endpoint)
@@ -181,7 +179,7 @@ class FreshdeskBase extends FreshdeskAPI
     }
 }
 
-class FreshdeskAgent extends FreshdeskAPI
+class FreshdeskAgent extends FreshdeskBase
 {
     protected $NODE = 'agent';
 
@@ -202,26 +200,33 @@ class FreshdeskAgent extends FreshdeskAPI
 
     public function create($data)
     {
+        # TODO: implement method
         return FALSE;
     }
 
     public function get($agent_id = NULL)
     {
-        return parent::get("agents/{$agent_id}.json", $agent_id);
+        // Return all categories if no ID was passed
+        if ( ! $agent_id) return $this->get_all();
+        // Return default method
+        return parent::get("agents/{$agent_id}.json");
     }
 
     public function get_all()
     {
+        // Return default method
         return parent::get_all("agents.json");
     }
 
-    public function update($id, $data)
+    public function update($agent_id, $data)
     {
+        # TODO: implement method
         return FALSE;
     }
 
-    public function delete($id)
+    public function delete($agent_id)
     {
+        # TODO: implement method
         return FALSE;
     }
 }
@@ -258,6 +263,7 @@ class FreshdeskUser extends FreshdeskBase
 
     public function create($data)
     {
+        // Return parent method
         return parent::create("contacts.json", $data);
     }
 
@@ -268,27 +274,33 @@ class FreshdeskUser extends FreshdeskBase
         {
             return $this->get_all($state, $query);
         }
-        return parent::get("contacts/{$user_id}.json", $user_id)
+        // Return parent method
+        return parent::get("contacts/{$user_id}.json")
     }
 
     public function get_all($state = '', $query = '')
     {
+        // Return parent method
         return parent::get_all("contacts.json?state={$state}&query={$query}")
     }
 
     public function update($user_id, $data)
     {
-        return parent::update("contacts/{$user_id}.json", $user_id, $data);
+        // Return object if parent method succeeds
+        return parent::update("contacts/{$user_id}.json", $data) ? $this->get($user_id) : FALSE;
     }
 
     public function delete($user_id)
     {
+        // Return parent method
         return parent::delete("contacts/{$user_id}.json");
     }
 }
 
-class FreshdeskForumCategory extends FreshdeskAPI
+class FreshdeskForumCategory extends FreshdeskBase
 {
+    protected $NODE = 'forum_category';
+
     // public $Forum;
 
     public function __construct($params)
@@ -306,38 +318,34 @@ class FreshdeskForumCategory extends FreshdeskAPI
 
     public function create($data)
     {
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'forum-category' container
-        if (array_shift(array_keys($data)) != 'forum-category') $data = array('forum-category' => $data);
-        // Return Forum Category object else FALSE if we've failed to get a request response
-        return $this->_request("categories.json", 'POST', $data) ?: FALSE;
+        // Return default method
+        return parent::create("categories.json", $data);
     }
 
     public function get($category_id = NULL)
     {
-        // Return all categories if no Category ID was passed
+        // Return all categories if no ID was passed
         if ( ! $category_id) return $this->get_all();
-        // Return Forum Category object(s) else FALSE if we've failed to get a request response
-        return $this->_request("categories/{$category_id}.json") ?: FALSE;
+        // Return default method
+        return parent::get("categories/{$category_id}.json");
     }
 
     public function get_all()
     {
-        // Return Forum Category object(s) else FALSE if we've failed to get a request response
-        return $this->_request("categories.json") ?: FALSE;
+        // Return default method
+        return parent::get_all("categories.json");
     }
 
     public function update($category_id, $data)
     {
-        // Return HTTP response else FALSE if we've failed to get a request response
-        return $this->_request("categories/{$category_id}.json", 'PUT', $data) ?: FALSE;
+        // Return object if parent method succeeds
+        return parent::update("categories/{$category_id}.json", $data) ? $this->get($category_id) : FALSE;
     }
 
     public function delete($category_id)
     {
-        // Return TRUE if HTTP 200 else FALSE
-        return $this->_request("categories/{$category_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
+        // Return default method
+        return parent::delete("categories/{$category_id}.json");
     }
 }
 
@@ -381,21 +389,18 @@ class FreshdeskForum extends FreshdeskAPI
         // Determine type and visibility
         // $type = is_string($type) ? @self::$TYPE[$type] : $type;
         // $visibility = is_string($visibility) ? @self::$VISIBILITY[$visibility] : $visibility;
-
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'forum' container
-        if (array_shift(array_keys($data)) != 'forum') $data = array('forum' => $data);
-        // Return Forum object
-        return $this->_request("categories/{$category_id}/forums.json", 'POST', $data) ?: FALSE;
+        return parent::create("categories/{$category_id}/forums.json", $category_id, $data);
     }
 
     public function get($category_id, $forum_id = NULL)
     {
         // Return all forums if no Forum ID was passed
         if ( ! $forum_id) return $this->get_all($category_id);
+
+        return parent::get("categories/{$category_id}/forums/{$forum_id}.json")
+
         // Return Forum object(s) or FALSE if we've failed to get a request response
-        return $this->_request("categories/{$category_id}/forums/{$forum_id}.json") ?: FALSE;
+        return $this->_request() ?: FALSE;
     }
 
     public function get_all($category_id)
