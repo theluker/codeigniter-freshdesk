@@ -213,66 +213,31 @@ class FreshdeskUser extends FreshdeskAPI
     public function create($data)
     {
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
-
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'user' container
-        if (array_shift(array_keys($data)) != 'user')
-        {
-            $data = array('user' => $data);
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts.json", 'POST', $data))
-        {
-            return FALSE;
-        }
-
-        // Return User object
-        return $response;
+        if (array_shift(array_keys($data)) != 'user') $data = array('user' => $data);
+        // Return User object else FALSE if we've failed to get a request response
+        return $this->_request("contacts.json", 'POST', $data) ?: FALSE;
     }
 
     public function get($user_id = NULL, $query = NULL)
     {
         // Return all users if no User ID or if get_all() args were passed
-        if ( ! ($state = $user_id) or is_string($state) or is_string($query))
-        {
-            return $this->get_all($state, $query);
-        }
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.json"))
-        {
-            return FALSE;
-        }
-        // Return User object(s)
-        return $response->user;
+        if ( ! ($state = $user_id) or is_string($state) or is_string($query)) return $this->get_all($state, $query);
+        // Return User object(s) else FALSE if we've failed to get a request response
+        return $response = $this->_request("contacts/{$user_id}.json") ? $response->user : FALSE;
     }
 
     public function get_all($state = '', $query = '')
     {
         // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts.json?state={$state}&query={$query}"))
-        {
-            return FALSE;
-        }
-
+        if ( ! $response = $this->_request("contacts.json?state={$state}&query={$query}")) return FALSE;
         // Default user array
         $users = array();
-
         // Return empty array of users if HTTP 200 received
-        if ($response == 200)
-        {
-            return $users;
-        }
-
+        if ($response == 200) return $users;
         // Extract user data from its 'user' container
-        foreach ($response as $user)
-        {
-            $users[] = $user->user;
-        }
-
+        foreach ($response as $user) $users[] = $user->user;
         // Return restructured array of users
         return $users;
     }
@@ -280,37 +245,17 @@ class FreshdeskUser extends FreshdeskAPI
     public function update($user_id, $data)
     {
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
-
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'user' container
-        if (array_shift(array_keys($data)) != 'user')
-        {
-            $data = array('user' => $data);
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.json", 'PUT', $data))
-        {
-            return FALSE;
-        }
-
-        // Return User object if HTTP 200
-        return $response == 200 ? $this->get($user_id) : FALSE;
+        if (array_shift(array_keys($data)) != 'user') $data = array('user' => $data);
+        // Return User object if HTTP 200 else FALSE
+        return $this->_request("contacts/{$user_id}.json", 'PUT', $data) == 200 ? $this->get($user_id) : FALSE;
     }
 
     public function delete($user_id)
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts/{$user_id}.json", 'DELETE'))
-        {
-            return FALSE;
-        }
-
-        // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;
+        // Return TRUE if HTTP 200 else FALSE
+        return $this->_request("contacts/{$user_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
     }
 }
 
