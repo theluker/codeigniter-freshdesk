@@ -127,8 +127,64 @@ class FreshdeskAPI
     }
 }
 
+class FreshdeskBase extends FreshdeskAPI
+{
+    protected $NODE;
+
+    public function create($endpoint, $data)
+    {
+        parent::create($data);
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data)) return FALSE;
+        // Encapsulate data in container node
+        if (array_shift(array_keys($data)) != $this->node) $data = array($this->node => $data);
+        // Return object else FALSE if we've failed to get a request response
+        return $this->_request($endpoint, 'POST', $data) ?: FALSE;
+    }
+
+    public function get($endpoint, $id = NULL)
+    {
+        // Return all categories if no ID was passed
+        if ( ! $id) return $this->get_all();
+        // Return object(s) else FALSE if we've failed to get a request response
+        return $this->_request($endpoint) ?: FALSE;
+    }
+
+    public function get_all($endpoint)
+    {
+        // Return FALSE if we've failed to get a request response
+        if ( ! $response = $this->_request($endpoint)) return FALSE;
+        // Default object array
+        $objects = array();
+        // Return empty array of objects if HTTP 200 received
+        if ($response == 200) return $objects;
+        // Extract object data from its container node
+        foreach ($response as $object) $objects[] = $object->{$this->node};
+        // Return restructured array of objects
+        return $objects;
+    }
+
+    public function update($endpoint, $id, $data)
+    {
+        // Return FALSE if we did not receive an array of data
+        if ( ! is_array($data)) return FALSE;
+        // Encapsulate data in container node
+        if (array_shift(array_keys($data)) != $this->node) $data = array($this->node => $data);
+        // Return object if HTTP 200 else FALSE
+        return $this->_request($endpoint, 'PUT', $data) == 200 ? $this->get($id) : FALSE;
+    }
+
+    public function delete($endpoint)
+    {
+        // Return TRUE if HTTP 200 else FALSE
+        return $this->_request($endpoint, 'DELETE') == 200 ? TRUE : FALSE;
+    }
+}
+
 class FreshdeskAgent extends FreshdeskAPI
 {
+    protected $NODE = 'agent';
+
     public static $SCHEMA = array(
         'available'           => 'bool',
         'created_at'          => 'string',
@@ -151,24 +207,12 @@ class FreshdeskAgent extends FreshdeskAPI
 
     public function get($agent_id = NULL)
     {
-        // Return all agents if no Agent ID was passed
-        if ( ! $agent_id) return $this->get_all();
-        // Return Agent object(s) else FALSE if we've failed to get a request response
-        return $response = $this->_request("agents/{$agent_id}.json") ? $response->agent : FALSE;
+        return parent::get("agents/{$agent_id}.json", $agent_id);
     }
 
     public function get_all()
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("agents.json")) return FALSE;
-        // Default agent array
-        $agents = array();
-        // Return empty array of users if HTTP 200 received
-        if ($response == 200) return $agents;
-        // Extract agent data from its 'agent' container
-        foreach ($response as $agent) $agents[] = $agent->agent;
-        // Return restructured array of agents
-        return $agents;
+        return parent::get_all("agents.json");
     }
 
     public function update($id, $data)
@@ -182,8 +226,10 @@ class FreshdeskAgent extends FreshdeskAPI
     }
 }
 
-class FreshdeskUser extends FreshdeskAPI
+class FreshdeskUser extends FreshdeskBase
 {
+    protected $NODE = 'user';
+
     public static $SCHEMA = array(
         'id'             => 'numeric',  // User ID             (read-only)
         'name'           => 'string',   // User Name           (required)
@@ -212,50 +258,32 @@ class FreshdeskUser extends FreshdeskAPI
 
     public function create($data)
     {
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'user' container
-        if (array_shift(array_keys($data)) != 'user') $data = array('user' => $data);
-        // Return User object else FALSE if we've failed to get a request response
-        return $this->_request("contacts.json", 'POST', $data) ?: FALSE;
+        return parent::create("contacts.json", $data);
     }
 
     public function get($user_id = NULL, $query = NULL)
     {
         // Return all users if no User ID or if get_all() args were passed
-        if ( ! ($state = $user_id) or is_string($state) or is_string($query)) return $this->get_all($state, $query);
-        // Return User object(s) else FALSE if we've failed to get a request response
-        return $response = $this->_request("contacts/{$user_id}.json") ? $response->user : FALSE;
+        if ( ! ($state = $user_id) or is_string($state) or is_string($query))
+        {
+            return $this->get_all($state, $query);
+        }
+        return parent::get("contacts/{$user_id}.json", $user_id)
     }
 
     public function get_all($state = '', $query = '')
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("contacts.json?state={$state}&query={$query}")) return FALSE;
-        // Default user array
-        $users = array();
-        // Return empty array of users if HTTP 200 received
-        if ($response == 200) return $users;
-        // Extract user data from its 'user' container
-        foreach ($response as $user) $users[] = $user->user;
-        // Return restructured array of users
-        return $users;
+        return parent::get_all("contacts.json?state={$state}&query={$query}")
     }
 
     public function update($user_id, $data)
     {
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'user' container
-        if (array_shift(array_keys($data)) != 'user') $data = array('user' => $data);
-        // Return User object if HTTP 200 else FALSE
-        return $this->_request("contacts/{$user_id}.json", 'PUT', $data) == 200 ? $this->get($user_id) : FALSE;
+        return parent::update("contacts/{$user_id}.json", $user_id, $data);
     }
 
     public function delete($user_id)
     {
-        // Return TRUE if HTTP 200 else FALSE
-        return $this->_request("contacts/{$user_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
+        return parent::delete("contacts/{$user_id}.json");
     }
 }
 
