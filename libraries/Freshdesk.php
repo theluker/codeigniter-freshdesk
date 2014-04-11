@@ -565,7 +565,7 @@ class FreshdeskTopic extends FreshdeskAPI
         'TAKEN'       => 3
     );
 
-    public function create($category_id = '', $forum_id = '', $data = '') # TODO: why are these optional?
+    public function create($category_id, $forum_id, $data)
     {
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data))
@@ -586,56 +586,36 @@ class FreshdeskTopic extends FreshdeskAPI
         return $response;
     }
 
-    public function get($category_id = '', $forum_id = '', $topic_id = '') # TODO: why are these optional?
+    public function get($category_id, $forum_id, $topic_id)
     {
-	    if (!$response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", "GET"))
-	    {
-		    return FALSE;
-	    }
-	    return $response;
+	    // Return FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'GET') ?: FALSE;
     }
 
     public function get_all() {
         # TODO: implement
     }
 
-    public function update($category_id = '', $forum_id = '', $topic_id ='',  $data = '') # TODO: why are these optional?
+    public function update($category_id, $forum_id, $topic_id, $data)
     {
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'topic' container
-        if (array_shift(array_keys($data)) != 'topic')
-        {
-            $data = array('topic' => $data);
-        }
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'POST', $data))
-        {
-            return FALSE;
-        }
-        // Return Forum object
-        return $response;
+        if (array_shift(array_keys($data)) != 'topic') $data = array('topic' => $data);
+        // Return Forum object else FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'POST', $data) ?: FALSE;
     }
 
-    public function delete($category_id = '', $forum_id = '', $topic_id = '')
+    public function delete($category_id, $forum_id, $topic_id)
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'DELETE'))
-        {
-            return FALSE;
-        }
-
-        // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;
+        // Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
     }
 }
 
 class FreshdeskPost extends FreshdeskAPI
 {
-	public function create($category_id = '', $forum_id = '', $topic_id = '', $data)
+	public function create($category_id, $forum_id, $topic_id, $data)
 	{
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data)) return FALSE;
@@ -645,7 +625,7 @@ class FreshdeskPost extends FreshdeskAPI
         return $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'POST', $data) ?: FALSE;
 	}
 
-	public function update($category_id = '', $forum_id = '', $topic_id = '', $data)
+	public function update($category_id, $forum_id, $topic_id, $data)
 	{
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data)) return FALSE;
@@ -655,7 +635,7 @@ class FreshdeskPost extends FreshdeskAPI
         return $this->_request("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", 'POST', $data) ?: FALSE;
 	}
 
-	public function delete($category_id = '', $forum_id = '', $topic_id='', $post_id = '')
+	public function delete($category_id, $forum_id, $topic_id, $post_id)
     {
         // Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
         return $this->_request("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", 'DELETE') == 200 ? TRUE : FALSE;
@@ -686,7 +666,7 @@ class FreshDeskMonitor extends FreshdeskAPI
 	}
 
     # TODO: FreshdeskTopic->unmonitor()
-	public function unmonitor($category_id = '', $forum_id = '', $topic_id = '')
+	public function unmonitor($category_id, $forum_id, $topic_id)
 	{
 		// Return TRUE if HTTP 200 else FALSE if we've failed to get a request response
 		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'DELETE') == 200 ? TRUE : FALSE;
