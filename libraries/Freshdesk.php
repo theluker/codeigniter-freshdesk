@@ -338,7 +338,7 @@ class FreshdeskUser extends FreshdeskAPI
 
 class FreshdeskForumCategory extends FreshdeskAPI
 {
-    public $Forum;
+    // public $Forum;
 
     public function __construct($params)
     {
@@ -356,78 +356,37 @@ class FreshdeskForumCategory extends FreshdeskAPI
     public function create($data)
     {
         // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data))
-        {
-            return FALSE;
-        }
-
+        if ( ! is_array($data)) return FALSE;
         // Encapsulate data in 'forum-category' container
-        if (array_shift(array_keys($data)) != 'forum-category')
-        {
-            $data = array('forum-category' => $data);
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories.json", 'POST', $data))
-        {
-            return FALSE;
-        }
-
-        // Return forum-category object
-        return $response;
+        if (array_shift(array_keys($data)) != 'forum-category') $data = array('forum-category' => $data);
+        // Return Forum Category object else FALSE if we've failed to get a request response
+        return $this->_request("categories.json", 'POST', $data) ?: FALSE;
     }
 
     public function get($category_id = NULL)
     {
         // Return all categories if no Category ID was passed
-        if ( ! $category_id)
-        {
-            return $this->get_all();
-        }
-
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}.json"))
-        {
-            return FALSE;
-        }
-
-        // Return Forum Category object(s)
-        return $response;
+        if ( ! $category_id) return $this->get_all();
+        // Return Forum Category object(s) else FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}.json") ?: FALSE;
     }
 
     public function get_all()
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories.json"))
-        {
-            return FALSE;
-        }
-        // Return restructured array of categories
-        return $response;
+        // Return Forum Category object(s) else FALSE if we've failed to get a request response
+        return $this->_request("categories.json") ?: FALSE;
     }
 
     public function update($category_id, $data)
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}.json", 'PUT', $data))
-        {
-            return FALSE;
-        }
-
-        // Return HTTP response
-        return $response;
+        // Return HTTP response else FALSE if we've failed to get a request response
+        return $this->_request("categories/{$category_id}.json", 'PUT', $data) ?: FALSE;
     }
 
     public function delete($category_id)
     {
-        // Return FALSE if we've failed to get a request response
-        if ( ! $response = $this->_request("categories/{$category_id}.json", 'DELETE'))
-        {
-            return FALSE;
-        }
-
-        // Return TRUE if HTTP 200
-        return $response == 200 ? TRUE : FALSE;
+        // Return TRUE if HTTP 200 else FALSE
+        return $this->_request("categories/{$category_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
     }
 }
 
