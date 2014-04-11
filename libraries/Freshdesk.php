@@ -427,8 +427,10 @@ class FreshdeskForum extends FreshdeskBase
     }
 }
 
-class FreshdeskTopic extends FreshdeskAPI
+class FreshdeskTopic extends FreshdeskBase
 {
+    protected $NODE = 'topic';
+
     public static $SCHEMA = array(
         'id'           => 'numeric',  // Unique id of the topic Read-Only
         'title'        => 'string',   // Title of the forum Mandatory
@@ -452,38 +454,32 @@ class FreshdeskTopic extends FreshdeskAPI
 
     public function create($category_id, $forum_id, $data)
     {
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'forum' container
-        if (array_shift(array_keys($data)) != 'topic') $data = array('topic' => $data);
-        // Return Forum object else FALSE if we've failed to get a request response
-        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics.json", 'POST', $data) ?: FALSE;
+        // Return parent method
+        return parent::create("categories/{$category_id}/forums/{$forum_id}/topics.json", $data);
     }
 
-    public function get($category_id, $forum_id, $topic_id)
+    public function get($category_id, $forum_id, $topic_id = NULL)
     {
-	    // Return FALSE if we've failed to get a request response
-        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json") ?: FALSE;
+        // Return all topics if no Topic ID was passed
+        if ( ! $topic_id) return $this->get_all($category_id, $forum_id);
+        // Return parent method
+        return parent::get("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json");
     }
 
-    public function get_all() {
+    public function get_all($category_id, $forum_id) {
         # TODO: implement
     }
 
     public function update($category_id, $forum_id, $topic_id, $data)
     {
-        // Return FALSE if we did not receive an array of data
-        if ( ! is_array($data)) return FALSE;
-        // Encapsulate data in 'topic' container
-        if (array_shift(array_keys($data)) != 'topic') $data = array('topic' => $data);
-        // Return Forum object else FALSE if we've failed to get a request response
-        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'POST', $data) ?: FALSE;
+        // Return parent method
+        return parent::update("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", $data);
     }
 
     public function delete($category_id, $forum_id, $topic_id)
     {
-        // Return TRUE if HTTP 200 else FALSE
-        return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", 'DELETE') == 200 ? TRUE : FALSE;
+        // Return parent method
+        return parent::delete("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json");
     }
 }
 
