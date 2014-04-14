@@ -57,36 +57,64 @@ class UnitTest extends CI_Controller {
     {
         $this->test_agent(TRUE, FALSE);
         $this->test_user(TRUE, FALSE);
+        $this->test_category(TRUE, FALSE);
+        $this->test_forum(TRUE, FALSE);
+        $this->test_topic(TRUE, FALSE);
+        $this->test_post(TRUE, FALSE);
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_create($sqelch = FALSE, $recurse = TRUE) {
         $this->test_agent_create(TRUE, FALSE);
         $this->test_user_create(TRUE, FALSE);
+        $this->test_category_create(TRUE, FALSE);
+        $this->test_forum_create(TRUE, FALSE);
+        $this->test_topic_create(TRUE, FALSE);
+        $this->test_post_create(TRUE, FALSE);
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_get($sqelch = FALSE, $recurse = TRUE) {
         $this->test_agent_get(TRUE, FALSE);
         $this->test_user_get(TRUE, FALSE);
+        $this->tecategoryser_get(TRUE, FALSE);
+        $this->test_forum_get(TRUE, FALSE);
+        $this->test_topic_get(TRUE, FALSE);
+        $this->test_post_get(TRUE, FALSE);
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_get_all($sqelch = FALSE, $recurse = TRUE) {
         $this->test_agent_get_all(TRUE, FALSE);
         $this->test_user_get_all(TRUE, FALSE);
+        $this->test_ucategoryget_all(TRUE, FALSE);
+        $this->test_forum_get_all(TRUE, FALSE);
+        $this->test_topic_get_all(TRUE, FALSE);
+        $this->test_post_get_all(TRUE, FALSE);
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_update($sqelch = FALSE, $recurse = TRUE) {
         $this->test_agent_update(TRUE, FALSE);
         $this->test_user_update(TRUE, FALSE);
+        $this->test_category_update(TRUE, FALSE);
+        $this->test_forum_update(TRUE, FALSE);
+        $this->test_topic_update(TRUE, FALSE);
+        $this->test_post_update(TRUE, FALSE);
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_delete($sqelch = FALSE, $recurse = TRUE) {
         $this->test_agent_delete(TRUE, FALSE);
         $this->test_user_delete(TRUE, FALSE);
+        $this->test_category_delete(TRUE, FALSE);
+        $this->test_forum_delete(TRUE, FALSE);
+        $this->test_topic_delete(TRUE, FALSE);
+        $this->test_post_delete(TRUE, FALSE);
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_misc($sqelch = FALSE, $recurse = TRUE) {
         $this->test_agent_misc(TRUE, FALSE);
         $this->test_user_misc(TRUE, FALSE);
+        $this->tescategoryer_misc(TRUE, FALSE);
+        $this->test_forum_misc(TRUE, FALSE);
+        $this->test_topic_misc(TRUE, FALSE);
+        $this->test_post_misc(TRUE, FALSE);
         if ( ! $sqelch) echo $this->unit->report();
     }
     /* END Main Controllers */
@@ -118,49 +146,31 @@ class UnitTest extends CI_Controller {
     public function test_agent_get($sqelch = FALSE, $resurse = TRUE)
     {
         $name = "Agent::get()";
-
         $test = "\$this->freshdesk->Agent->get()";
         $result = $this->freshdesk->Agent->get();
         $this->unit->run($result, 'is_array', $name, $test);
         if ($resurse and $agent = @$result[0]) $this->_test_agent($test, $agent);
-
-        $test = "\$this->freshdesk->Agent()->get()";
-        $result = $this->freshdesk->Agent()->get();
-        $this->unit->run($result, FALSE, $name, $test);
         if ($agent_id = @$agent->id)
         {
             $test = "\$this->freshdesk->Agent->get(\$agent_id)";
             $agent = $this->freshdesk->Agent->get($agent_id);
             $this->unit->run($agent, 'is_object', $name, $test);
             if ($resurse and $agent = $agent->agent) $this->_test_agent($test, $agent);
-
-            $test = "\$this->freshdesk->Agent(\$agent_id)->get()";
-            $agent = $this->freshdesk->Agent($agent_id)->get();
-            $this->unit->run($agent, 'is_object', $name, $test);
-            if ($resurse and $agent = $agent->agent) $this->_test_agent($test, $agent);
-
-            $test = "\$this->freshdesk->Agent()->get(\$agent_id)";
-            $result = $this->freshdesk->Agent()->get($agent_id);
-            $this->unit->run($result, FALSE, $name, $test);
         }
-
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_agent_get_all($sqelch = FALSE, $recurse = TRUE)
     {
         $name = "Agent::get_all()";
-
         $test = "Agent->get_all()";
         $result = $this->freshdesk->Agent->get_all();
         $this->unit->run($result, 'is_array', $name, $test);
         if ($recurse and $agent = @$result[0]) $this->_test_agent($test, $agent);
-
         if ( ! $sqelch) echo $this->unit->report();
     }
     public function test_agent_update($sqelch = FALSE, $resurse = TRUE)
     {
         $name = "Agent::update()";
-
         $test = "Agent->update()";
         $data = array();
         $result = $this->freshdesk->Agent->update(0, $data);
@@ -169,7 +179,6 @@ class UnitTest extends CI_Controller {
     public function test_agent_delete($sqelch = FALSE, $resurse = TRUE)
     {
         $name = "Agent::delete()";
-
         $test = "Agent->delete()";
         $result = $this->freshdesk->Agent->delete(0);
         $this->unit->run($result, FALSE, $name, $test);
@@ -199,4 +208,96 @@ class UnitTest extends CI_Controller {
     public function test_user_delete($sqelch = FALSE, $resurse = TRUE) {}
     public function test_user_misc($sqelch = FALSE, $resurse = TRUE) {}
     /* END User Test */
+
+
+    /* BEGIN ForumCategory Tests */
+    public function _test_category($trace, $result)
+    {
+        $this->__test_schema("TestForumCategory({$trace})", $this->freshdesk->ForumCategory, $result);
+    }
+    public function test_category($sqelch = FALSE, $recurse = TRUE)
+    {
+        $this->test_category_create(TRUE, FALSE);
+        $this->test_category_get(TRUE, FALSE);
+        $this->test_category_get_all(TRUE, FALSE);
+        $this->test_category_update(TRUE, FALSE);
+        $this->test_category_delete(TRUE, FALSE);
+        if ( ! $sqelch) echo $this->unit->report();
+    }
+    public function test_category_create($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_category_get($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_category_get_all($sqelch = FALSE, $recurse = TRUE) {}
+    public function test_category_update($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_category_delete($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_category_misc($sqelch = FALSE, $resurse = TRUE) {}
+    /* END ForumCategory Test */
+
+
+    /* BEGIN Forum Tests */
+    public function _test_forum($trace, $result)
+    {
+        $this->__test_schema("TestForum({$trace})", $this->freshdesk->Forum, $result);
+    }
+    public function test_forum($sqelch = FALSE, $recurse = TRUE)
+    {
+        $this->test_forum_create(TRUE, FALSE);
+        $this->test_forum_get(TRUE, FALSE);
+        $this->test_forum_get_all(TRUE, FALSE);
+        $this->test_forum_update(TRUE, FALSE);
+        $this->test_forum_delete(TRUE, FALSE);
+        if ( ! $sqelch) echo $this->unit->report();
+    }
+    public function test_forum_create($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_forum_get($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_forum_get_all($sqelch = FALSE, $recurse = TRUE) {}
+    public function test_forum_update($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_forum_delete($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_forum_misc($sqelch = FALSE, $resurse = TRUE) {}
+    /* END Forum Test */
+
+
+    /* BEGIN Forum Topic Tests */
+    public function _test_topic($trace, $result)
+    {
+        $this->__test_schema("TestTopic({$trace})", $this->freshdesk->Topic, $result);
+    }
+    public function test_topic($sqelch = FALSE, $recurse = TRUE)
+    {
+        $this->test_topic_create(TRUE, FALSE);
+        $this->test_topic_get(TRUE, FALSE);
+        $this->test_topic_get_all(TRUE, FALSE);
+        $this->test_topic_update(TRUE, FALSE);
+        $this->test_topic_delete(TRUE, FALSE);
+        if ( ! $sqelch) echo $this->unit->report();
+    }
+    public function test_topic_create($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_topic_get($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_topic_get_all($sqelch = FALSE, $recurse = TRUE) {}
+    public function test_topic_update($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_topic_delete($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_topic_misc($sqelch = FALSE, $resurse = TRUE) {}
+    /* END Forum Topic Test */
+
+
+    /* BEGIN Topic Post Tests */
+    public function _test_post($trace, $result)
+    {
+        $this->__test_schema("TestPost({$trace})", $this->freshdesk->Post, $result);
+    }
+    public function test_post($sqelch = FALSE, $recurse = TRUE)
+    {
+        $this->test_post_create(TRUE, FALSE);
+        $this->test_post_get(TRUE, FALSE);
+        $this->test_post_get_all(TRUE, FALSE);
+        $this->test_post_update(TRUE, FALSE);
+        $this->test_post_delete(TRUE, FALSE);
+        if ( ! $sqelch) echo $this->unit->report();
+    }
+    public function test_post_create($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_post_get($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_post_get_all($sqelch = FALSE, $recurse = TRUE) {}
+    public function test_post_update($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_post_delete($sqelch = FALSE, $resurse = TRUE) {}
+    public function test_post_misc($sqelch = FALSE, $resurse = TRUE) {}
+    /* END Topic Post Test */
 }

@@ -1182,7 +1182,7 @@ class FreshdeskTopic extends FreshdeskAPI
      *
      * @param  integer $category_id Forum Category ID
      * @param  integer $forum_id    Forum ID
-     * @param  integer $topic_id    Topic ID
+     * @param  integer $topic_id    Forum Topic ID
      * @return mixed                Array of, or single, JSON Topic object(s)
      */
     public function get($category_id, $forum_id, $topic_id = NULL)
@@ -1257,7 +1257,7 @@ class FreshdeskTopic extends FreshdeskAPI
      *
      * @param  integer $category_id Forum Category ID
      * @param  integer $forum_id    Forum ID
-     * @param  integer $topic_id    Topic ID
+     * @param  integer $topic_id    Forum Topic ID
      * @param  array   $data        Array of Topic data
      * @return mixed                JSON Topic object or FALSE
      */
@@ -1284,7 +1284,7 @@ class FreshdeskTopic extends FreshdeskAPI
      *
      * @param  integer  $category_id Forum Category ID
      * @param  integer  $forum_id    Forum ID
-     * @param  integer  $topic_id    Topic ID
+     * @param  integer  $topic_id    Forum Topic ID
      * @return boolean               TRUE if HTTP 200 else FALSE
      */
     public function delete($category_id, $forum_id, $topic_id)
@@ -1295,7 +1295,7 @@ class FreshdeskTopic extends FreshdeskAPI
 }
 
 /**
- * Freshdesk Forum Post
+ * Freshdesk Forum Topic Post
  *
  * Create, Retrieve, Update, and Delete Forum Posts
  *
@@ -1316,7 +1316,7 @@ class FreshdeskPost extends FreshdeskAPI
     );
 
     /**
-     * Create a Forum Post
+     * Create a Topic Topic Post
      *
      * Request URL: /posts.json
      * Request method: POST
@@ -1348,7 +1348,7 @@ class FreshdeskPost extends FreshdeskAPI
      *
      * @param  integer $category_id Forum Category ID
      * @param  integer $forum_id    Forum ID
-     * @param  integer $topic_id    Topic ID
+     * @param  integer $topic_id    Forum Topic ID
      * @param  array   $data        Array of Post data
      * @return object               JSON Post object
      */
@@ -1359,7 +1359,7 @@ class FreshdeskPost extends FreshdeskAPI
 	}
 
     /**
-     * Retrieve a Forum Post
+     * Retrieve a Forum Topic Post
      *
      * Request URL: /posts/[post_id].json
      * Request method: GET
@@ -1385,8 +1385,8 @@ class FreshdeskPost extends FreshdeskAPI
      *
      * @param    integer    $category_id    Forum Category ID
      * @param    integer    $forum_id       Forum ID
-     * @param    integer    $topic_id       Topic ID
-     * @param    integer    $post_id        Post ID
+     * @param    integer    $topic_id       Forum Topic ID
+     * @param    integer    $post_id        Forum Topic Post ID
      * @return   bool                       TRUE if HTTP Status: 200 OK
      */
     public function get($category_id, $forum_id, $topic_id, $post_id = NULL)
@@ -1398,7 +1398,7 @@ class FreshdeskPost extends FreshdeskAPI
     }
 
     /**
-     * Retrieve all Posts in a Topic
+     * Retrieve all Posts in a Forum Topic
      *
      * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: GET
@@ -1449,7 +1449,7 @@ class FreshdeskPost extends FreshdeskAPI
      *
      * @param  integer $category_id Forum Category ID
      * @param  integer $forum_id    Forum ID
-     * @param  integer $topic_id    Topic ID
+     * @param  integer $topic_id    Forum Topic ID
      * @return mixed                Array of JSON Post object(s)
      */
     public function get_all($category_id, $forum_id, $topic_id)
@@ -1460,7 +1460,7 @@ class FreshdeskPost extends FreshdeskAPI
     }
 
     /**
-     * Update a Forum Post
+     * Update a Forum Topic Post
      *
      * Request URL: /posts/[post_id].json
      * Request method: PUT
@@ -1483,7 +1483,7 @@ class FreshdeskPost extends FreshdeskAPI
      * @param  integer $category_id Forum Category ID
      * @param  integer $forum_id    Forum ID
      * @param  integer $topic_id    Forum Topic ID
-     * @param  integer $post_id     Post ID
+     * @param  integer $post_id     Forum Topic Post ID
      * @param  array   $data        Array of Post data
      * @return mixed                JSON Post object or FALSE
      */
@@ -1494,7 +1494,7 @@ class FreshdeskPost extends FreshdeskAPI
 	}
 
     /**
-     * Delete a Forum Post
+     * Delete a Forum Topic Post
      *
      * Request URL: /posts/[post_id].json
      * Request method: DELETE
@@ -1510,8 +1510,8 @@ class FreshdeskPost extends FreshdeskAPI
      *
      * @param  integer $category_id Forum Category ID
      * @param  integer $forum_id    Forum ID
-     * @param  integer $topic_id    Topic ID
-     * @param  integer $post_id     Post ID
+     * @param  integer $topic_id    Forum Topic ID
+     * @param  integer $post_id     Forum Topic Post ID
      * @return boolean              TRUE if HTTP 200 else FALSE
      */
 	public function delete($category_id, $forum_id, $topic_id, $post_id)
