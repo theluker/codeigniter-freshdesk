@@ -214,7 +214,7 @@ class FreshdeskAPI extends FreshdeskTransport
      *
      * @param  string $endpoint API Endpoint
      * @param  array  $data     Array of resource data
-     * @return mixed            JSON object or FALSE
+     * @return boolean          TRUE if HTTP 200 else FALSE
      */
     public function update($endpoint, $data)
     {
@@ -270,7 +270,7 @@ class FreshdeskAgent extends FreshdeskAPI
      *
      * Currently unsupported
      *
-     * @param  array   $data Array of data
+     * @param  array   $data Array of Agent data
      * @return boolean       FALSE as unsupported
      */
     public function create($data)
@@ -329,12 +329,12 @@ class FreshdeskAgent extends FreshdeskAPI
     }
 
     /**
-     * Update an existing Agent
+     * Update an Agent
      *
      * Currently unsupported
      *
      * @param  integer $agent_id Agent ID
-     * @param  array   $data     Array of data
+     * @param  array   $data     Array of Agent data
      * @return boolean           FALSE as unsupported
      */
     public function update($agent_id, $data)
@@ -344,7 +344,7 @@ class FreshdeskAgent extends FreshdeskAPI
     }
 
     /**
-     * Delete an existing Agent
+     * Delete an Agent
      *
      * Currently unsupported
      *
@@ -358,6 +358,13 @@ class FreshdeskAgent extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk User API
+ *
+ * Create, Retrieve, Update, and Delete Users
+ *
+ * @link http://freshdesk.com/api/#user
+ */
 class FreshdeskUser extends FreshdeskAPI
 {
     protected $NODE = 'user';
@@ -388,12 +395,95 @@ class FreshdeskUser extends FreshdeskAPI
         'ROLE_3' => 3
     );
 
+    /**
+     * Create a new User
+     *
+     * Request URL: /contacts.json
+     * Request method: POST
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     *         -d '{ "user": { "name":"Super Man", "email":"superman@marvel.com" }}' \
+     *         http://domain.freshdesk.com/contacts.json
+     *
+     * Request:
+     *     {"user": {
+     *         "name":"Super Man",
+     *         "email":"superman@marvel.com"
+     *     }}
+     *
+     * Response:
+     *     {"user": {
+     *         "active":false,
+     *         "address":null,
+     *         "created_at":"2014-01-07T19:33:43+05:30",
+     *         "customer_id":null,
+     *         "deleted":false,
+     *         "description":null,
+     *         "email":"superman@marvel.com",
+     *         "external_id":null,
+     *         "fb_profile_id":null,
+     *         "id":19,
+     *         "job_title":null,
+     *         "language":"en",
+     *         "mobile":null,
+     *         "name":"Super Man",
+     *         "phone":null,
+     *         "time_zone":"Hawaii",
+     *         "twitter_id":null,
+     *         "updated_at":"2014-01-07T19:33:43+05:30"
+     *     }}
+     *
+     * @link   http://freshdesk.com/api/#create_user
+     *
+     * @param  array $data Array of User data
+     * @return object      JSON User object
+     */
     public function create($data)
     {
         // Return parent method
         return parent::create("contacts.json", $data);
     }
 
+    /**
+     * Retrieve a User
+     *
+     * Request URL: /contacts/[user_id].json
+     * Request method: GET
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *         http://domain.freshdesk.com/contacts/19.json
+     *
+     * Response:
+     *     {"user":{
+     *         "active":false,
+     *         "address":null,
+     *         "created_at":"2014-01-07T19:33:43+05:30",
+     *         "customer_id":null,
+     *         "deleted":false,
+     *         "description":null,
+     *         "email":"superman@marvel.com",
+     *         "external_id":null,
+     *         "fb_profile_id":null,
+     *         "id":19,
+     *         "job_title":null,
+     *         "language":"en",
+     *         "mobile":null,
+     *         "name":"Super Man",
+     *         "phone":null,
+     *         "time_zone":"Hawaii",
+     *         "twitter_id":null,
+     *         "updated_at":"2014-01-07T19:33:43+05:30"
+     *      }}
+     *
+     *
+     * @link   http://freshdesk.com/api/#view_user
+     *
+     * @param  mixed  $user_id User ID or Filter state
+     * @param  string $query   Filter query string
+     * @return object          JSON User object
+     */
     public function get($user_id = NULL, $query = NULL)
     {
         // Return all users if no User ID or if get_all() args were passed
@@ -405,18 +495,113 @@ class FreshdeskUser extends FreshdeskAPI
         return parent::get("contacts/{$user_id}.json");
     }
 
+    /**
+     * Retrieve all Users
+     *
+     * Request URL: /contacts.json
+     * Request method: GET
+     *
+     * Filter:
+     *     State: /contacts?state=[state]
+     *     Note: state may be 'verified', 'unverified', 'all', or 'deleted'
+     *     Example: /contacts.json?state=all
+     *
+     *     Query: /contacts.json?query=[condition]
+     *     Note: condition may be 'email', 'mobile', or 'phone'
+     *     Example: /contacts.json?query=email is user@yourcompany.com
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *         http://domain.freshdesk.com/contacts.json
+     *
+     * Response:
+     *     [
+     *         {"user": {
+     *             "active":false,
+     *             "address":"",
+     *             "created_at":"2013-12-20T15:04:16+05:30",
+     *             "customer_id":null,
+     *             "deleted":false,
+     *             "description":"",
+     *             "email":"superman@marvel.com",
+     *             "external_id":null,
+     *             "fb_profile_id":null,
+     *             "helpdesk_agent":false,
+     *             "id":19,
+     *             "job_title":"Super Hero",
+     *             "language":"en",
+     *             "mobile":"",
+     *             "name":"Super Man",
+     *             "phone":"",
+     *             "time_zone":"Hawaii",
+     *             "twitter_id":"",
+     *             "updated_at":"2013-12-20T15:04:16+05:30"
+     *          }},
+     *          ...
+     *      ]
+     *
+     * @link   http://freshdesk.com/api/#view_all_user
+     *
+     * @param  string $state Filter state
+     * @param  string $query Filter query string
+     * @return array         Array of JSON User objects
+     */
     public function get_all($state = '', $query = '')
     {
         // Return parent method
         return parent::get_all("contacts.json?state={$state}&query={$query}");
     }
 
+    /**
+     * Update a User
+     *
+     * Request URL: /contacts/[user_id].json
+     * Request method: PUT
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *         -d '{ "user": { "name":"SuperMan", "job_title":"Avenger" }}' \
+     *         http://domain.freshdesk.com/contacts/19.json
+     *
+     * Request:
+     *     {"user": {
+     *         "name":"SuperMan",
+     *         "job_title":"Avenger"
+     *     }}
+     *
+     * Response:
+     *     HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#update_user
+     *
+     * @param  integer $user_id User ID
+     * @param  array   $data    Array of User data
+     * @return mixed            JSON User object or FALSE
+     */
     public function update($user_id, $data)
     {
         // Return object if parent method succeeds
         return parent::update("contacts/{$user_id}.json", $data) ? $this->get($user_id) : FALSE;
     }
 
+    /**
+     * Delete a User
+     *
+     * Request URL: /contacts/[user_id].json
+     * Request method: DELETE
+     *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     *         http://domain.freshdesk.com/contacts/1.json
+     *
+     * Response:
+     *     HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#delete_user
+     *
+     * @param  integer $user_id User ID
+     * @return boolean          TRUE if HTTP 200 else FALSE
+     */
     public function delete($user_id)
     {
         // Return parent method

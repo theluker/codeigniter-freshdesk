@@ -5,6 +5,7 @@
 
 /**
  * Freshdesk Library
+ * #TODO: Library infos
  */
 class Freshdesk
 {}
@@ -111,7 +112,7 @@ class FreshdeskAgent extends FreshdeskAPI
      *
      * Currently unsupported
      *
-     * @param  array   $data Array of data
+     * @param  array   $data Array of Agent data
      * @return boolean       FALSE as unsupported
      */
     public function create($data)
@@ -159,19 +160,19 @@ class FreshdeskAgent extends FreshdeskAPI
     {}
 
     /**
-     * Update an existing Agent
+     * Update an Agent
      *
      * Currently unsupported
      *
      * @param  integer $agent_id Agent ID
-     * @param  array   $data     Array of data
+     * @param  array   $data     Array of Agent data
      * @return boolean           FALSE as unsupported
      */
     public function update($agent_id, $data)
     {}
 
     /**
-     * Delete an existing Agent
+     * Delete an Agent
      *
      * Currently unsupported
      *
@@ -185,7 +186,7 @@ class FreshdeskAgent extends FreshdeskAPI
 /**
  * Freshdesk User API
  *
- * Create, View, Update, and Delete Users.
+ * Create, Retrieve, Update, and Delete Users
  *
  * @link http://freshdesk.com/api/#user
  */
@@ -258,8 +259,8 @@ class FreshdeskUser extends FreshdeskAPI
      *
      * @link   http://freshdesk.com/api/#create_user
      *
-     * @param  array $data  Array of User data
-     * @return object       JSON User object
+     * @param  array $data Array of User data
+     * @return object      JSON User object
      */
     public function create($data)
     {}
@@ -271,8 +272,7 @@ class FreshdeskUser extends FreshdeskAPI
      * Request method: GET
      *
      * Curl:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
-     *         -d '{ "user": { "name":"SuperMan", "job_title":"Avenger" }}' \
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *         http://domain.freshdesk.com/contacts/19.json
      *
      * Response:
@@ -301,7 +301,7 @@ class FreshdeskUser extends FreshdeskAPI
      * @link   http://freshdesk.com/api/#view_user
      *
      * @param  mixed  $user_id User ID or Filter state
-     * @param  string $query   Filter query
+     * @param  string $query   Filter query string
      * @return object          JSON User object
      */
     public function get($user_id = NULL, $query = NULL)
@@ -355,7 +355,7 @@ class FreshdeskUser extends FreshdeskAPI
      * @link   http://freshdesk.com/api/#view_all_user
      *
      * @param  string $state Filter state
-     * @param  string $query Filter query
+     * @param  string $query Filter query string
      * @return array         Array of JSON User objects
      */
     public function get_all($state = '', $query = '')
@@ -383,9 +383,9 @@ class FreshdeskUser extends FreshdeskAPI
      *
      * @link   http://freshdesk.com/api/#update_user
      *
-     * @param  integer $user_id  User ID
-     * @param  array   $data     User data
-     * @return integer           HTTP response code
+     * @param  integer $user_id User ID
+     * @param  array   $data    Array of User data
+     * @return mixed            JSON User object or FALSE
      */
     public function update($user_id, $data)
     {}
@@ -405,8 +405,8 @@ class FreshdeskUser extends FreshdeskAPI
      *
      * @link   http://freshdesk.com/api/#delete_user
      *
-     * @param  integer $user_id  User ID
-     * @return integer           HTTP response code
+     * @param  integer $user_id User ID
+     * @return boolean          TRUE if HTTP 200 else FALSE
      */
     public function delete($user_id)
     {}
