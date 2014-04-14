@@ -1,11 +1,35 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
+ * codeigniter-freshdesk
+ *
+ * @link    https://github.com/theluker/codeigniter-freshdesk   GitHub
+ * @license http://opensource.org/licenses/MIT                  The MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
  * All documentation Copyright © Freshdesk Inc. (http://freshdesk.com/api)
  */
 
 /**
  * Freshdesk Library
- * #TODO: Library infos
+ *
+ * Provides access to various Freshdesk APIs within the CodeIgniter PHP Framework.
  */
 class Freshdesk
 {
@@ -54,16 +78,6 @@ class Freshdesk
         {
             $class = "Freshdesk{$api}";
             $this->$api = new $class($this->params);
-        }
-    }
-
-    public function __call($name, $args)
-    {
-        // Dynamically load and return wrapped API
-        if (in_array($name, self::$apis))
-        {
-            $class = "Freshdesk{$name}Wrapper";
-            return new $class($this->params, $args);
         }
     }
 }
@@ -258,6 +272,7 @@ class FreshdeskAgent extends FreshdeskAPI
         'occasional'          => 'bool',          // Agent Occasional           (?)
         'scoreboard_level_id' => 'numeric',       // Agent Scoreboard Level ID  (?)
         'signature'           => 'string',        // Agent signature
+                                                  // OR
         'signature_html'      => 'string',        // Agent signature HTML
         'ticket_permission'   => 'numeric',       // Agent Ticket permission    (?)
         'updated_at'          => 'string',        // Agent time last updated
@@ -266,7 +281,7 @@ class FreshdeskAgent extends FreshdeskAPI
     );
 
     /**
-     * Create a new Agent
+     * Create an Agent
      *
      * Currently unsupported
      *
@@ -396,7 +411,7 @@ class FreshdeskUser extends FreshdeskAPI
     );
 
     /**
-     * Create a new User
+     * Create a User
      *
      * Request URL: /contacts.json
      * Request method: POST
@@ -636,7 +651,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
     );
 
     /**
-     * Create a new Forum Category
+     * Create a Forum Category
      *
      * Request URL:  /categories.json
      * Request method: POST
@@ -767,7 +782,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
     }
 
     /**
-     * Delete an existing Forum Category
+     * Delete a Forum Category
      *
      * Request URL: categories/[category_id].json
      * Request method: DELETE
@@ -801,21 +816,25 @@ class FreshdeskForumCategory extends FreshdeskAPI
 /**
  * Freshdesk Forum API
  *
- * Create, Retrieve, Update, and Delete Forums
+ * Create, Retrieve, Update, and Delete Forums.
  *
  * @link http://freshdesk.com/api/#forum
  */
 class FreshdeskForum extends FreshdeskAPI
 {
+    public $Topic;
+
     protected $NODE = 'forum';
 
     public static $SCHEMA = array(
-        'id'                => 'numeric',  // Forum ID (read-only)
-        'name'              => 'string',   // Forum Name (required)
+        'id'                => 'numeric',  // Forum ID           (read-only)
+        'name'              => 'string',   // Forum Name         (required)
         'description'       => 'string',   // Forum Description
+                                           // OR
+        'description_html'  => 'string',   // Forum Description HTML
         'forum_category_id' => 'numeric',  // Forum Category ID
-        'forum_type'        => 'numeric',  // Forum Type ID (required)
-        'forum_visibility'  => 'numeric',  // Forum Visibility (required)
+        'forum_type'        => 'numeric',  // Forum Type ID      (required)
+        'forum_visibility'  => 'numeric',  // Forum Visibility   (required)
         'position'          => 'numeric',  // Forum Position
         'posts_count'       => 'numeric',  // Forum Post count
         'topics_count'      => 'numeric'   // Forum Topic count
@@ -834,15 +853,21 @@ class FreshdeskForum extends FreshdeskAPI
         'AGENTS' => 3
     );
 
+    public function __construct($params)
+    {
+        parent::__construct($params);
+        $this->Topic = new FreshdeskTopic($params);
+    }
+
     /**
-     * Create a new Forum
+     * Create a Forum
      *
      * Request URL: categories/[category_id]/forums.json
      * Request method: POST
      *
      * CURL:
-     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST
-     *         -d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}'
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     *         -d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}' \
      *         http://domain.freshdesk.com/categories/1/forums.json
      *
      * Request:
@@ -942,12 +967,13 @@ class FreshdeskForum extends FreshdeskAPI
      * @see    FreshdeskForumCategory::get()
      *
      * @param  integer $category_id Forum Category ID
-     * @return mixed                Array of, or single, JSON Forum Category object(s)
+     * @return array                Array of JSON Forum objects
      */
     public function get_all($category_id)
     {
-        // Return ForumCategory::get() method
-        return $this->ForumCategory->get($category_id);
+        // Return parent method
+        $parent = new FreshdeskForumCategory($params);
+        return $parent->get($category_id)->forums;
     }
 
     /**
@@ -1010,23 +1036,32 @@ class FreshdeskForum extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk Forum Topic
+ *
+ * Create, Retrieve, Update, and Delete Forum Topics.
+ *
+ * @link http://freshdesk.com/api/#topic
+ */
 class FreshdeskTopic extends FreshdeskAPI
 {
+    public $Post;
+
     protected $NODE = 'topic';
 
     public static $SCHEMA = array(
-        'id'           => 'numeric',  // Unique id of the topic Read-Only
-        'title'        => 'string',   // Title of the forum Mandatory
-        'forum_id'     => 'numeric',  // ID of the Forum in which this topic is present
-        'hits'         => 'numeric',  // Number of views of that forum Read-Only
-        'last_post_id' => 'numeric',  // ID of the latest comment on the forum Read-Only
-        'locked'       => 'boolean',  // Set as true if the forum is locked
-        'posts_count'  => 'numeric',  // Number of posts in that topic
-        'sticky'       => 'numeric',  // Describes whether a topic can be deleted or not
-        'user_id'      => 'numeric',  // ID of the user Read-Only
-        'user_votes'   => 'numeric',  // Number of votes in the topic Read-Only
-        'replied_at'   => 'string',   // Timestamp of the latest comment made in the topic Read-Only
-        'replied_by'   => 'string'    // ID of the user who made the latest comment in that topic Read-Only
+        'id'           => 'numeric',  // Topic ID               (read-only)
+        'title'        => 'string',   // Topic Title            (required)
+        'forum_id'     => 'numeric',  // Forum ID
+        'hits'         => 'numeric',  // Forum Hits             (read-only)
+        'last_post_id' => 'numeric',  // Last Post ID           (read-only)
+        'locked'       => 'boolean',  // Forum Locked
+        'posts_count'  => 'numeric',  // Topic Post count
+        'sticky'       => 'numeric',  // Forum Sticky
+        'user_id'      => 'numeric',  // Topic User ID          (read-only)
+        'user_votes'   => 'numeric',  // Topic Votes            (read-only)
+        'replied_at'   => 'string',   // Topic reply timestamp  (read-only)
+        'replied_by'   => 'string'    // Topic reply User ID    (read-only)
     );
 
     public static $STAMP = array(
@@ -1035,12 +1070,121 @@ class FreshdeskTopic extends FreshdeskAPI
         'TAKEN'       => 3
     );
 
+    public function __construct($params)
+    {
+        parent::__construct($params);
+        $this->Post = new FreshdeskPost($params);
+    }
+
+    /**
+     * Create a Topic
+     *
+     * Request URL: /categories/[category_id]/forums/[forum_id]/topics.json
+     * Request method: POST
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     *          -d '{ "topic": { "sticky":0, "locked":0, "title":"how to create a custom field", "body_html":"Can someone give me the steps ..." }}' \
+     *          http://domain.freshdesk.com/categories/1/forums/1/topics.json
+     *
+     * Request:
+     *    {"topic": {
+     *        "sticky":0,
+     *        "locked":0,
+     *        "title":"how to create a custom field",
+     *        "body_html":"Can someone give me the steps..."
+     *    }}
+     *
+     * Response:
+     *    {"topic":{
+     *        "account_id":1,
+     *        "created_at":"2014-01-08T08:54:01+05:30",
+     *        "delta":true,
+     *        "forum_id":5,
+     *        "hits":0,
+     *        "id":3,
+     *        "import_id":null,
+     *        "last_post_id":null,
+     *        "locked":false,
+     *        "posts_count":0,
+     *        "replied_at":"2014-01-08T08:54:01+05:30",
+     *        "replied_by":null,
+     *        "stamp_type":null,
+     *        "sticky":0,
+     *        "title":"how to create a custom field",
+     *        "updated_at":"2014-01-08T08:54:01+05:30",
+     *        "user_id":1,
+     *        "user_votes":0
+     *    }}
+     *
+     * @link http://freshdesk.com/api/#create_topic
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  array   $data        Array of Topic data
+     * @return object               JSON Topic object
+     */
     public function create($category_id, $forum_id, $data)
     {
         // Return parent method
         return parent::create("categories/{$category_id}/forums/{$forum_id}/topics.json", $data);
     }
 
+    /**
+     * Retrieve a Topic
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
+     * Request method: GET
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *          http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
+     *
+     * Response:
+     *     {"topic":{
+     *         "account_id":1,
+     *         "created_at":"2014-01-08T08:54:01+05:30",
+     *         "delta":true,
+     *         "forum_id":5,
+     *         "hits":0,
+     *         "id":3,
+     *         "import_id":null,
+     *         "last_post_id":9,
+     *         "locked":false,
+     *         "posts_count":0,
+     *         "replied_at":"2014-01-08T08:54:01+05:30",
+     *         "replied_by":1,
+     *         "stamp_type":null,
+     *         "sticky":0,
+     *         "title":"How to create a ticket field",
+     *         "updated_at":"2014-01-08T08:54:01+05:30",
+     *         "user_id":1,
+     *         "user_votes":0,
+     *         "posts":[
+     *             {
+     *                 "account_id":1,
+     *                 "answer":false,
+     *                 "body":"Steps: Go to Admin tab ...",
+     *                 "body_html":"Steps: Go to Admin tab ...",
+     *                 "created_at":"2014-01-08T08:54:01+05:30",
+     *                 "forum_id":5,
+     *                 "id":9,
+     *                 "import_id":null,
+     *                 "topic_id":3,
+     *                 "updated_at":"2014-01-08T08:54:01+05:30",
+     *                 "user_id":1
+     *            },
+     *            ...
+     *         ]
+     *      }
+     *
+     * @link http://freshdesk.com/api/#view_topic
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  integer $topic_id    Topic ID
+     * @return mixed                Array of, or single, JSON Topic object(s)
+     */
     public function get($category_id, $forum_id, $topic_id = NULL)
     {
         // Return all topics if no Topic ID was passed
@@ -1049,16 +1193,100 @@ class FreshdeskTopic extends FreshdeskAPI
         return parent::get("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json");
     }
 
+    /**
+     * Retrieve all Topics in a Forum
+     *
+     * Request URL: categories/[category_id]/forums/[forum_id].json
+     * Request method: GET
+     *
+     * CURL:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *         http://domain.freshdesk.com/categories/1/forums/2.json
+     *
+     * Response:
+     *     {"forum":{
+     *         "description":"Ticket related functions",
+     *         "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
+     *         "forum_category_id":1,
+     *         "forum_type":2,
+     *         "forum_visibility":1,
+     *         "id":2,
+     *         "name":"Ticket Operations",
+     *         "position":5,
+     *         "posts_count":0,
+     *         "topics_count":0,
+     *         "topics":[]
+     *     }
+     *
+     * @link   http://freshdesk.com/api/#view_forum
+     * @see    FreshdeskForum::get()
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @return mixed                Array of JSON Topic objects
+     */
     public function get_all($category_id, $forum_id) {
-        # TODO: implement
+        // Return parent method
+        $parent = new FreshdeskForum($params);
+        return $parent->get($category_id, $forum_id)->topics;
     }
 
+    /**
+     * Update a Forum Topic
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
+     * Request method: PUT
+     *
+     * CURL:
+     *    curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *        -d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}' \
+     *        http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
+     *
+     * Request:
+     *     {"topic":{
+     *         "sticky":0,
+     *         "locked":0,
+     *         "title":"How to create a new ticket field",
+     *         "body_html": "Steps: Go to Admin tab ..."
+     *     }}
+     *
+     * Response:
+     *    HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/#update_topic
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  integer $topic_id    Topic ID
+     * @param  array   $data        Array of Topic data
+     * @return mixed                JSON Topic object or FALSE
+     */
     public function update($category_id, $forum_id, $topic_id, $data)
     {
-        // Return parent method
-        return parent::update("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", $data);
+        // Return object if parent method succeeds
+        return parent::update("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}.json", $data) ? $this->get($category_id, $forum_id, $topic_id) : FALSE;
     }
 
+    /**
+     * Delete a Forum Topic
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
+     * Request method: DELETE
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     *          http://domain.freshdesk.com/categories/1/forums/1/topics/1.json
+     *
+     * Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/#delete_topic
+     *
+     * @param  integer  $category_id Forum Category ID
+     * @param  integer  $forum_id    Forum ID
+     * @param  integer  $topic_id    Topic ID
+     * @return boolean               TRUE if HTTP 200 else FALSE
+     */
     public function delete($category_id, $forum_id, $topic_id)
     {
         // Return parent method
@@ -1066,104 +1294,232 @@ class FreshdeskTopic extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk Forum Post
+ *
+ * Create, Retrieve, Update, and Delete Forum Posts
+ *
+ * @link http://freshdesk.com/api/#post
+ */
 class FreshdeskPost extends FreshdeskAPI
 {
     protected $NODE = 'post';
 
+    public static $SCHEMA = array(
+        'id'        => 'numeric',  // Post ID         (read-only)
+        'body'      => 'string',   // Post Body       (required)
+                                   // OR
+        'body_html' => 'string',   // Post Body HTML  (required)
+        'forum_id'  => 'numeric',  // Post Forum ID
+        'topic_id'  => 'numeric',  // Post Topic ID
+        'user_id'   => 'numeric',  // Post User ID    (read-only)
+    );
+
+    /**
+     * Create a Forum Post
+     *
+     * Request URL: /posts.json
+     * Request method: POST
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     *          -d '{ "post": { "body_html":"What type of ticket field you are creating" }}' \
+     *          http://domain.freshdesk.com/posts.json?forum_id=1&category_id=1&topic_id=2
+     *
+     * Request:
+     *     {"post": {
+     *         "body_html":"What type of ticket field you are creating"
+     *     }}
+     *
+     * Response:
+     *     {"post": {
+     *         "answer": false,
+     *         "body": "What type of ticket field you are creating",
+     *         "body_html": "What type of ticket field you are creating",
+     *         "created_at": "2014-02-07T12:32:34+05:30",
+     *         "forum_id": 1,
+     *         "id": 12,
+     *         "topic_id": 2,
+     *         "updated_at": "2014-02-07T12:32:34+05:30",
+     *         "user_id": 1
+     *      }}
+     *
+     * @link http://freshdesk.com/api/#create_post
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  integer $topic_id    Topic ID
+     * @param  array   $data        Array of Post data
+     * @return object               JSON Post object
+     */
 	public function create($category_id, $forum_id, $topic_id, $data)
 	{
         // Return parent method
         return parent::create("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", $data);
 	}
 
+    /**
+     * Retrieve a Forum Post
+     *
+     * Request URL: /posts/[post_id].json
+     * Request method: GET
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *          http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
+     *
+     * Response:
+     *     {"post": {
+     *         "answer": false,
+     *         "body": "What type of ticket field you are creating",
+     *         "body_html": "What type of ticket field you are creating",
+     *         "created_at": "2014-02-07T12:32:34+05:30",
+     *         "forum_id": 1,
+     *         "id": 12,
+     *         "topic_id": 2,
+     *         "updated_at": "2014-02-07T12:32:34+05:30",
+     *         "user_id": 1
+     *      }}
+     *
+     * @link http://freshdesk.com/api/#view_post
+     *
+     * @param    integer    $category_id    Forum Category ID
+     * @param    integer    $forum_id       Forum ID
+     * @param    integer    $topic_id       Topic ID
+     * @param    integer    $post_id        Post ID
+     * @return   bool                       TRUE if HTTP Status: 200 OK
+     */
     public function get($category_id, $forum_id, $topic_id, $post_id = NULL)
     {
         // Return all forums if no Forum ID was passed
         if ( ! $post_id) return $this->get_all($category_id, $forum_id, $topic_id);
-        # TODO: implement
+        // Return parent method
+        return parent::get("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
     }
 
+    /**
+     * Retrieve all Posts in a Topic
+     *
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
+     * Request method: GET
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *          http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
+     *
+     * Response:
+     *     {"topic":{
+     *         "account_id":1,
+     *         "created_at":"2014-01-08T08:54:01+05:30",
+     *         "delta":true,
+     *         "forum_id":5,
+     *         "hits":0,
+     *         "id":3,
+     *         "import_id":null,
+     *         "last_post_id":9,
+     *         "locked":false,
+     *         "posts_count":0,
+     *         "replied_at":"2014-01-08T08:54:01+05:30",
+     *         "replied_by":1,
+     *         "stamp_type":null,
+     *         "sticky":0,
+     *         "title":"How to create a ticket field",
+     *         "updated_at":"2014-01-08T08:54:01+05:30",
+     *         "user_id":1,
+     *         "user_votes":0,
+     *         "posts":[
+     *             {
+     *                 "account_id":1,
+     *                 "answer":false,
+     *                 "body":"Steps: Go to Admin tab ...",
+     *                 "body_html":"Steps: Go to Admin tab ...",
+     *                 "created_at":"2014-01-08T08:54:01+05:30",
+     *                 "forum_id":5,
+     *                 "id":9,
+     *                 "import_id":null,
+     *                 "topic_id":3,
+     *                 "updated_at":"2014-01-08T08:54:01+05:30",
+     *                 "user_id":1
+     *            },
+     *            ...
+     *         ]
+     *      }
+     *
+     * @link http://freshdesk.com/api/#view_topic
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  integer $topic_id    Topic ID
+     * @return mixed                Array of JSON Post object(s)
+     */
     public function get_all($category_id, $forum_id, $topic_id)
     {
-        # TODO implement
+        // Return parent method
+        $parent = new FreshdeskTopic($params);
+        return $parent->get($category_id, $forum_id, $topic_id)->posts;
     }
 
-	public function update($category_id, $forum_id, $topic_id, $data)
+    /**
+     * Update a Forum Post
+     *
+     * Request URL: /posts/[post_id].json
+     * Request method: PUT
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *          -d '{ "post": { "body_html": "Ticket field have different types ..." }}' \
+     *          http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=2
+     *
+     * Request:
+     *     {"post": {
+     *         "body_html":"What type of ticket field you are creating"
+     *     }}
+     *
+     * Response:
+     *    HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/#update_post
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  integer $topic_id    Forum Topic ID
+     * @param  integer $post_id     Post ID
+     * @param  array   $data        Array of Post data
+     * @return mixed                JSON Post object or FALSE
+     */
+	public function update($category_id, $forum_id, $topic_id, $post_id, $data)
 	{
-        // Return parent method
-        return parent::update("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", $data);
+        // Return object if parent method succeeds
+        return parent::update("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", $data) ? $this->get($category_id, $forum_id, $topic_id, $post_id) : FALSE;
 	}
 
+    /**
+     * Delete a Forum Post
+     *
+     * Request URL: /posts/[post_id].json
+     * Request method: DELETE
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     *          http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
+     *
+     * Response:
+     *    HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api/#delete_post
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  integer $forum_id    Forum ID
+     * @param  integer $topic_id    Topic ID
+     * @param  integer $post_id     Post ID
+     * @return boolean              TRUE if HTTP 200 else FALSE
+     */
 	public function delete($category_id, $forum_id, $topic_id, $post_id)
     {
         // Return parent method
         return parent::update("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
     }
 }
-
-class FreshdeskWrapper extends FreshdeskTransport
-{
-    protected $id;
-    protected $api;
-    protected $args;
-    protected $data;
-
-    public function __construct($params, $args)
-    {
-        FreshdeskAPI::__construct($params);
-
-        $api = substr(get_class($this), 0, -strlen('Wrapper'));
-        $this->api = new $api($params);
-
-        // Return if no args were passed
-        if ( ! $arg0 = @$args[0]) return;
-        // Set args if only args passed
-        if (is_array($arg0)) $this->args = $arg0;
-        // Set args and data if id was passed
-        else if ($this->id = intval(array_shift($args)))
-        {
-            $this->args = @$args[0];
-            $this->data = $this->get();
-        }
-    }
-
-    public function __get($name)
-    {
-        if ($value = (@$this->args[$name] ?: @$this->data->$name)) return $value;
-    }
-
-    public function __set($name, $value)
-    {
-        $this->args[$name] = $value;
-    }
-
-    public function create($args = NULL)
-    {
-        return $this->api->create($args ?: $this->args);
-    }
-
-    public function get()
-    {
-        return $this->id ? $this->api->get($this->id) : FALSE;
-    }
-
-    public function update($args = NULL)
-    {
-        return $this->id ? $this->api->update($this->id, $args ?: $this->args) : FALSE;
-    }
-
-    public function delete()
-    {
-        return $this->id ? $this->api->delete($this->id) : FALSE;
-    }
-}
-
-class FreshdeskAgentWrapper extends FreshdeskWrapper {}
-class FreshdeskUserWrapper extends FreshdeskWrapper {}
-class FreshdeskForumCategoryWrapper extends FreshdeskWrapper {}
-class FreshdeskForumWrapper extends FreshdeskWrapper {}
-class FreshdeskTopicWrapper extends FreshdeskWrapper {}
-class FreshdeskPostWrapper extends FreshdeskWrapper {}
 
 /* End of file Freshdesk.php */
 /* Location: ./application/libraries/Freshdesk.php */
