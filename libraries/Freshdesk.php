@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * codeigniter-freshdesk
+ * codeigniter-freshdesk: A Freshdesk Library for the CodeIgniter PHP Framework.
  *
  * @link    https://github.com/theluker/codeigniter-freshdesk   GitHub
  * @license http://opensource.org/licenses/MIT                  The MIT License (MIT)
@@ -89,15 +89,17 @@ class Freshdesk
  */
 class FreshdeskTransport
 {
+    protected $params;
     private $base_url;
     private $username;
     private $password;
 
     public function __construct($params)
     {
+        $this->params   = $params;
         $this->base_url = $params['base_url'];
-        $this->username  = $params['username'];
-        $this->password  = $params['password'];
+        $this->username = $params['username'];
+        $this->password = $params['password'];
     }
 
     /**
@@ -182,13 +184,12 @@ class FreshdeskAPI extends FreshdeskTransport
      */
     public function create($endpoint, $data)
     {
-        parent::create($data);
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data)) return FALSE;
         // Encapsulate data in container node
         if (array_shift(array_keys($data)) != $this->NODE) $data = array($this->NODE => $data);
         // Return object else FALSE if we've failed to get a request response
-        return $this->_request($endpoint, 'POST', $data) ?: FALSE;
+        return @$this->_request($endpoint, 'POST', $data)->{$this->NODE} ?: FALSE;
     }
 
     /**
@@ -200,7 +201,7 @@ class FreshdeskAPI extends FreshdeskTransport
     public function get($endpoint)
     {
         // Return object(s) else FALSE if we've failed to get a request response
-        return $this->_request($endpoint) ?: FALSE;
+        return @$this->_request($endpoint)->{$this->NODE} ?: FALSE;
     }
 
     /**
@@ -249,7 +250,7 @@ class FreshdeskAPI extends FreshdeskTransport
     public function delete($endpoint)
     {
         // Return TRUE if HTTP 200 else FALSE
-        return $this->_request($endpoint, 'DELETE') == 200 ? TRUE : FALSE;
+        return ($response = $this->_request($endpoint, 'DELETE') or $response == 200) ? TRUE : FALSE;
     }
 }
 
@@ -860,6 +861,9 @@ class FreshdeskForum extends FreshdeskAPI
 
     public function __construct($params)
     {
+        $this->TYPE = self::$TYPE;
+        $this->VISIBILITY = self::$VISIBILITY;
+
         parent::__construct($params);
         $this->Topic = new FreshdeskTopic($params);
     }
@@ -977,7 +981,7 @@ class FreshdeskForum extends FreshdeskAPI
     public function get_all($category_id)
     {
         // Return parent method
-        $parent = new FreshdeskForumCategory($params);
+        $parent = new FreshdeskForumCategory($this->params);
         return $parent->get($category_id)->forums;
     }
 
@@ -1057,6 +1061,7 @@ class FreshdeskTopic extends FreshdeskAPI
     public static $SCHEMA = array(
         'id'           => 'numeric',  // Topic ID               (read-only)
         'title'        => 'string',   // Topic Title            (required)
+        'body_html'    => 'string',   // Topic Body HTML        (required)
         'forum_id'     => 'numeric',  // Forum ID
         'hits'         => 'numeric',  // Forum Hits             (read-only)
         'last_post_id' => 'numeric',  // Last Post ID           (read-only)
@@ -1232,7 +1237,7 @@ class FreshdeskTopic extends FreshdeskAPI
      */
     public function get_all($category_id, $forum_id) {
         // Return parent method
-        $parent = new FreshdeskForum($params);
+        $parent = new FreshdeskForum($this->params);
         return $parent->get($category_id, $forum_id)->topics;
     }
 
@@ -1460,7 +1465,7 @@ class FreshdeskPost extends FreshdeskAPI
     public function get_all($category_id, $forum_id, $topic_id)
     {
         // Return parent method
-        $parent = new FreshdeskTopic($params);
+        $parent = new FreshdeskTopic($this->params);
         return $parent->get($category_id, $forum_id, $topic_id)->posts;
     }
 

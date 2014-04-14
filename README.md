@@ -1,6 +1,6 @@
 # codeigniter-freshdesk
 
-A Freshdesk Library for CodeIgniter.
+A Freshdesk Library for the CodeIgniter PHP Framework.
 
 ### Using The Library
 
@@ -36,7 +36,7 @@ You can also pass parameters stored in a config file. Note that if you dynamical
 Note that if you pass the `api_key` parameter, the `username` and `password` options will be ignored.
 
 ### Accessing the API
- * The library provides access to the following APIs: `User`
+ * The library provides access to the following APIs: `User`, `ForumCategory`, `Forum`, `Topic`, and `Post`
  * Limited access is provided to the (currently undocumented) `Agent` API.
 
 API methods can be accessed via a standardized scheme:
@@ -50,31 +50,87 @@ The following examples demonstrate various methods of utilizing the library.
 
 #### Users
 ```php
-# Create a User
-$data = array('name' => 'Name', 'email' => 'user@domain.com');
+// Create a User
+$data = array(
+    'name' => 'Name',
+    'email' => 'user@domain.com'
+);
 $user = $this->freshdesk->User->create($data);
 
-# Update a User
-$this->freshdesk->User->update(12345, ['name' => 'New Name']);
+// Update a User
+$this->freshdesk->User->update(12345, array('name' => 'New Name'));
 
-# Delete a User
+// Delete a User
 $this->freshdesk->User->delete(12345);
 
-# Retrieve a User
+// Retrieve a User
 $user = $this->freshdesk->User->get(12345);
-
-# Retrieve a list of Users
+```
+```php
+// Retrieve a list of Users
 foreach ($this->freshdesk->User->get_all() as $user)
 {
     $name = $user->name;
     $email = $user->email;
     $created = $user->created_at;
-
     echo "User '{$name}' ({$email}) was created {$created}.";
 }
-
-# Create a a Post
-$this->freshdesk->Post->create(123, 234, 456, ['body' => 'My first post!']);
+```
+#### Forums
+```php
+// Retrieve a list of Forum Categories
+foreach ($this->freshdesk->ForumCategory->get_all() as $category)
+{
+    $name = $category->name;
+    $description = $category->description;
+    $created = $category->created_at;
+    echo "Category '{$name} - {$description}' created at {$created}.";
+}
+```
+```php
+// Create a Forum
+$data = array(
+    'name' => "Example Forum",
+    'description' => "This is an example Forum",
+    'forum_type' => $this->freshdesk->Forum->TYPE['IDEA'],
+    'forum_visibility' => $this->freshdesk->Forum->VISIBILITY['ALL']
+);
+$forum = $this->freshdesk->Forum->create($category->id, $data);
+```
+#### Topics
+```php
+// Retrieve a list of Topics in a Forum
+foreach ($this->freshdesk->Forum->get_all($category->id) as $forum)
+{
+    $name = $forum->name;
+    $description = $forum->description;
+    $created = $forum->created_at;
+    echo "Forum '{$name} - {$description}' created at {$created}.";
+}
+```
+```php
+// Create a Topic
+$data = array(
+    'title' => "Example Topic",
+    'body_html' => "This is an example Topic",
+    'sticky' => TRUE
+);
+$topic = $this->freshdesk->Topic->create($category->id, $forum->id, $data);
+```
+#### Posts
+```php
+// Retrieve a list of Posts in a Topic
+foreach ($this->freshdesk->Topic->get_all($category->id, $forum->id) as $topic)
+{
+    $name = $forum->name;
+    $description = $forum->description;
+    $created = $forum->created_at;
+    echo "Forum '{$name} - {$description}' created at {$created}.";
+}
+```
+```php
+$data = array('body_html' => "This is an example Post");
+$post = $this->freshdesk->Post->create($category->id, $forum->id, $topic->id, $data);
 ```
 
 ### License
