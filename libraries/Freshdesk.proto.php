@@ -86,7 +86,7 @@ class FreshdeskAPI extends FreshdeskTransport
 /**
  * Freshdesk Agent API
  *
- * Currently undocumented by Freshdesk
+ * Currently undocumented by Freshdesk.
  *
  * @link http://freshdesk.com/api/#agent
  */
@@ -186,7 +186,7 @@ class FreshdeskAgent extends FreshdeskAPI
 /**
  * Freshdesk User API
  *
- * Create, Retrieve, Update, and Delete Users
+ * Create, Retrieve, Update, and Delete Users.
  *
  * @link http://freshdesk.com/api/#user
  */
@@ -415,7 +415,7 @@ class FreshdeskUser extends FreshdeskAPI
 /**
  * Freshdesk Forum Category API
  *
- * Create, View, Update, and Delete Forum Categories.
+ * Create, Retrieve, Update, and Delete Forum Categories.
  *
  * @link http://freshdesk.com/api/#forum-category
  */
@@ -431,20 +431,22 @@ class FreshdeskForumCategory extends FreshdeskAPI
     );
 
     /**
-     * Create a new Forum Category.
+     * Create a new Forum Category
      *
      * Request URL:  /categories.json
      * Request method: POST
      *
      * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST
-     *      -d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' http://domain.freshdesk.com/categories.json
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     *          -d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' \
+     *          http://domain.freshdesk.com/categories.json
      *
      * Request:
-     *    {"forum_category": {
+     *     {"forum_category": {
      *         "name":"How to",
      *         "description":"Queries on How to ?"
-     *      }}
+     *     }}
+     *
      * Response:
      *     {"forum_category":{
      *         "created_at":"2014-01-08T06:38:11+05:30",
@@ -455,20 +457,23 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *         "updated_at":"2014-01-08T06:38:11+05:30"
      *      }}
      *
-     *
      * @link http://freshdesk.com/api/#create_forum_category
      *
-     * @param  JSON object $data Forum Category Data '{ "forum_category": { "name":"How to", "description":"Getting Started" }}'
-     * @return JSON object              Forum Category JSON object
+     * @param  array $data Array of Forum Category data
+     * @return object      JSON Forum Category object
      */
     public function create($data)
     {}
 
     /**
-     * View Forums in a Category.
+     * Retrieve a Forum Category
      *
-     * Request URL: /categories/[id].json
+     * Request URL: /categories/[category_id].json
      * Request method: GET
+     *
+     * CURL:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *         http://domain.freshdesk.com/categories/2.json
      *
      * Response:
      *      {"forum_category":{
@@ -480,75 +485,80 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *          "updated_at":"2014-01-08T06:38:11+05:30"
      *      }}
      *
-     *
      * @link   http://freshdesk.com/api/#view_forum_category
      *
      * @param  integer $category_id Forum Category ID
-     * @return Object  JSON Forum Category Object
+     * @return object               JSON Forum Category object
      */
     public function get($category_id = NULL)
     {}
 
     /**
-     * View all Forum Categories.
+     * Retrieve all Forum Categories
      *
      * Request URL: categories.json
      * Request method: GET
      *
      * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json"
-     *      -X GET http://domain.freshdesk.com/categories.json
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *          http://domain.freshdesk.com/categories.json
+     *
      * Response:
-     *      {"forum_category":{
-     *            "created_at":"2014-01-08T06:38:11+05:30",
-     *            "description":"Tell us your problems",
-     *            "id":3,
-     *            "name":"Report Problems",
-     *            "position":3,
-     *            "updated_at":"2014-01-08T06:38:11+05:30"
-     *        }
+     *      [
+     *          {"forum_category":{
+     *              "created_at":"2014-01-08T06:38:11+05:30",
+     *              "description":"Tell us your problems",
+     *              "id":3,
+     *              "name":"Report Problems",
+     *              "position":3,
+     *              "updated_at":"2014-01-08T06:38:11+05:30"
+     *          }},
+     *          ...
+     *      ]
      *
      * @link   http://freshdesk.com/api/#view_all_forum_category
      *
-     * @return Object    JSON Object of Forum Category Objects
+     * @return array               Array of JSON Forum Category objects
      */
     public function get_all()
     {}
 
     /**
-     * Update an existing Forum Category.
+     * Update a Forum Category
      *
-     * Request URL: /categories/[id].json
+     * Request URL: /categories/[category_id].json
      * Request method: PUT
      *
      * Request:
      *     {"forum_category":{
      *         "name":"Report Problems",
      *         "description":"Tell us your problems"
-     *      }}
+     *     }}
+     *
      *  Response:
      *      HTTP Status: 200 OK
      *
      * @link   http://freshdesk.com/api/#update_forum_category
      *
      * @param  integer $category_id Forum Category ID
-     * @param  object  $data        Forum Category JSON Object
-     * @return bool    TRUE         Return TRUE if HTTP 200 OK
+     * @param  array   $data        Array of Forum Category data
+     * @return mixed                JSON Forum Category object or FALSE
      */
     public function update($category_id, $data)
     {}
 
     /**
-     * Delete an existing Forum Category.
+     * Delete an existing Forum Category
      *
-     * Request URL: categories/[id].json
+     * Request URL: categories/[category_id].json
      * Request method: DELETE
      *
      * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json"
-     *      -X DELETE http://domain.freshdesk.com/categories/3.json
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     *          http://domain.freshdesk.com/categories/3.json
+     *
      * Response:
-     *      {"forum_category":{
+     *     {"forum_category":{
      *          "created_at":"2014-01-08T06:38:11+05:30",
      *          "description":"How to Queries",
      *          "id":3,
@@ -559,8 +569,8 @@ class FreshdeskForumCategory extends FreshdeskAPI
      *
      * @link   http://freshdesk.com/api/#delete_forum_category
      *
-     * @param  integer  $category_id    Forum Category ID
-     * @return bool     TRUE            Returns TRUE if HTTP Response: 200 OK
+     * @param  integer $category_id Forum Category ID
+     * @return boolean              TRUE if HTTP 200 else FALSE
      */
     public function delete($category_id)
     {}
@@ -605,7 +615,7 @@ class FreshdeskForum extends FreshdeskAPI
     /**
      * Create a new Forum.
      *
-     * Request URL: categories/[id]/forums.json
+     * Request URL: categories/[category_id]/forums.json
      * Request method: POST
      *
      * CURL:
@@ -648,7 +658,7 @@ class FreshdeskForum extends FreshdeskAPI
     /**
      * View Forum
      *
-     * Request URL: categories/[id]/forums/[id].json
+     * Request URL: categories/[category_id]/forums/[forum_id].json
      * Request method: GET
      *
      * Response:
@@ -694,7 +704,7 @@ class FreshdeskForum extends FreshdeskAPI
     /**
      * Update an existing Forum.
      *
-     * Request URL: categories/[id]/forums/[id].json
+     * Request URL: categories/[category_id]/forums/[forum_id].json
      * Request method: PUT
      *
      * Request:
@@ -722,7 +732,7 @@ class FreshdeskForum extends FreshdeskAPI
     /**
      * Delete an existing Forum.
      *
-     * Request URL: categories/[id]/forums/[id].json
+     * Request URL: categories/[category_id]/forums/[forum_id].json
      * Request method: DELETE
      *
      * CURL:
@@ -772,7 +782,7 @@ class FreshdeskTopic extends FreshdeskTransport
     /**
      * Create a new Forum Topic
      *
-     * Request URL: /categories/[id]/forums/[id]/topics.json
+     * Request URL: /categories/[category_id]/forums/[forum_id]/topics.json
      * Request method: POST
      *
      * CURL:
@@ -826,7 +836,7 @@ class FreshdeskTopic extends FreshdeskTransport
     /**
      * View all conversations in a forum Topic
      *
-     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: GET
      *
      * CURL:
@@ -889,7 +899,7 @@ class FreshdeskTopic extends FreshdeskTransport
     /**
      * Update an existing forum Topic
      *
-     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: PUT
      *
      * CURL:
@@ -921,7 +931,7 @@ class FreshdeskTopic extends FreshdeskTransport
     /**
      * Delete Topic
      *
-     * Request URL: domain_URL/categories/[id]/forums/[id]/topics/[id].json
+     * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: DELETE
      *
      * CURL:
@@ -1002,7 +1012,7 @@ class FreshdeskPost extends FreshdeskTransport
     /**
      * Update an existing post
      *
-     * Request URL: /posts/[id].json
+     * Request URL: /posts/[post_id].json
      * Request method: PUT
      *
      * CURL:
@@ -1036,7 +1046,7 @@ class FreshdeskPost extends FreshdeskTransport
     /**
      * Update an existing post
      *
-     * Request URL: /posts/[id].json
+     * Request URL: /posts/[post_id].json
      * Request method: PUT
      *
      * CURL:
@@ -1064,7 +1074,7 @@ class FreshdeskPost extends FreshdeskTransport
     /**
      * Delete an existing post
      *
-     * Request URL: /posts/[id].json
+     * Request URL: /posts/[post_id].json
      * Request method: DELETE
      *
      * CURL:
@@ -1096,7 +1106,7 @@ class FreshDeskMonitor extends FreshdeskTransport
     /**
      * Get a user's Monitored Topics
      *
-     * Request URL: /support/discussions/user_monitored?user_id=[id]
+     * Request URL: /support/discussions/user_monitored?user_id=[post_id]
      * Request method: GET
      *
      * Curl:
@@ -1137,7 +1147,7 @@ class FreshDeskMonitor extends FreshdeskTransport
     /**
      * Monitoring Status
      *
-     * Request URL: /support/discussions/topics/[id]/check_monitor.json?user_id=[id]
+     * Request URL: /support/discussions/topics/[topic_id]/check_monitor.json?user_id=[user_id]
      * Request method: GET
      *
      * Curl:
@@ -1166,7 +1176,7 @@ class FreshDeskMonitor extends FreshdeskTransport
     /**
      * Monitor Topic
      *
-     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json
+     * Request URL: /categories/[category_id]/forums/[forum_id]/topics/[topic_id]/monitorship.json
      * Request method: POST
      *
      * Curl:
@@ -1189,7 +1199,7 @@ class FreshDeskMonitor extends FreshdeskTransport
     /**
      * Un-Monitor Topic
      *
-     * Request URL: /categories/[id]/forums/[id]/topics/[id]/monitorship.json
+     * Request URL: /categories/[category_id]/forums/[forum_id]/topics/[topic_id]/monitorship.json
      * Request method: DELETE
      *
      * Curl:
@@ -1284,7 +1294,7 @@ class FreshdeskTicket extends FreshdeskTransport
     /**
      * View a Ticket
      *
-     * Request URL: /helpdesk/tickets/[id].json
+     * Request URL: /helpdesk/tickets/[ticket_id].json
      * Request method: GET
      *
      * Curl:
@@ -1351,7 +1361,7 @@ class FreshdeskTicket extends FreshdeskTransport
     /**
      * View all Tickets
      *
-     * Request URL: /helpdesk/tickets/[id].json
+     * Request URL: /helpdesk/tickets/[ticket_id].json
      * Request method: GET
      *
      * Curl:

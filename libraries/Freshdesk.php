@@ -242,7 +242,7 @@ class FreshdeskAPI extends FreshdeskTransport
 /**
  * Freshdesk Agent API
  *
- * Currently undocumented by Freshdesk
+ * Currently undocumented by Freshdesk.
  *
  * @link http://freshdesk.com/api/#agent
  */
@@ -361,7 +361,7 @@ class FreshdeskAgent extends FreshdeskAPI
 /**
  * Freshdesk User API
  *
- * Create, Retrieve, Update, and Delete Users
+ * Create, Retrieve, Update, and Delete Users.
  *
  * @link http://freshdesk.com/api/#user
  */
@@ -609,16 +609,23 @@ class FreshdeskUser extends FreshdeskAPI
     }
 }
 
+/**
+ * Freshdesk Forum Category API
+ *
+ * Create, Retrieve, Update, and Delete Forum Categories.
+ *
+ * @link http://freshdesk.com/api/#forum-category
+ */
 class FreshdeskForumCategory extends FreshdeskAPI
 {
-    // public $Forum;
+    public $Forum;
 
     protected $NODE = 'forum_category';
 
     public function __construct($params)
     {
         parent::__construct($params);
-        // $this->Forum = new FreshdeskForum($params);
+        $this->Forum = new FreshdeskForum($params);
     }
 
     public static $SCHEMA = array(
@@ -628,43 +635,171 @@ class FreshdeskForumCategory extends FreshdeskAPI
         'position'    => 'numeric'   // The rank of the category in the category listing
     );
 
+    /**
+     * Create a new Forum Category
+     *
+     * Request URL:  /categories.json
+     * Request method: POST
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     *          -d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' \
+     *          http://domain.freshdesk.com/categories.json
+     *
+     * Request:
+     *     {"forum_category": {
+     *         "name":"How to",
+     *         "description":"Queries on How to ?"
+     *     }}
+     *
+     * Response:
+     *     {"forum_category":{
+     *         "created_at":"2014-01-08T06:38:11+05:30",
+     *         "description":"Getting Started",
+     *         "id":3,
+     *         "name":"How to",
+     *         "position":3,
+     *         "updated_at":"2014-01-08T06:38:11+05:30"
+     *      }}
+     *
+     * @link http://freshdesk.com/api/#create_forum_category
+     *
+     * @param  array $data Array of Forum Category data
+     * @return object      JSON Forum Category object
+     */
     public function create($data)
     {
-        // Return default method
+        // Return parent method
         return parent::create("categories.json", $data);
     }
 
+    /**
+     * Retrieve a Forum Category
+     *
+     * Request URL: /categories/[category_id].json
+     * Request method: GET
+     *
+     * CURL:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *         http://domain.freshdesk.com/categories/2.json
+     *
+     * Response:
+     *      {"forum_category":{
+     *          "created_at":"2014-01-08T06:38:11+05:30",
+     *          "description":"Recently Changed",
+     *          "id":2,
+     *          "name":"Latest Updates",
+     *          "position":4,
+     *          "updated_at":"2014-01-08T06:38:11+05:30"
+     *      }}
+     *
+     * @link   http://freshdesk.com/api/#view_forum_category
+     *
+     * @param  integer $category_id Forum Category ID
+     * @return object               JSON Forum Category object
+     */
     public function get($category_id = NULL)
     {
         // Return all categories if no ID was passed
         if ( ! $category_id) return $this->get_all();
-        // Return default method
+        // Return parent method
         return parent::get("categories/{$category_id}.json");
     }
 
+    /**
+     * Retrieve all Forum Categories
+     *
+     * Request URL: categories.json
+     * Request method: GET
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     *          http://domain.freshdesk.com/categories.json
+     *
+     * Response:
+     *      [
+     *          {"forum_category":{
+     *              "created_at":"2014-01-08T06:38:11+05:30",
+     *              "description":"Tell us your problems",
+     *              "id":3,
+     *              "name":"Report Problems",
+     *              "position":3,
+     *              "updated_at":"2014-01-08T06:38:11+05:30"
+     *          }},
+     *          ...
+     *      ]
+     *
+     * @link   http://freshdesk.com/api/#view_all_forum_category
+     *
+     * @return array               Array of JSON Forum Category objects
+     */
     public function get_all()
     {
-        // Return default method
+        // Return parent method
         return parent::get_all("categories.json");
     }
 
+    /**
+     * Update a Forum Category
+     *
+     * Request URL: /categories/[category_id].json
+     * Request method: PUT
+     *
+     * Request:
+     *     {"forum_category":{
+     *         "name":"Report Problems",
+     *         "description":"Tell us your problems"
+     *     }}
+     *
+     *  Response:
+     *      HTTP Status: 200 OK
+     *
+     * @link   http://freshdesk.com/api/#update_forum_category
+     *
+     * @param  integer $category_id Forum Category ID
+     * @param  array   $data        Array of Forum Category data
+     * @return mixed                JSON Forum Category object or FALSE
+     */
     public function update($category_id, $data)
     {
         // Return object if parent method succeeds
         return parent::update("categories/{$category_id}.json", $data) ? $this->get($category_id) : FALSE;
     }
 
+    /**
+     * Delete an existing Forum Category
+     *
+     * Request URL: categories/[category_id].json
+     * Request method: DELETE
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     *          http://domain.freshdesk.com/categories/3.json
+     *
+     * Response:
+     *     {"forum_category":{
+     *          "created_at":"2014-01-08T06:38:11+05:30",
+     *          "description":"How to Queries",
+     *          "id":3,
+     *          "name":"How and What?",
+     *          "position":null,
+     *          "updated_at":"2014-01-08T07:13:56+05:30"
+     *     }}
+     *
+     * @link   http://freshdesk.com/api/#delete_forum_category
+     *
+     * @param  integer $category_id Forum Category ID
+     * @return boolean              TRUE if HTTP 200 else FALSE
+     */
     public function delete($category_id)
     {
-        // Return default method
+        // Return parent method
         return parent::delete("categories/{$category_id}.json");
     }
 }
 
 class FreshdeskForum extends FreshdeskAPI
 {
-    // public $ForumCategory;
-
     protected $NODE = 'forum';
 
     public static $SCHEMA = array(
@@ -691,12 +826,6 @@ class FreshdeskForum extends FreshdeskAPI
         'USERS'  => 2,
         'AGENTS' => 3
     );
-
-    public function __construct($params)
-    {
-        parent::__construct($params);
-        //$this->ForumCategory = new FreshdeskForumCategory($params);
-    }
 
     public function create($category_id, $data)
     {
