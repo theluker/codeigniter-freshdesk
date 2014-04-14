@@ -4,7 +4,10 @@ class Freshdesk
 {
     private $CI;
     private $params;
-    private static $apis = array('Agent', 'User', 'ForumCategory', 'Forum', 'Topic', 'Post', 'Monitor');
+    private static $apis = array(
+        'Agent', 'User',
+        'ForumCategory', 'Forum', 'Topic', 'Post'
+    );
 
     public function __construct($params = array())
     {
@@ -14,13 +17,13 @@ class Freshdesk
         // Attempt to load config values from file
         if ($config = $this->CI->config->load('freshdesk', TRUE, TRUE))
         {
-            $api_key = $this->CI->config->item('api_key', 'freshdesk');
+            $api_key  = $this->CI->config->item('api_key',  'freshdesk');
             $username = $this->CI->config->item('username', 'freshdesk');
             $password = $this->CI->config->item('password', 'freshdesk');
             $base_url = $this->CI->config->item('base_url', 'freshdesk');
         }
         // Attempt to load config values from params
-        $api_key = @$params['api_key'] ?: @$params['api-key'];
+        $api_key  = @$params['api_key']  ?: @$params['api-key'];
         $username = @$params['username'];
         $password = @$params['password'];
         $base_url = @$params['base_url'] ?: @$params['base-url'];
@@ -39,7 +42,7 @@ class Freshdesk
             'password' => $password
         );
 
-        // Instantiate APIs
+        // Load APIs
         foreach (self::$apis as $api)
         {
             $class = "Freshdesk{$api}";
