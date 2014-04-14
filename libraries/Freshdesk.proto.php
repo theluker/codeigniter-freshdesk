@@ -11,6 +11,8 @@ class Freshdesk
 
 /**
  * Freshdesk API Transport
+ *
+ * Performs HTTP calls to the Freshdesk web service.
  */
 class FreshdeskTransport
 {

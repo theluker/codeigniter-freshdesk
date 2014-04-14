@@ -1,5 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * All documentation Copyright © Freshdesk Inc. (http://freshdesk.com/api)
+ */
 
+/**
+ * Freshdesk Library
+ * #TODO: Library infos
+ */
 class Freshdesk
 {
     private $CI;
@@ -61,6 +68,11 @@ class Freshdesk
     }
 }
 
+/**
+ * Freshdesk API Transport
+ *
+ * Performs HTTP calls to the Freshdesk web service.
+ */
 class FreshdeskTransport
 {
     private $base_url;
@@ -74,6 +86,14 @@ class FreshdeskTransport
         $this->password  = $params['password'];
     }
 
+    /**
+     * Perform an API request.
+     *
+     * @param  string $resource Freshdesk API resource
+     * @param  string $method   HTTP request method
+     * @param  array  $data     HTTP PUT/POST data
+     * @return mixed            JSON object or HTTP response code
+     */
     protected function _request($resource, $method = 'GET', $data = NULL)
     {
         // Build request
