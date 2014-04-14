@@ -51,37 +51,20 @@ The following examples demonstrate various methods of utilizing the library.
 #### Users
 ```php
 # Create a User
-
 $data = array('name' => 'Name', 'email' => 'user@domain.com');
-$user = $this->freshdesk->User->create($data);      // method 1
-$user = $this->freshdesk->User($data)->create();    // method 2
+$user = $this->freshdesk->User->create($data);
 
 # Update a User
-
-$user_id = 12345;
-$data = array('name' => 'New Name');
-$this->freshdesk->User->update($user_id, $data);    // method 1
-$this->freshdesk->User($user_id)->update($data);    // method 2
-$this->freshdesk->User($user_id, $data)->update();  // method 3
+$this->freshdesk->User->update(12345, ['name' => 'New Name']);
 
 # Delete a User
-
-$user_id = 12345;
-$this->freshdesk->User->delete($user_id);           // method 1
-$this->freshdesk->User($user_id)->delete();         // method 2
+$this->freshdesk->User->delete(12345);
 
 # Retrieve a User
-
-$user_id = 12345;
-$user = $this->freshdesk->User->get($user_id);      // method 1
-$user = $this->freshdesk->User($user_id)->get();    // method 2
+$user = $this->freshdesk->User->get(12345);
 
 # Retrieve a list of Users
-
-$users = $this->freshdesk->User->get();             // method 1
-$users = $this->freshdesk->User->get_all();         // method 2
-
-foreach ($users as $user)
+foreach ($this->freshdesk->User->get_all() as $user)
 {
     $name = $user->name;
     $email = $user->email;
@@ -90,19 +73,11 @@ foreach ($users as $user)
     echo "User '{$name}' ({$email}) was created {$created}.";
 }
 
-# Performing multiple actions
-
-$user = $this->freshdesk->User();
-$user->name = 'Name';
-$user->email = 'user@host.com';
-$user->create();
-
-$this->freshdesk->User(12345)->update(['name' => 'Updated Name 2']);
-
-$this->freshdesk->User(12345, ['name' => 'Updated Name 3'])->update();
-$this->freshdesk->User(12345)->delete();
+# Create a a Post
+$this->freshdesk->Post->create($category_id, $forum_id, $topic_id, ['body' => 'My first post!']);
 ```
 
 ### License
+ * The MIT License (MIT) (http://opensource.org/licenses/MIT)
  * Freshdesk documentation Copyright &copy; Freshdesk Inc. (http://freshdesk.com/api)
  * CodeIgniter documentation Copyright &copy; EllisLab, Inc. (http://ellislab.com/codeigniter/user-guide)
