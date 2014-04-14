@@ -27,9 +27,30 @@ class FreshdeskAPI
 }
 
 /**
+ * Freshdesk Base
+ */
+class FreshdeskBase extends FreshdeskAPI
+{
+    public function create($endpoint, $data)
+    {}
+
+    public function get($endpoint)
+    {}
+
+    public function get_all($endpoint)
+    {}
+
+    public function update($endpoint, $data)
+    {}
+
+    public function delete($endpoint)
+    {}
+}
+
+/**
  * Freshdesk Agent
  */
-class FreshdeskAgent extends FreshdeskAPI
+class FreshdeskAgent extends FreshdeskBase
 {
     public static $SCHEMA = array(
         'available'           => 'bool',
@@ -45,6 +66,18 @@ class FreshdeskAgent extends FreshdeskAPI
         'user_id'             => 'numeric',
         'user'                => 'FreshdeskUser'
     );
+
+    public function create($data)
+    {}
+
+    public function get_all()
+    {}
+
+    public function update($agent_id, $data)
+    {}
+
+    public function delete($agent_id)
+    {}
 }
 
 /**
@@ -54,7 +87,7 @@ class FreshdeskAgent extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#user
  */
-class FreshdeskUser extends FreshdeskAPI
+class FreshdeskUser extends FreshdeskBase
 {
     public static $SCHEMA = array(
         'id'             => 'numeric',  // User ID             (read-only)
@@ -284,8 +317,10 @@ class FreshdeskUser extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#forum-category
  */
-class FreshdeskForumCategory extends FreshdeskAPI
+class FreshdeskForumCategory extends FreshdeskBase
 {
+    public $Forum;
+
     public static $SCHEMA = array(
         'id'          => 'numeric',  // Unique id of the forum category Read-Only
         'name'        => 'string',   // Name of the forum category Mandatory
@@ -436,7 +471,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#forum
  */
-class FreshdeskForum extends FreshdeskAPI
+class FreshdeskForum extends FreshdeskBase
 {
     public $ForumCategory;
 

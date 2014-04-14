@@ -299,13 +299,13 @@ class FreshdeskUser extends FreshdeskBase
 
 class FreshdeskForumCategory extends FreshdeskBase
 {
-    protected $NODE = 'forum_category';
-
     // public $Forum;
+
+    protected $NODE = 'forum_category';
 
     public function __construct($params)
     {
-        FreshdeskAPI::__construct($params);
+        parent::__construct($params);
         // $this->Forum = new FreshdeskForum($params);
     }
 
@@ -351,9 +351,9 @@ class FreshdeskForumCategory extends FreshdeskBase
 
 class FreshdeskForum extends FreshdeskBase
 {
-    protected $NODE = 'forum'; # TODO: move node to schema;
-
     // public $ForumCategory;
+
+    protected $NODE = 'forum';
 
     public static $SCHEMA = array(
         'id'                => 'numeric',  // Unique id of the forum Read-Only
@@ -382,7 +382,7 @@ class FreshdeskForum extends FreshdeskBase
 
     public function __construct($params)
     {
-        FreshdeskAPI::__construct($params);
+        parent::__construct($params);
         //$this->ForumCategory = new FreshdeskForumCategory($params);
     }
 
