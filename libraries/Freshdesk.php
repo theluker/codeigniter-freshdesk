@@ -150,10 +150,22 @@ class FreshdeskTransport
     }
 }
 
+/**
+ * Freshdesk Base API
+ *
+ * Provides common create, get, update, and delete methods.
+ */
 class FreshdeskAPI extends FreshdeskTransport
 {
     protected $NODE;
 
+    /**
+     * Create a resource
+     *
+     * @param  string $endpoint  API Endpoint
+     * @param  array  $data      Array of resource data
+     * @return mixed             JSON object or FALSE
+     */
     public function create($endpoint, $data)
     {
         parent::create($data);
@@ -165,12 +177,24 @@ class FreshdeskAPI extends FreshdeskTransport
         return $this->_request($endpoint, 'POST', $data) ?: FALSE;
     }
 
+    /**
+     * Retrieve a resource
+     *
+     * @param  string $endpoint  API Endpoint
+     * @return mixed             JSON object or FALSE
+     */
     public function get($endpoint)
     {
         // Return object(s) else FALSE if we've failed to get a request response
         return $this->_request($endpoint) ?: FALSE;
     }
 
+    /**
+     * Retrieve all resources
+     *
+     * @param  string $endpoint  API Endpoint
+     * @return mixed             JSON object or FALSE
+     */
     public function get_all($endpoint)
     {
         // Return FALSE if we've failed to get a request response
@@ -185,6 +209,13 @@ class FreshdeskAPI extends FreshdeskTransport
         return $objects;
     }
 
+    /**
+     * Update a resource
+     *
+     * @param  string $endpoint  API Endpoint
+     * @param  array  $data      Array of resource data
+     * @return mixed             JSON object or FALSE
+     */
     public function update($endpoint, $data)
     {
         // Return FALSE if we did not receive an array of data
@@ -195,6 +226,12 @@ class FreshdeskAPI extends FreshdeskTransport
         return $this->_request($endpoint, 'PUT', $data) == 200 ? TRUE : FALSE;
     }
 
+    /**
+     * Delete a resource
+     *
+     * @param  string $endpoint  API Endpoint
+     * @return boolean           TRUE if HTTP 200 else FALSE
+     */
     public function delete($endpoint)
     {
         // Return TRUE if HTTP 200 else FALSE

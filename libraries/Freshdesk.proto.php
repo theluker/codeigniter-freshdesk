@@ -30,21 +30,54 @@ class FreshdeskTransport
 
 /**
  * Freshdesk Base API
+ *
+ * Provides common create, get, update, and delete methods.
  */
 class FreshdeskAPI extends FreshdeskTransport
 {
+    /**
+     * Create a resource
+     * @param  string $endpoint  API Endpoint
+     * @param  array  $data      Array of resource data
+     * @return mixed             JSON object or FALSE
+     */
     public function create($endpoint, $data)
     {}
 
+    /**
+     * Retrieve a resource
+     *
+     * @param  string $endpoint  API Endpoint
+     * @return mixed             JSON object or FALSE
+     */
     public function get($endpoint)
     {}
 
+    /**
+     * Retrieve all resources
+     *
+     * @param  string $endpoint  API Endpoint
+     * @return mixed             JSON object or FALSE
+     */
     public function get_all($endpoint)
     {}
 
+    /**
+     * Update a resource
+     *
+     * @param  string $endpoint  API Endpoint
+     * @param  array  $data      Array of resource data
+     * @return mixed             JSON object or FALSE
+     */
     public function update($endpoint, $data)
     {}
 
+    /**
+     * Delete a resource
+     *
+     * @param  string $endpoint  API Endpoint
+     * @return boolean           TRUE or FALSE
+     */
     public function delete($endpoint)
     {}
 }
