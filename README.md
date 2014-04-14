@@ -43,7 +43,7 @@ API methods can be accessed via a standardized scheme:
 ```php
 $this->freshdesk->{$resource}->{$method}();
 ```
-Common methods provided are: `create()`, `get_all()`, `get()`, `update()`, and `delete()`.
+Common methods provided are: `create()`, `get()`, `get_all()`, `update()`, and `delete()`.
 
 ### Examples
 The following examples demonstrate various methods of utilizing the library.
@@ -74,7 +74,7 @@ foreach ($this->freshdesk->User->get_all() as $user)
 }
 
 # Create a a Post
-$this->freshdesk->Post->create($category_id, $forum_id, $topic_id, ['body' => 'My first post!']);
+$this->freshdesk->Post->create(123, 234, 456, ['body' => 'My first post!']);
 ```
 
 ### License
