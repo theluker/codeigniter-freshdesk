@@ -58,7 +58,7 @@ class Freshdesk
     }
 }
 
-class FreshdeskAPI
+class FreshdeskTransport
 {
     private $base_url;
     private $username;
@@ -127,7 +127,7 @@ class FreshdeskAPI
     }
 }
 
-class FreshdeskBase extends FreshdeskAPI
+class FreshdeskAPI extends FreshdeskTransport
 {
     protected $NODE;
 
@@ -179,7 +179,7 @@ class FreshdeskBase extends FreshdeskAPI
     }
 }
 
-class FreshdeskAgent extends FreshdeskBase
+class FreshdeskAgent extends FreshdeskAPI
 {
     protected $NODE = 'agent';
 
@@ -231,7 +231,7 @@ class FreshdeskAgent extends FreshdeskBase
     }
 }
 
-class FreshdeskUser extends FreshdeskBase
+class FreshdeskUser extends FreshdeskAPI
 {
     protected $NODE = 'user';
 
@@ -297,7 +297,7 @@ class FreshdeskUser extends FreshdeskBase
     }
 }
 
-class FreshdeskForumCategory extends FreshdeskBase
+class FreshdeskForumCategory extends FreshdeskAPI
 {
     // public $Forum;
 
@@ -349,7 +349,7 @@ class FreshdeskForumCategory extends FreshdeskBase
     }
 }
 
-class FreshdeskForum extends FreshdeskBase
+class FreshdeskForum extends FreshdeskAPI
 {
     // public $ForumCategory;
 
@@ -427,7 +427,7 @@ class FreshdeskForum extends FreshdeskBase
     }
 }
 
-class FreshdeskTopic extends FreshdeskBase
+class FreshdeskTopic extends FreshdeskAPI
 {
     protected $NODE = 'topic';
 
@@ -483,7 +483,7 @@ class FreshdeskTopic extends FreshdeskBase
     }
 }
 
-class FreshdeskPost extends FreshdeskBase
+class FreshdeskPost extends FreshdeskAPI
 {
     protected $NODE = 'post';
 
@@ -518,162 +518,7 @@ class FreshdeskPost extends FreshdeskBase
     }
 }
 
-class FreshDeskMonitor extends FreshdeskAPI
-{
-    # TODO: FreshdeskUser->get_monitored()
-	public function get($user_id)
-	{
-        // Return FALSE if we've failed to get a request response
-		return $this->_request("support/discussions/user_monitored?user_id={$user_id}") ?: FALSE;
-	}
-
-    # TODO: FreshdeskUser->check_monitored()
-	public function check($user_id, $topic_id)
-	{
-        // Return FALSE if we've failed to get a request response
-		return $this->_request("support/discussions/topics/{$topic_id}/check_monitor.json?user_id={$user_id}") ?: FALSE;
-	}
-
-    # TODO: FreshdeskTopic->monitor()
-    public function monitor($category_id, $forum_id, $topic_id)
-	{
-		// Return TRUE if HTTP 200 else FALSE
-		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'POST') == 200 ? TRUE : FALSE;
-	}
-
-    # TODO: FreshdeskTopic->unmonitor()
-	public function unmonitor($category_id, $forum_id, $topic_id)
-	{
-		// Return TRUE if HTTP 200 else FALSE
-		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'DELETE') == 200 ? TRUE : FALSE;
-	}
-}
-
-class FreshdeskTicket extends FreshdeskAPI
-{
-    public static $SCHEMA = array(
-        'ticket' => array(
-            'display_id'       => 'numeric',
-            'email'            => 'string',
-            'requester_id'     => 'numeric',
-            'subject'          => 'string',
-            'description'      => 'string',
-            'description_html' => 'string',
-            'status'           => 'numeric',
-            'priority'         => 'numeric',
-            'source'           => 'numeric',
-            'deleted'          => 'boolean',
-            'spam'             => 'boolean',
-            'responder_id'     => 'numeric',
-            'group_id'         => 'numeric',
-            'ticket_type'      => 'numeric',
-            'to_email'         => 'array',
-            'cc_email'         => 'array',
-            'email_config_id'  => 'numeric',
-            'isescalated'      => 'boolean',
-            'due_by'           => 'string',
-            'id'               => 'numeric',
-            'attachements'     => 'array'
-        ),
-        'note' => array(
-            'id'          => 'number',
-            'body'        => 'string',
-            'body_html'   => 'string',
-            'attachments' => 'array',
-            'user_id'     => 'number',
-            'private'     => 'boolean',
-            'to_emails'   => 'array',
-            'deleted'     => 'boolean'
-        )
-    );
-
-    public static $SOURCE = array(
-        'EMAIL'    => 1,
-        'PORTAL'   => 2,
-        'PHONE'    => 3,
-        'FORUM'    => 4,
-        'TWITTER'  => 5,
-        'FACEBOOK' => 6,
-        'CHAT'     => 7
-    );
-
-    public static $STATUS = array(
-        'OPEN'     => 1,
-        'PENDING'  => 2,
-        'RESOLVED' => 3,
-        'CLOSED'   => 4
-    );
-
-    public static $PRIORITY = array(
-        'LOW'      => 1,
-        'MEDIUM'   => 2,
-        'HIGH'     => 3,
-        'URGENT'   => 4
-    );
-
-    public function create($data)
-    {
-      return $this->_request("helpdesk/tickets.json", "POST", $data) ?: FALSE;
-    }
-
-    public function get($ticket_id)
-    {
-        return $this->_request("/helpdesk/tickets/{$ticket_id}") ?: FALSE;
-    }
-
-    public function get_all($ticket_id = '', $filter = '', $data = '')
-    {
-        $DEFAULT_FILTERS = array(
-            'ALL'       => 'all_tickets',
-            'NEW'       => 'new_my_open',
-            'MONITORED' => 'monitored_by',
-            'SPAM'      => 'spam',
-            'DELETED'   => 'deleted'
-        );
-
-        $INFO_FILTERS = array(
-            'NAME'  => 'company_name',
-            'ID'    => 'company_id',
-            'EMAIL' => 'email'
-        );
-
-        $filter = strtoupper($filter);
-        // If filter variable exists in our default filters we don't require data
-        if (in_array($filter, array_keys($DEFAULT_FILTERS)))
-        {
-            return $this->_request("helpdesk/tickets/{$DEFAULT_FILTERS[$filter]}/?format=json") ?: FALSE;
-        }
-        // Data is required past this point
-        if ( ! $data) return FALSE;
-        // If filter variable exists in our info filters we require data to be passed
-        if (in_array($filter, array_keys($INFO_FILTERS)))
-        {
-            return $this->_request("helpdesk/tickets.json?{$INFO_FILTERS[$filter]}={$data}&filter_name=all_tickets") ?: FALSE;
-        }
-        // If filter variable is VIEW we require a view_id
-        if($filter == "VIEW")
-        {
-            return $this->_request("helpdesk/tickets/view/{$data}?format=json") ?: FALSE;
-        }
-        // If filter variable is REQUESTER we require a requester_id
-        if($filter == "REQUESTER")
-        {
-            return $this->_request("helpdesk/tickets/filter/requester/{$data}?format=json") ?: FALSE;
-        }
-        // Return all tickets by default
-        return $this->_request("helpdesk/tickets.json") ?: FALSE;
-    }
-
-    public function update() {}
-    public function pick() {}
-    public function delete() {}
-    public function restore() {}
-    public function assign() {}
-    public function get_all_ticket_fields() {}
-    public function add_note() {}
-}
-
-class FreshdeskWrapper extends FreshdeskAPI
+class FreshdeskWrapper extends FreshdeskTransport
 {
     protected $id;
     protected $api;
@@ -736,7 +581,6 @@ class FreshdeskForumCategoryWrapper extends FreshdeskWrapper {}
 class FreshdeskForumWrapper extends FreshdeskWrapper {}
 class FreshdeskTopicWrapper extends FreshdeskWrapper {}
 class FreshdeskPostWrapper extends FreshdeskWrapper {}
-class FreshdeskMonitorWrapper extends FreshdeskWrapper {}
 
 /* End of file Freshdesk.php */
 /* Location: ./application/libraries/Freshdesk.php */

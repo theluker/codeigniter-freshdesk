@@ -10,9 +10,9 @@ class Freshdesk
 {}
 
 /**
- * Freshdesk API
+ * Freshdesk API Transport
  */
-class FreshdeskAPI
+class FreshdeskTransport
 {
     /**
      * Perform an API request.
@@ -27,9 +27,9 @@ class FreshdeskAPI
 }
 
 /**
- * Freshdesk Base
+ * Freshdesk Base API
  */
-class FreshdeskBase extends FreshdeskAPI
+class FreshdeskAPI extends FreshdeskTransport
 {
     public function create($endpoint, $data)
     {}
@@ -48,9 +48,9 @@ class FreshdeskBase extends FreshdeskAPI
 }
 
 /**
- * Freshdesk Agent
+ * Freshdesk Agent API
  */
-class FreshdeskAgent extends FreshdeskBase
+class FreshdeskAgent extends FreshdeskAPI
 {
     public static $SCHEMA = array(
         'available'           => 'bool',
@@ -81,13 +81,13 @@ class FreshdeskAgent extends FreshdeskBase
 }
 
 /**
- * Freshdesk User
+ * Freshdesk User API
  *
  * Create, View, Update, and Delete Users.
  *
  * @link http://freshdesk.com/api/#user
  */
-class FreshdeskUser extends FreshdeskBase
+class FreshdeskUser extends FreshdeskAPI
 {
     public static $SCHEMA = array(
         'id'             => 'numeric',  // User ID             (read-only)
@@ -311,13 +311,13 @@ class FreshdeskUser extends FreshdeskBase
 }
 
 /**
- * Freshdesk Forum Category
+ * Freshdesk Forum Category API
  *
  * Create, View, Update, and Delete Forum Categories.
  *
  * @link http://freshdesk.com/api/#forum-category
  */
-class FreshdeskForumCategory extends FreshdeskBase
+class FreshdeskForumCategory extends FreshdeskAPI
 {
     public $Forum;
 
@@ -465,13 +465,13 @@ class FreshdeskForumCategory extends FreshdeskBase
 }
 
 /**
- * Freshdesk Forum
+ * Freshdesk Forum API
  *
  * Create, View, Update, and Delete Forums
  *
  * @link http://freshdesk.com/api/#forum
  */
-class FreshdeskForum extends FreshdeskBase
+class FreshdeskForum extends FreshdeskAPI
 {
     public $ForumCategory;
 
@@ -644,7 +644,7 @@ class FreshdeskForum extends FreshdeskBase
  * Create, View, Update, and Delete Forum Topics
  * @link http://freshdesk.com/api/#topic
  */
-class FreshdeskTopic extends FreshdeskAPI
+class FreshdeskTopic extends FreshdeskTransport
 {
     public static $SCHEMA = array(
         'id'           => 'numeric',  // Unique id of the topic Read-Only
@@ -857,7 +857,7 @@ class FreshdeskTopic extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#post
  */
-class FreshdeskPost extends FreshdeskAPI
+class FreshdeskPost extends FreshdeskTransport
 {
     /**
      * Create a new Forum Post
@@ -989,7 +989,7 @@ class FreshdeskPost extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#monitor
  */
-class FreshDeskMonitor extends FreshdeskAPI
+class FreshDeskMonitor extends FreshdeskTransport
 {
     /**
      * Get a user's Monitored Topics
@@ -1117,7 +1117,7 @@ class FreshDeskMonitor extends FreshdeskAPI
  *
  * @link http://freshdesk.com/api/#ticket
  */
-class FreshdeskTicket extends FreshdeskAPI
+class FreshdeskTicket extends FreshdeskTransport
 {
     public static $SCHEMA = array(
         'ticket' => array(
@@ -1329,7 +1329,7 @@ class FreshdeskTicket extends FreshdeskAPI
  *
  * Returns an object that can be used similar to a Model.
  */
-class FreshdeskWrapper extends FreshdeskAPI
+class FreshdeskWrapper extends FreshdeskTransport
 {}
 
 /**
