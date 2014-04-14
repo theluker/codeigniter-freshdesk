@@ -129,7 +129,7 @@ class FreshdeskTransport
         $info = curl_getinfo($ch);
         log_message('debug', var_export(array($info, htmlspecialchars($data)), TRUE));
 
-        // CURL error handling
+        // Curl error handling
         if (curl_errno($ch) and $error = curl_error($ch))
         {
             log_message('error', var_export($error, TRUE));
@@ -300,7 +300,7 @@ class FreshdeskAgent extends FreshdeskAPI
      * Request URL: /agents/[agent_id].json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json"
      *      -X GET http://domain.freshdesk.com/agents/[agent_id].json
      *
@@ -326,7 +326,7 @@ class FreshdeskAgent extends FreshdeskAPI
      * Request URL: agents.json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json"
      *      -X GET http://domain.freshdesk.com/agents.json
      *
@@ -656,7 +656,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request URL:  /categories.json
      * Request method: POST
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
      *          -d '{ "forum_category": { "name":"How to", "description":"Getting Started" }}' \
      *          http://domain.freshdesk.com/categories.json
@@ -694,7 +694,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request URL: /categories/[category_id].json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *         http://domain.freshdesk.com/categories/2.json
      *
@@ -727,7 +727,7 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request URL: categories.json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *          http://domain.freshdesk.com/categories.json
      *
@@ -760,6 +760,11 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request URL: /categories/[category_id].json
      * Request method: PUT
      *
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *         -d '{ "forum_category": { "name":"Report Problems", "description":"Tell us your problems" }}' \
+     *         http://domain.freshdesk.com/categories/3.json
+     *
      * Request:
      *     {"forum_category":{
      *         "name":"Report Problems",
@@ -787,18 +792,18 @@ class FreshdeskForumCategory extends FreshdeskAPI
      * Request URL: categories/[category_id].json
      * Request method: DELETE
      *
-     * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
-     *          http://domain.freshdesk.com/categories/3.json
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     *         http://domain.freshdesk.com/categories/3.json
      *
      * Response:
      *     {"forum_category":{
-     *          "created_at":"2014-01-08T06:38:11+05:30",
-     *          "description":"How to Queries",
-     *          "id":3,
-     *          "name":"How and What?",
-     *          "position":null,
-     *          "updated_at":"2014-01-08T07:13:56+05:30"
+     *         "created_at":"2014-01-08T06:38:11+05:30",
+     *         "description":"How to Queries",
+     *         "id":3,
+     *         "name":"How and What?",
+     *         "position":null,
+     *         "updated_at":"2014-01-08T07:13:56+05:30"
      *     }}
      *
      * @link   http://freshdesk.com/api/#delete_forum_category
@@ -865,32 +870,32 @@ class FreshdeskForum extends FreshdeskAPI
      * Request URL: categories/[category_id]/forums.json
      * Request method: POST
      *
-     * CURL:
+     * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
      *         -d '{ "forum": { "description": "Ticket related functions", "forum_type":2, "forum_visibility":1, "name":"Ticket Operations" }}' \
      *         http://domain.freshdesk.com/categories/1/forums.json
      *
      * Request:
-     *       {"forum": {
-     *           "description":"Ticket related functions",
-     *           "forum_type":2,
-     *           "forum_visibility":1,
-     *           "name":"Ticket Operations"
-     *       }}
+     *     {"forum": {
+     *         "description":"Ticket related functions",
+     *         "forum_type":2,
+     *         "forum_visibility":1,
+     *         "name":"Ticket Operations"
+     *     }}
      *
      * Response:
-     *       {"forum":{
-     *           "description":"Ticket related functions",
-     *           "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
-     *           "forum_category_id":1,
-     *           "forum_type":2,
-     *           "forum_visibility":1,
-     *           "id":2,
-     *           "name":"Ticket Operations",
-     *           "position":5,
-     *           "posts_count":0,
-     *           "topics_count":0
-     *       }}
+     *     {"forum":{
+     *         "description":"Ticket related functions",
+     *         "description_html":"\u003Cp\u003ETicket related functions\u003C/p\u003E",
+     *         "forum_category_id":1,
+     *         "forum_type":2,
+     *         "forum_visibility":1,
+     *         "id":2,
+     *         "name":"Ticket Operations",
+     *         "position":5,
+     *         "posts_count":0,
+     *         "topics_count":0
+     *     }}
      *
      * @link http://freshdesk.com/api/#create_forum
      *
@@ -910,7 +915,7 @@ class FreshdeskForum extends FreshdeskAPI
      * Request URL: categories/[category_id]/forums/[forum_id].json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *         http://domain.freshdesk.com/categories/1/forums/2.json
      *
@@ -949,7 +954,7 @@ class FreshdeskForum extends FreshdeskAPI
      * Request URL: /categories/[category_id].json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *         http://domain.freshdesk.com/categories/2.json
      *
@@ -982,7 +987,7 @@ class FreshdeskForum extends FreshdeskAPI
      * Request URL: categories/[category_id]/forums/[forum_id].json
      * Request method: PUT
      *
-     * CURL:
+     * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
      *         -d '{ "forum": { "description":"Tickets and Ticket fields related queries", "forum_type":2, "forum_visibility":1 }}' \
      *         http://domain.freshdesk.com/categories/1/forums/2.json
@@ -1016,7 +1021,7 @@ class FreshdeskForum extends FreshdeskAPI
      * Request URL: categories/[category_id]/forums/[forum_id].json
      * Request method: DELETE
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
      *          http://domain.freshdesk.com/categories/1/forums/2.json
      *
@@ -1082,7 +1087,7 @@ class FreshdeskTopic extends FreshdeskAPI
      * Request URL: /categories/[category_id]/forums/[forum_id]/topics.json
      * Request method: POST
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
      *          -d '{ "topic": { "sticky":0, "locked":0, "title":"how to create a custom field", "body_html":"Can someone give me the steps ..." }}' \
      *          http://domain.freshdesk.com/categories/1/forums/1/topics.json
@@ -1136,7 +1141,7 @@ class FreshdeskTopic extends FreshdeskAPI
      * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *          http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
      *
@@ -1199,7 +1204,7 @@ class FreshdeskTopic extends FreshdeskAPI
      * Request URL: categories/[category_id]/forums/[forum_id].json
      * Request method: GET
      *
-     * CURL:
+     * Curl:
      *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *         http://domain.freshdesk.com/categories/1/forums/2.json
      *
@@ -1237,10 +1242,10 @@ class FreshdeskTopic extends FreshdeskAPI
      * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: PUT
      *
-     * CURL:
-     *    curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
-     *        -d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}' \
-     *        http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
+     *         -d '{ "topic": { "sticky":0, "locked":0, "title":"How to create a new ticket field", "body_html":"Steps: Go to Admin tab ..." }}' \
+     *         http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
      *
      * Request:
      *     {"topic":{
@@ -1273,12 +1278,12 @@ class FreshdeskTopic extends FreshdeskAPI
      * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: DELETE
      *
-     * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
      *          http://domain.freshdesk.com/categories/1/forums/1/topics/1.json
      *
      * Response:
-     *      HTTP Status: 200 OK
+     *     HTTP Status: 200 OK
      *
      * @link http://freshdesk.com/api/#delete_topic
      *
@@ -1321,8 +1326,8 @@ class FreshdeskPost extends FreshdeskAPI
      * Request URL: /posts.json
      * Request method: POST
      *
-     * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X POST \
      *          -d '{ "post": { "body_html":"What type of ticket field you are creating" }}' \
      *          http://domain.freshdesk.com/posts.json?forum_id=1&category_id=1&topic_id=2
      *
@@ -1364,8 +1369,8 @@ class FreshdeskPost extends FreshdeskAPI
      * Request URL: /posts/[post_id].json
      * Request method: GET
      *
-     * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *          http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
      *
      * Response:
@@ -1403,8 +1408,8 @@ class FreshdeskPost extends FreshdeskAPI
      * Request URL: domain_URL/categories/[category_id]/forums/[forum_id]/topics/[topic_id].json
      * Request method: GET
      *
-     * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X GET \
      *          http://domain.freshdesk.com/categories/1/forums/1/topics/3.json
      *
      * Response:
@@ -1465,7 +1470,7 @@ class FreshdeskPost extends FreshdeskAPI
      * Request URL: /posts/[post_id].json
      * Request method: PUT
      *
-     * CURL:
+     * Curl:
      *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X PUT \
      *          -d '{ "post": { "body_html": "Ticket field have different types ..." }}' \
      *          http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=2
@@ -1476,7 +1481,7 @@ class FreshdeskPost extends FreshdeskAPI
      *     }}
      *
      * Response:
-     *    HTTP Status: 200 OK
+     *     HTTP Status: 200 OK
      *
      * @link http://freshdesk.com/api/#update_post
      *
@@ -1499,12 +1504,12 @@ class FreshdeskPost extends FreshdeskAPI
      * Request URL: /posts/[post_id].json
      * Request method: DELETE
      *
-     * CURL:
-     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
+     * Curl:
+     *     curl -u user@yourcompany.com:test -H "Content-Type: application/json" -X DELETE \
      *          http://domain.freshdesk.com/posts/1.json?forum_id=1&category_id=1&topic_id=1
      *
      * Response:
-     *    HTTP Status: 200 OK
+     *     HTTP Status: 200 OK
      *
      * @link http://freshdesk.com/api/#delete_post
      *
