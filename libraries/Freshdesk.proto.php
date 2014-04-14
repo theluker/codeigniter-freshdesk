@@ -37,9 +37,9 @@ class FreshdeskAPI extends FreshdeskTransport
 {
     /**
      * Create a resource
-     * @param  string $endpoint  API Endpoint
-     * @param  array  $data      Array of resource data
-     * @return mixed             JSON object or FALSE
+     * @param  string $endpoint API Endpoint
+     * @param  array  $data     Array of resource data
+     * @return mixed            JSON object or FALSE
      */
     public function create($endpoint, $data)
     {}
@@ -47,8 +47,8 @@ class FreshdeskAPI extends FreshdeskTransport
     /**
      * Retrieve a resource
      *
-     * @param  string $endpoint  API Endpoint
-     * @return mixed             JSON object or FALSE
+     * @param  string $endpoint API Endpoint
+     * @return mixed            JSON object or FALSE
      */
     public function get($endpoint)
     {}
@@ -56,8 +56,8 @@ class FreshdeskAPI extends FreshdeskTransport
     /**
      * Retrieve all resources
      *
-     * @param  string $endpoint  API Endpoint
-     * @return mixed             JSON object or FALSE
+     * @param  string $endpoint API Endpoint
+     * @return mixed            JSON object or FALSE
      */
     public function get_all($endpoint)
     {}
@@ -65,9 +65,9 @@ class FreshdeskAPI extends FreshdeskTransport
     /**
      * Update a resource
      *
-     * @param  string $endpoint  API Endpoint
-     * @param  array  $data      Array of resource data
-     * @return mixed             JSON object or FALSE
+     * @param  string $endpoint API Endpoint
+     * @param  array  $data     Array of resource data
+     * @return mixed            JSON object or FALSE
      */
     public function update($endpoint, $data)
     {}
@@ -75,8 +75,8 @@ class FreshdeskAPI extends FreshdeskTransport
     /**
      * Delete a resource
      *
-     * @param  string $endpoint  API Endpoint
-     * @return boolean           TRUE or FALSE
+     * @param  string $endpoint API Endpoint
+     * @return boolean          TRUE or FALSE
      */
     public function delete($endpoint)
     {}
@@ -84,33 +84,100 @@ class FreshdeskAPI extends FreshdeskTransport
 
 /**
  * Freshdesk Agent API
+ *
+ * Currently undocumented by Freshdesk
+ *
+ * @link http://freshdesk.com/api/#agent
  */
 class FreshdeskAgent extends FreshdeskAPI
 {
     public static $SCHEMA = array(
-        'available'           => 'bool',
-        'created_at'          => 'string',
-        'id'                  => 'numeric',
-        'points'              => 'numeric',
-        'occasional'          => 'bool',
-        'scoreboard_level_id' => 'numeric',
-        'signature'           => 'string',
-        'signature_html'      => 'string',
-        'ticket_permission'   => 'numeric',
-        'updated_at'          => 'string',
-        'user_id'             => 'numeric',
-        'user'                => 'FreshdeskUser'
+        'available'           => 'bool',          // Agent Available
+        'created_at'          => 'string',        // Agent time created
+        'id'                  => 'numeric',       // Agent ID
+        'points'              => 'numeric',       // Agent Points               (?)
+        'occasional'          => 'bool',          // Agent Occasional           (?)
+        'scoreboard_level_id' => 'numeric',       // Agent Scoreboard Level ID  (?)
+        'signature'           => 'string',        // Agent signature
+        'signature_html'      => 'string',        // Agent signature HTML
+        'ticket_permission'   => 'numeric',       // Agent Ticket permission    (?)
+        'updated_at'          => 'string',        // Agent time last updated
+        'user_id'             => 'numeric',       // User ID
+        'user'                => 'FreshdeskUser'  // Incomplete set of User data
     );
 
+    /**
+     * Create a new Agent
+     *
+     * Currently unsupported
+     *
+     * @param  array   $data Array of data
+     * @return boolean       FALSE as unsupported
+     */
     public function create($data)
     {}
 
+    /**
+     * Retrieve an Agent
+     *
+     * Request URL: /agents/[agent_id].json
+     * Request method: GET
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json"
+     *      -X GET http://domain.freshdesk.com/agents/[agent_id].json
+     *
+     * Response:
+     *     # TODO: FreshdeskAgent::get() response
+     *
+     * @link   http://freshdesk.com/api/#view_all_agent
+     *
+     * @param  integer $agent_id Agent ID
+     * @return object            JSON Agent object
+     */
+    public function get($agent_id = NULL)
+    {}
+
+    /**
+     * Retrieve all Agents
+     *
+     * Request URL: agents.json
+     * Request method: GET
+     *
+     * CURL:
+     *      curl -u user@yourcompany.com:test -H "Content-Type: application/json"
+     *      -X GET http://domain.freshdesk.com/agents.json
+     *
+     * Response:
+     *     # TODO: FreshdeskAgent::get_all() response
+     *
+     * @link   http://freshdesk.com/api/#view_all_agent
+     *
+     * @return array             Array of JSON Agent objects
+     */
     public function get_all()
     {}
 
+    /**
+     * Update an existing Agent
+     *
+     * Currently unsupported
+     *
+     * @param  integer $agent_id Agent ID
+     * @param  array   $data     Array of data
+     * @return boolean           FALSE as unsupported
+     */
     public function update($agent_id, $data)
     {}
 
+    /**
+     * Delete an existing Agent
+     *
+     * Currently unsupported
+     *
+     * @param  integer $agent_id Agent ID
+     * @return boolean           FALSE as unsupported
+     */
     public function delete($agent_id)
     {}
 }
@@ -139,7 +206,7 @@ class FreshdeskUser extends FreshdeskAPI
         'time_zone'      => 'string',   // User Time Zone
         'customer_id'    => 'numeric',  // User Customer ID
         'deleted'        => 'bool',     // True if deleted
-        'helpdesk_agent' => 'bool',     // True if agent       (read-only)
+        'helpdesk_agent' => 'bool',     // True if Agent       (read-only)
         'active'         => 'bool',     // True if active
     );
 
