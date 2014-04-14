@@ -80,6 +80,16 @@ class Freshdesk
             $this->$api = new $class($this->params);
         }
     }
+
+    public function __call($name, $args)
+    {
+        // Dynamically load and return wrapped API
+        if (in_array($name, self::$apis))
+        {
+            $class = "Freshdesk{$name}Wrapper";
+            return new $class($this->params, $args);
+        }
+    }
 }
 
 /**
@@ -355,7 +365,7 @@ class FreshdeskAgent extends FreshdeskAPI
      */
     public function update($agent_id, $data)
     {
-        // Currently unsupported
+        # TODO: implement method
         return FALSE;
     }
 
@@ -369,7 +379,7 @@ class FreshdeskAgent extends FreshdeskAPI
      */
     public function delete($agent_id)
     {
-        // Currently unsupported
+        # TODO: implement method
         return FALSE;
     }
 }
@@ -1469,7 +1479,7 @@ class FreshdeskPost extends FreshdeskAPI
         return $parent->get($category_id, $forum_id, $topic_id)->posts;
     }
 
-    /**
+   /**
      * Update a Forum Topic Post
      *
      * Request URL: /posts/[post_id].json
@@ -1530,6 +1540,226 @@ class FreshdeskPost extends FreshdeskAPI
         return parent::update("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
     }
 }
+
+class FreshDeskMonitor extends FreshdeskAPI
+{
+    # TODO: FreshdeskUser->get_monitored()
+	public function get($user_id)
+	{
+        // Return FALSE if we've failed to get a request response
+		return $this->_request("support/discussions/user_monitored?user_id={$user_id}") ?: FALSE;
+	}
+
+    # TODO: FreshdeskUser->check_monitored()
+	public function check($user_id, $topic_id)
+	{
+        // Return FALSE if we've failed to get a request response
+		return $this->_request("support/discussions/topics/{$topic_id}/check_monitor.json?user_id={$user_id}") ?: FALSE;
+	}
+
+    # TODO: FreshdeskTopic->monitor()
+    public function monitor($category_id, $forum_id, $topic_id)
+	{
+		// Return TRUE if HTTP 200 else FALSE
+		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'POST') == 200 ? TRUE : FALSE;
+	}
+
+    # TODO: FreshdeskTopic->unmonitor()
+	public function unmonitor($category_id, $forum_id, $topic_id)
+	{
+		// Return TRUE if HTTP 200 else FALSE
+		return $this->_request("categories/{$category_id}/forums/{$forum_id}/topics/{$topic_id}/monitorship.json", 'DELETE') == 200 ? TRUE : FALSE;
+	}
+}
+
+class FreshdeskTicket extends FreshdeskAPI
+{
+    public static $SCHEMA = array(
+        'ticket' => array(
+            'display_id'       => 'numeric',
+            'email'            => 'string',
+            'requester_id'     => 'numeric',
+            'subject'          => 'string',
+            'description'      => 'string',
+            'description_html' => 'string',
+            'status'           => 'numeric',
+            'priority'         => 'numeric',
+            'source'           => 'numeric',
+            'deleted'          => 'boolean',
+            'spam'             => 'boolean',
+            'responder_id'     => 'numeric',
+            'group_id'         => 'numeric',
+            'ticket_type'      => 'numeric',
+            'to_email'         => 'array',
+            'cc_email'         => 'array',
+            'email_config_id'  => 'numeric',
+            'isescalated'      => 'boolean',
+            'due_by'           => 'string',
+            'id'               => 'numeric',
+            'attachements'     => 'array'
+        ),
+        'note' => array(
+            'id'          => 'number',
+            'body'        => 'string',
+            'body_html'   => 'string',
+            'attachments' => 'array',
+            'user_id'     => 'number',
+            'private'     => 'boolean',
+            'to_emails'   => 'array',
+            'deleted'     => 'boolean'
+        )
+    );
+
+    public static $SOURCE = array(
+        'EMAIL'    => 1,
+        'PORTAL'   => 2,
+        'PHONE'    => 3,
+        'FORUM'    => 4,
+        'TWITTER'  => 5,
+        'FACEBOOK' => 6,
+        'CHAT'     => 7
+    );
+
+    public static $STATUS = array(
+        'OPEN'     => 1,
+        'PENDING'  => 2,
+        'RESOLVED' => 3,
+        'CLOSED'   => 4
+    );
+
+    public static $PRIORITY = array(
+        'LOW'      => 1,
+        'MEDIUM'   => 2,
+        'HIGH'     => 3,
+        'URGENT'   => 4
+    );
+
+    public function create($data)
+    {
+      return $this->_request("helpdesk/tickets.json", "POST", $data) ?: FALSE;
+    }
+
+    public function get($ticket_id)
+    {
+        return $this->_request("/helpdesk/tickets/{$ticket_id}") ?: FALSE;
+    }
+
+    public function get_all($ticket_id = '', $filter = '', $data = '')
+    {
+        $DEFAULT_FILTERS = array(
+            'ALL'       => 'all_tickets',
+            'NEW'       => 'new_my_open',
+            'MONITORED' => 'monitored_by',
+            'SPAM'      => 'spam',
+            'DELETED'   => 'deleted'
+        );
+
+        $INFO_FILTERS = array(
+            'NAME'  => 'company_name',
+            'ID'    => 'company_id',
+            'EMAIL' => 'email'
+        );
+
+        $filter = strtoupper($filter);
+        // If filter variable exists in our default filters we don't require data
+        if (in_array($filter, array_keys($DEFAULT_FILTERS)))
+        {
+            return $this->_request("helpdesk/tickets/{$DEFAULT_FILTERS[$filter]}/?format=json") ?: FALSE;
+        }
+        // Data is required past this point
+        if ( ! $data) return FALSE;
+        // If filter variable exists in our info filters we require data to be passed
+        if (in_array($filter, array_keys($INFO_FILTERS)))
+        {
+            return $this->_request("helpdesk/tickets.json?{$INFO_FILTERS[$filter]}={$data}&filter_name=all_tickets") ?: FALSE;
+        }
+        // If filter variable is VIEW we require a view_id
+        if($filter == "VIEW")
+        {
+            return $this->_request("helpdesk/tickets/view/{$data}?format=json") ?: FALSE;
+        }
+        // If filter variable is REQUESTER we require a requester_id
+        if($filter == "REQUESTER")
+        {
+            return $this->_request("helpdesk/tickets/filter/requester/{$data}?format=json") ?: FALSE;
+        }
+        // Return all tickets by default
+        return $this->_request("helpdesk/tickets.json") ?: FALSE;
+    }
+
+    public function update() {}
+    public function pick() {}
+    public function delete() {}
+    public function restore() {}
+    public function assign() {}
+    public function get_all_ticket_fields() {}
+    public function add_note() {}
+}
+
+class FreshdeskWrapper extends FreshdeskAPI
+{
+    protected $id;
+    protected $api;
+    protected $args;
+    protected $data;
+
+    public function __construct($params, $args)
+    {
+        FreshdeskAPI::__construct($params);
+
+        $api = substr(get_class($this), 0, -strlen('Wrapper'));
+        $this->api = new $api($params);
+
+        // Return if no args were passed
+        if ( ! $arg0 = @$args[0]) return;
+        // Set args if only args passed
+        if (is_array($arg0)) $this->args = $arg0;
+        // Set args and data if id was passed
+        else if ($this->id = intval(array_shift($args)))
+        {
+            $this->args = @$args[0];
+            $this->data = $this->get();
+        }
+    }
+
+    public function __get($name)
+    {
+        if ($value = (@$this->args[$name] ?: @$this->data->$name)) return $value;
+    }
+
+    public function __set($name, $value)
+    {
+        $this->args[$name] = $value;
+    }
+
+    public function create($args = NULL)
+    {
+        return $this->api->create($args ?: $this->args);
+    }
+
+    public function get()
+    {
+        return $this->id ? $this->api->get($this->id) : FALSE;
+    }
+
+    public function update($args = NULL)
+    {
+        return $this->id ? $this->api->update($this->id, $args ?: $this->args) : FALSE;
+    }
+
+    public function delete()
+    {
+        return $this->id ? $this->api->delete($this->id) : FALSE;
+    }
+}
+
+class FreshdeskAgentWrapper extends FreshdeskWrapper {}
+class FreshdeskUserWrapper extends FreshdeskWrapper {}
+class FreshdeskForumCategoryWrapper extends FreshdeskWrapper {}
+class FreshdeskForumWrapper extends FreshdeskWrapper {}
+class FreshdeskTopicWrapper extends FreshdeskWrapper {}
+class FreshdeskPostWrapper extends FreshdeskWrapper {}
+class FreshdeskMonitorWrapper extends FreshdeskWrapper {}
 
 /* End of file Freshdesk.php */
 /* Location: ./application/libraries/Freshdesk.php */
