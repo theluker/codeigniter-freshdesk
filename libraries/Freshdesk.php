@@ -1362,11 +1362,11 @@ class FreshdeskPost extends FreshdeskAPI
      * @param  array   $data        Array of Post data
      * @return object               JSON Post object
      */
-    public function create($category_id, $forum_id, $topic_id, $data)
-    {
+	public function create($category_id, $forum_id, $topic_id, $data)
+	{
         // Return parent method
         return parent::create("posts.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}", $data);
-    }
+	}
 
     /**
      * Retrieve a Forum Topic Post
@@ -1497,11 +1497,11 @@ class FreshdeskPost extends FreshdeskAPI
      * @param  array   $data        Array of Post data
      * @return mixed                JSON Post object or FALSE
      */
-    public function update($category_id, $forum_id, $topic_id, $post_id, $data)
-    {
+	public function update($category_id, $forum_id, $topic_id, $post_id, $data)
+	{
         // Return object if parent method succeeds
         return parent::update("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id{$topic_id}", $data) ? $this->get($category_id, $forum_id, $topic_id, $post_id) : FALSE;
-    }
+	}
 
     /**
      * Delete a Forum Topic Post
@@ -1524,7 +1524,7 @@ class FreshdeskPost extends FreshdeskAPI
      * @param  integer $post_id     Forum Topic Post ID
      * @return boolean              TRUE if HTTP 200 else FALSE
      */
-    public function delete($category_id, $forum_id, $topic_id, $post_id)
+	public function delete($category_id, $forum_id, $topic_id, $post_id)
     {
         // Return parent method
         return parent::update("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
