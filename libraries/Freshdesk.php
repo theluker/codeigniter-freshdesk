@@ -1527,7 +1527,7 @@ class FreshdeskPost extends FreshdeskAPI
     public function delete($category_id, $forum_id, $topic_id, $post_id)
     {
         // Return parent method
-        return parent::delete("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
+        return parent::update("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
     }
 }
 
