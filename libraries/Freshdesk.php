@@ -184,8 +184,6 @@ class FreshdeskAPI extends FreshdeskTransport
      */
     public function create($endpoint, $data)
     {
-<<<<<<< HEAD
->>>>>>> Revert "Revert "Fixed FreshdeskPost::delete""
         // Return FALSE if we did not receive an array of data
         if ( ! is_array($data)) return FALSE;
         // Encapsulate data in container node
