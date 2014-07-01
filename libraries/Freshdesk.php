@@ -1519,6 +1519,277 @@ class FreshdeskPost extends FreshdeskAPI
         // Return parent method
         return parent::delete("posts/{$post_id}.json?category_id={$category_id}&forum_id={$forum_id}&topic_id={$topic_id}");
     }
+
+    class FreshdeskTicket extends FreshdeskAPI
+    {
+    protected $NODE = 'ticket';
+
+    public static $SCHEMA = array(
+
+        'id'        => 'numeric',  // Post ID         (read-only)
+        'body'      => 'string',   // Post Body       (required)
+                                   // OR
+        'body_html' => 'string',   // Post Body HTML  (required)
+        'forum_id'  => 'numeric',  // Post Forum ID
+        'topic_id'  => 'numeric',  // Post Topic ID
+        'user_id'   => 'numeric',  // Post User ID    (read-only)
+    );
+
+    public static $TICKET_SOURCE_TYPE = array(
+        'email'     => 1,
+        'portal'    => 2,
+        'Phone'     => 3,
+        'forum'     => 4,
+        'twitter'   => 5,
+        'facebook'  => 6,
+        'chat'      => 7
+    );
+
+    public static $TICKET_STATUS = array(
+        'open'      => 2,
+        'pending'   => 3,
+        'resolved'  => 4,
+        'closed'    => 5
+    );
+
+    public static $TICKET_PRIORITIES = array(
+        'low'       => 1,
+        'medium'    => 2,
+        'high'      => 3,
+        'urgent'    => 4
+    );
+
+    /**
+     * Create a Ticket
+     *
+     * Request URL: /helpdesk/tickets.json 
+     * Request method: POST
+     *
+     * CURL:
+     * curl -u user@yourcompany.com:test -H "Content-Type: application/json" -d 
+     * '{ "helpdesk_ticket": { "description": "Details about the issue...", "subject": "Support Needed...", "email": "tom@outerspace.com", "priority": 1, "status": 2 }, "cc_emails": "ram@freshdesk.com,diana@freshdesk.com" }' 
+     * -X POST http://domain.freshdesk.com/helpdesk/tickets.json
+     *
+     * Request:
+     *    {
+     *    "helpdesk_ticket":{
+     *         "description":"Some details on the issue ...",
+     *         "subject":"Support needed..",
+     *         "email":"tom@outerspace.com",
+     *        "priority":1, "status":2
+     *            },
+     *          "cc_emails":"ram@freshdesk.com,diana@freshdesk.com"
+     *      }   
+     * Response:
+     *   {
+     *      "helpdesk_ticket":{
+     *         "cc_email":{
+     *            "cc_emails":[
+     *               "ram@freshdesk.com",
+     *               "diana@freshdesk.com"
+     *           ],
+     *            "fwd_emails":[]
+     *       },
+     *       "created_at":"2014-01-07T18:48:33+05:30",
+     *       "deleted":false,
+     *       "delta":true,
+     *       "description":"Some details on the...",
+     *       "description_html":"\u003Cdiv\u003ESome details on the...\u003C/div\u003E",
+     *       "display_id":141,
+     *       "due_by":"2014-01-10T17:00:00+05:30",
+     *       "email_config_id":null,
+     *       "frDueBy":"2014-01-08T17:00:00+05:30",
+     *       "fr_escalated":false,
+     *       "group_id":null,
+     *       "id":141,
+     *       "isescalated":false,
+     *       "notes":[],
+     *       "owner_id":null,
+     *       "priority":1,
+     *       "requester_id":18,
+     *       "responder_id":null,
+     *       "source":2,
+     *       "spam":false,
+     *       "status":2,
+     *       "subject":"Support needed..",
+     *       "ticket_type":"Question",
+     *       "to_email":null,
+     *       "trained":false,
+     *       "updated_at":"2014-01-07T18:48:33+05:30",
+     *       "urgent":false,
+     *       "status_name":"Open",
+     *       "requester_status_name":"Being Processed",
+     *       "priority_name":"Low",
+     *       "source_name":"Portal",
+     *       "requester_name":"tom",
+     *       "responder_name":"No Agent",
+     *       "to_emails":null,
+     *       "custom_field":{
+     *          "weapon_1":"Laser Gun"
+     *       },
+     *       "attachments":[]
+     *      }
+     *   }
+     *
+     * @link http://freshdesk.com/api#create_ticket
+     *
+     * @param  text     $description Ticket Description
+     * @param  text     $subject     Ticket Subject
+     * @param  email    $email       Ticket creator email
+     * @param  priority $priority    Ticket Priority (see $TICKET_PRIORITIES)
+     * @param  status   $status      Ticket status (see $TICKET_STATUS)
+     * @param  array    $cc_emails   Array of email address to send copies of tickets too
+     * @return object                JSON Ticket object
+     */
+    public function create($data)
+    {
+        // TODO: Clean up how this works
+        // $data = array(
+        //     "helpdesk_ticket" => array(
+        //         "description" => $description,
+        //         "subject" => $subject,
+        //         "email" => $email,
+        //         "priority" => $priority,
+        //         "status" => $status
+        //     ),
+        //     "cc_emails" => $cc_emails
+        // );
+        // Return parent method
+        return parent::create("helpdesk/tickets.json", $data);
+    }
+    /**
+     * Get a Ticket
+     *
+     * Request URL: /helpdesk/tickets/[id].json  
+     * Request method: GET
+     *
+     * CURL:
+     * curl -u user@yourcompany.com:test -H "Content-Type: application/json"  
+     * -X GET http://domain.freshdesk.com/helpdesk/tickets/1.json
+     *
+     * Response:
+     *    {
+     *      "helpdesk_ticket":{
+     *         "cc_email":{
+     *            "cc_emails":[
+     *               "ram@freshdesk.com",
+     *               "diana@freshdesk.com"
+     *               ],
+     *            "fwd_emails":[]
+     *         },
+     *         "created_at":"2014-01-07T14:57:55+05:30",
+     *         "deleted":false,
+     *         "delta":true,
+     *         "description":"Details on the issue ...",
+     *         "description_html":"\u003Cdiv\u003EDetails on the issue ...\u003C/div\u003E",
+     *         "display_id":138,
+     *         "due_by":"2014-01-10T14:57:55+05:30",
+     *         "email_config_id":null,
+     *         "frDueBy":"2014-01-08T14:57:55+05:30",
+     *         "fr_escalated":false,
+     *         "group_id":null,
+     *         "id":138,
+     *         "isescalated":false,
+     *         "notes":[],
+     *         "owner_id":null,
+     *         "priority":1,
+     *         "requester_id":17,
+     *         "responder_id":null,
+     *         "source":2,
+     *         "spam":false,
+     *         "status":2,
+     *         "subject":"Support Needed...",
+     *         "ticket_type":"Problem",
+     *         "to_email":null,
+     *         "trained":false,
+     *         "updated_at":"2014-01-07T15:53:21+05:30",
+     *         "urgent":false,
+     *         "status_name":"Open",
+     *         "requester_status_name":"Being Processed",
+     *         "priority_name":"Low",
+     *         "source_name":"Portal",
+     *         "requester_name":"Test",
+     *         "responder_name":"No Agent",
+     *         "to_emails":null,
+     *         "custom_field":{
+     *            "weapon_1":"Laser Gun"
+     *            },
+     *            "attachments":[]
+     *      }
+     *   }
+     *
+     * @link http://freshdesk.com/api#view_a_ticket
+     *
+     * @param  integer  $ticket_id   Ticket ID
+     * @return object                JSON Ticket object
+     */
+    public function get($ticket_id)
+    {
+        return parent::get("helpdesk/{$ticket_id}.json");
+    }
+
+    /**
+     * Delete a Ticket
+     *
+     * Request URL: /helpdesk/tickets/[id].json
+     * Request method: DELETE
+     *
+     * Note: Rest assured though. Tickets aren't cast into the fiery volcanic Mount Doom. 
+     * You can always retrieve them using the Restore Ticket API. 
+     *
+     * CURL:
+     * curl -u user@yourcompany.com:test -H "Content-Type: application/json"  
+     * -X DELETE http://domain.freshdesk.com/helpdesk/tickets/1.json
+     *
+     * RESPONSE: HTTP Status: 200 OK
+     *
+     * @link http://freshdesk.com/api#delete_a_ticket
+     *
+     * @param  integer  $ticket_id   Ticket ID
+     * @return object                JSON Ticket object
+     */
+    public function delete($ticket_id)
+    {
+        return parent::delete("helpdesk/tickets/{$ticket_id}.json");
+    }
+
+    /**
+     * Restore a Ticket
+     *
+     * Request URL: /helpdesk/tickets/[id]/restore.json
+     * Request method: PUT
+     *
+     * CURL:
+     * curl -u user@yourcompany.com:test -H "Content-Type: application/json"  
+     * -X PUT http://domain.freshdesk.com/helpdesk/tickets/[id]/restore.json
+     *
+     * RESPONSE: 
+     * 
+     * [
+     *     {
+     *       "ticket":{
+     *         "deleted":false,
+     *         "display_id":135,
+     *         "subject":"Support Needed...",
+     *         "status_name":"Open",
+     *         "requester_status_name":"Being Processed",
+     *         "priority_name":"Low",
+     *         "source_name":"Portal",
+     *         "requester_name":"tom",
+     *         "responder_name":"No Agent",
+     *         "to_emails":null
+     *       }
+     *     }
+     *   ]
+     * @link http://freshdesk.com/api#restore_a_ticket
+     *
+     * @param  integer  $ticket_id   Ticket ID
+     * @return object                JSON Ticket object
+     */
+    public function restore($ticket_id)
+    {
+        return parent::put("helpdesk/tickets/{$ticket_id}/restore.json");
+    }
 }
 
 /* End of file Freshdesk.php */
